@@ -15,3 +15,6 @@ static/uploads/*
 .vscode/
 .idea/
 .DS_Store
+
+# personal agent instructions (not shared with the team)
+CLAUDE.md
