@@ -219,7 +219,6 @@ textarea.input{resize:none;font:inherit;width:100%}
 .badge.free{color:var(--ok)}
 .badge.swap{color:var(--amber)}
 .badge.state{color:var(--ink-2);border-style:dashed}
-.badge.state.rsv{color:var(--amber)}
 .badge.state.done{color:var(--ok)}
 .hr{border:none;border-top:1.5px dashed var(--line-soft)}
 
@@ -242,14 +241,8 @@ textarea.input{resize:none;font:inherit;width:100%}
 .feedcard .tt{font-weight:500;font-size:.94rem}
 .feedcard .meta{font-size:.76rem;color:var(--ink-2)}
 .feedcard .price{font-weight:700}
-.agorapeek{
-  border-top:1.5px dashed var(--line-soft);padding:7px 12px;font-size:.78rem;color:var(--blue);
-  background:var(--blue-soft);display:flex;gap:6px;align-items:center;
-}
-.agorapeek .n{font-weight:700;white-space:nowrap}
-.agorapeek .q{color:var(--ink-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
-/* agora thread */
+/* chat */
 .thread{display:flex;flex-direction:column;gap:10px}
 .msg{display:flex;gap:8px;align-items:flex-start}
 .msg .avatar{width:30px;height:30px;border-radius:50%;border:1.5px solid var(--line);background:var(--ph1);flex:none}
@@ -257,11 +250,6 @@ textarea.input{resize:none;font:inherit;width:100%}
 .msg .who{font-size:.72rem;color:var(--ink-2);margin-bottom:2px}
 .msg.me{flex-direction:row-reverse}
 .msg.me .bubble{background:var(--blue-soft);border-color:var(--blue)}
-.dealbtn{
-  border:1.5px dashed var(--blue);border-radius:6px;padding:3px 9px;font-size:.76rem;
-  color:var(--blue);font-weight:700;margin-top:5px;background:var(--box);
-}
-.dealbtn:hover{background:var(--blue-soft)}
 .syscard{
   border:1.5px dashed var(--ok);border-radius:10px;padding:10px 12px;background:var(--ok-soft);
   color:var(--ok);font-size:.88rem;text-align:center;font-weight:500;
@@ -269,26 +257,28 @@ textarea.input{resize:none;font:inherit;width:100%}
 .inputrow{display:flex;gap:8px;padding:10px 0 0}
 .inputrow .input{flex:1}
 
-/* detail */
-.detailtop{display:flex;gap:18px;align-items:flex-start}
-.detailtop .ph{width:240px;height:200px}
-.browser.mobile .detailtop{flex-direction:column}
-.browser.mobile .detailtop .ph{width:100%;height:180px}
+/* merged item+chat */
+.itemhead{display:flex;gap:14px;align-items:flex-start}
+.itemhead .ph{width:150px;height:120px}
+.browser.mobile .itemhead{flex-direction:column}
+.browser.mobile .itemhead .ph{width:100%;height:160px}
 @media (max-width:700px){
-  .detailtop{flex-direction:column}
-  .detailtop .ph{width:100%;height:180px}
+  .itemhead{flex-direction:column}
+  .itemhead .ph{width:100%;height:160px}
 }
 .sellerrow{display:flex;gap:10px;align-items:center}
-.sellerrow .avatar{width:38px;height:38px;border-radius:50%;border:1.5px solid var(--line);background:var(--ph1)}
-.sellerrow .nm{font-weight:500}
-.sellerrow .gen{font-size:.78rem;color:var(--ink-2)}
+.sellerrow .avatar{width:34px;height:34px;border-radius:50%;border:1.5px solid var(--line);background:var(--ph1)}
+.sellerrow .nm{font-weight:500;font-size:.9rem}
+.sellerrow .gen{font-size:.76rem;color:var(--ink-2)}
 .heart{
   width:42px;height:40px;border:1.5px solid var(--line);border-radius:8px;font-size:1.15rem;
   display:flex;align-items:center;justify-content:center;flex:none;color:var(--ink-2);
 }
 .heart.on{color:var(--blue);border-color:var(--blue);background:var(--blue-soft)}
-.ctarow{display:flex;gap:10px;align-items:center}
-.ctarow .btn{flex:1}
+.acct{
+  display:flex;justify-content:space-between;align-items:center;gap:8px;
+  border:1.5px solid var(--line);border-radius:8px;padding:8px 12px;font-size:.86rem;background:var(--box);
+}
 
 /* community */
 .postitem{padding:12px 2px;border-bottom:1.5px solid var(--line-soft);cursor:pointer;border-radius:6px;text-align:left;width:100%}
@@ -307,26 +297,7 @@ textarea.input{resize:none;font:inherit;width:100%}
 .chatitem .tt{font-weight:500}
 .chatitem .last{font-size:.82rem;color:var(--ink-2);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:380px}
 
-/* 1:1 room */
-.pincard{
-  display:flex;gap:10px;align-items:center;padding:10px 14px;
-  border:1.5px solid var(--line);border-radius:10px;background:var(--panel);
-}
-.pincard .ph{width:44px;height:44px}
-.pincard .tt{font-size:.88rem;font-weight:500}
-.acct{
-  display:flex;justify-content:space-between;align-items:center;gap:8px;
-  border:1.5px solid var(--line);border-radius:8px;padding:8px 12px;font-size:.86rem;background:var(--box);
-}
-
-/* modal / toast */
-.overlay{position:absolute;inset:0;background:rgba(20,21,23,.45);z-index:30;display:none;align-items:center;justify-content:center;padding:24px}
-.overlay.on{display:flex}
-.modal{
-  background:var(--box);border:2px solid var(--ink);border-radius:14px;padding:20px;
-  width:100%;max-width:340px;display:flex;flex-direction:column;gap:12px;
-}
-.modal h4{font-size:1.05rem}
+/* toast */
 .toast{
   position:absolute;left:50%;bottom:26px;transform:translateX(-50%);
   background:var(--ink);color:var(--ground);font-size:.84rem;padding:8px 16px;border-radius:999px;
@@ -342,8 +313,8 @@ textarea.input{resize:none;font:inherit;width:100%}
   <!-- ============ side panel ============ -->
   <aside class="sidepanel">
     <div class="brand">
-      <h1>크래프톤 당근 · 와이어프레임 v3 (최종)</h1>
-      <p class="sub">2박 3일 수작업 구현 기준 감축판 — 마이페이지 제거, 사이드바 5항목, 판매자 단독 완료. Flask + Jinja SSR + Ajax + MongoDB + Bootstrap.</p>
+      <h1>크래프톤 당근 · 와이어프레임 v4 (MVP)</h1>
+      <p class="sub">아고라 제거판 — 카드 클릭이 곧 1:1 채팅. 상태 2단계(판매중 → 판매완료). Flask + Jinja SSR + Ajax + MongoDB + Bootstrap.</p>
     </div>
 
     <div class="card">
@@ -354,8 +325,8 @@ textarea.input{resize:none;font:inherit;width:100%}
     <div class="card prio">
       <h2>구현 우선순위</h2>
       <ul>
-        <li><b>P0 (표시 없음)</b> — 이것만 되면 시연 성립: 인증 · 거래 글 작성/삭제(사진 1장) · 홈 피드 · 아고라(폴링) · 1:1 전환 · 판매완료(판매자 단독) · 계좌 modal</li>
-        <li><span class="tag p1">P1</span> 코어 완성 후: 구매 탭 · 글 수정 · 안 읽음 뱃지 · 나눔/교환 분기</li>
+        <li><b>P0 (표시 없음)</b> — 이것만 되면 시연 성립: 인증 · 거래 글 작성/삭제(사진 1장) · 홈 피드 · 카드 → 1:1 채팅(폴링) · 판매완료(판매자 단독) · 계좌 복사</li>
+        <li><span class="tag p1">P1</span> 코어 완성 후: 거래내역 구매 탭 · 글 수정 · 안 읽음 뱃지 · 나눔/교환 분기</li>
         <li><span class="tag p2">P2</span> 시간이 남으면: 커뮤니티 전체 · 검색 · 필터 · 찜</li>
       </ul>
     </div>
@@ -384,7 +355,7 @@ textarea.input{resize:none;font:inherit;width:100%}
         </div>
         <div class="item">
           <b>2. SSR / Ajax 경계 <span class="muted">(추천: 아래 규칙)</span></b>
-          <p>페이지 이동(목록 → 상세 → 작성)은 전부 SSR 페이지 전환으로, Ajax는 찜 토글 · 댓글 등록 · 채팅 송수신(폴링) · 거래 상태 전환 네 곳에만 써요.</p>
+          <p>페이지 이동(목록 → 채팅 화면 → 작성)은 전부 SSR 페이지 전환으로, Ajax는 찜 토글 · 댓글 등록 · 채팅 송수신(폴링) · 판매완료 전환 네 곳에만 써요.</p>
         </div>
       </details>
     </div>
@@ -394,7 +365,7 @@ textarea.input{resize:none;font:inherit;width:100%}
         <summary>부록 — Bootstrap 도입 메모</summary>
         <div class="item">
           <b>CDN 두 줄이면 끝</b>
-          <p>bootstrap.min.css + bootstrap.bundle.min.js (offcanvas·modal은 JS 번들 필수, Popper 포함). 빌드 도구 불필요 — Jinja base.html의 head에 한 번만.</p>
+          <p>bootstrap.min.css + bootstrap.bundle.min.js (offcanvas는 JS 번들 필수, Popper 포함). 빌드 도구 불필요 — Jinja base.html의 head에 한 번만.</p>
         </div>
         <div class="item">
           <b>이 와이어프레임의 진짜 Bootstrap 파일 여부</b>
@@ -413,18 +384,22 @@ textarea.input{resize:none;font:inherit;width:100%}
 
     <div class="card">
       <details class="appendix">
-        <summary>부록 — 이번 판에서 잘라낸 것 (기록용)</summary>
+        <summary>부록 — 잘라낸 것 (기록용)</summary>
         <div class="item">
-          <b>제안 카드 (금액 조절 오퍼 UI)</b>
-          <p>제안 데이터 모델 + 수락 로직이 통째로 필요해서 제외. 대신 아고라 메시지 옆 판매자 전용 "이 사람과 거래" 버튼이 수락 역할. 나중에 떠오르면 다시 검토.</p>
+          <b>아고라 (공개 협상 스레드) — 2026-08-24 MVP 피벗</b>
+          <p>글별 공개 협상 + 판매자 확정 버튼 구조를 통째로 제거. 구매자-판매자 사이의 결정 레이어를 하나 줄이고, 데이터 모델을 "글 + 1:1 방 + 메시지"로 축소. 아이디어는 확장 후보로 보존.</p>
         </div>
         <div class="item">
-          <b>양측 거래 완료 확인</b>
-          <p>상태 2개 관리가 필요해서 판매자 단독 "판매완료 처리"로 단순화. 당근마켓도 실제로는 판매자 단독 처리.</p>
+          <b>"예약중" 상태 · 계좌 안내 modal</b>
+          <p>확정 단계가 사라지며 예약중도 함께 제거(판매중 → 판매완료 2단계). 계좌는 modal 없이 채팅 화면의 계좌 줄에서 복사.</p>
+        </div>
+        <div class="item">
+          <b>제안 카드 (금액 조절 오퍼 UI)</b>
+          <p>제안 데이터 모델 + 수락 로직 비용으로 이전 판에서 제외. 아고라 제거로 자연 소멸.</p>
         </div>
         <div class="item">
           <b>마이페이지 · 프로필 수정</b>
-          <p>마이페이지 화면 자체를 제거. 내 물건 관리는 거래내역(판매 탭)으로, 로그아웃은 사이드바로. 프로필 수정은 추후 검토.</p>
+          <p>마이페이지 화면 제거. 내 물건 관리는 거래내역(판매 탭)으로, 로그아웃은 사이드바로.</p>
         </div>
       </details>
     </div>
@@ -460,9 +435,9 @@ textarea.input{resize:none;font:inherit;width:100%}
         <div class="offback" id="offback"></div>
         <div class="offcanvas" role="dialog" aria-label="메뉴">
           <div class="head"><b>메뉴</b> <span class="tag bs">offcanvas</span> <button class="close" id="offclose" aria-label="닫기">×</button></div>
-          <button class="menucard" data-go="home" data-menu="home"><span class="ic"></span><span><span class="en">Home</span><br><span class="ko">거래 피드 · 아고라</span></span></button>
+          <button class="menucard" data-go="home" data-menu="home"><span class="ic"></span><span><span class="en">Home</span><br><span class="ko">거래 피드 — 카드가 곧 채팅 입구</span></span></button>
           <button class="menucard" data-go="community" data-menu="community"><span class="ic"></span><span><span class="en">Community</span> <span class="tag p2">P2</span><br><span class="ko">질문 · 정보공유 게시판</span></span></button>
-          <button class="menucard" data-go="chats" data-menu="chats"><span class="ic"></span><span><span class="en">채팅목록</span><br><span class="ko">확정된 1:1 거래 방</span></span></button>
+          <button class="menucard" data-go="chats" data-menu="chats"><span class="ic"></span><span><span class="en">채팅목록</span><br><span class="ko">진행 중인 1:1 거래 방</span></span></button>
           <button class="menucard" data-go="history" data-menu="history"><span class="ic"></span><span><span class="en">거래내역</span><br><span class="ko">판매 · 구매</span></span></button>
           <button class="menucard" data-go="login"><span class="ic"></span><span><span class="en">로그아웃</span><br><span class="ko">JWT 쿠키 삭제</span></span></button>
           <span class="caption" style="align-self:center">menu card = <span class="tag bs">card</span></span>
@@ -508,7 +483,7 @@ textarea.input{resize:none;font:inherit;width:100%}
           <div class="body">
             <div class="secrow">
               <h4>거래 피드</h4>
-              <span class="muted">협상 중인 아고라가 카드에 보여요</span>
+              <span class="muted">카드를 누르면 판매자와의 1:1 채팅이 열려요</span>
               <span class="sp"></span>
               <button class="btn sm" style="border-style:dashed">⌕ 검색 <span class="tag p2">P2</span></button>
               <button class="btn sm primary" data-go="write">＋ 글쓰기 <span class="tag bs">btn</span></button>
@@ -518,70 +493,64 @@ textarea.input{resize:none;font:inherit;width:100%}
               <span class="tag bs">nav-pills</span><span class="tag p2">유형 필터 P2</span>
             </div>
             <div class="feedgrid" id="feedgrid">
-              <span class="caption" style="grid-column:1/-1">grid = <span class="tag bs">row-cols-1 row-cols-md-3</span> — 위 📱 버튼으로 1열 접힘을 확인해 보세요</span>
-              <button class="feedcard" data-go="detail">
+              <span class="caption" style="grid-column:1/-1">grid = <span class="tag bs">row-cols-1 row-cols-md-3</span> — 위 📱 버튼으로 1열 접힘을 확인해 보세요 · 카드 클릭 = 1:1 채팅 <span class="tag ssr">SSR</span></span>
+              <button class="feedcard" data-go="itemchat">
                 <span class="ph"></span>
                 <span class="pad">
                   <span class="tt">해피해킹 키보드 (무각인)</span>
                   <span class="meta">13기 · 조진근 · 10분 전</span>
                   <span class="price">120,000원 <span class="badge sale">판매</span> <span class="badge state" data-role="item-state">판매중</span></span>
                 </span>
-                <span class="agorapeek"><span class="n">💬 3명 협상 중</span><span class="q">"저는 105,000원이요!"</span></span>
               </button>
-              <button class="feedcard" data-go="detail">
+              <button class="feedcard" data-go="itemchat">
                 <span class="ph"></span>
                 <span class="pad">
                   <span class="tt">라꾸라꾸 접이식 침대</span>
                   <span class="meta">12기 · 수료생 · 1시간 전</span>
                   <span class="price">나눔 <span class="badge free">나눔</span></span>
                 </span>
-                <span class="agorapeek"><span class="n">💬 5명 대기 중</span><span class="q">"선착순인가요??"</span></span>
               </button>
-              <button class="feedcard" data-go="detail">
+              <button class="feedcard" data-go="itemchat">
                 <span class="ph"></span>
                 <span class="pad">
                   <span class="tt">백준 문제집 ↔ 몬스터 한 박스</span>
                   <span class="meta">13기 · 익명의 정글러 · 3시간 전</span>
                   <span class="price">아무거나 환영 <span class="badge swap">교환</span></span>
                 </span>
-                <span class="agorapeek"><span class="n">💬 2명 협상 중</span><span class="q">"핫식스 한 박스는 어때요"</span></span>
               </button>
-              <button class="feedcard" data-go="detail">
+              <button class="feedcard" data-go="itemchat">
                 <span class="ph"></span>
                 <span class="pad">
                   <span class="tt">모니터 받침대 + C타입 허브</span>
                   <span class="meta">13기 · 옆자리사람 · 어제</span>
                   <span class="price">15,000원 <span class="badge sale">판매</span></span>
                 </span>
-                <span class="agorapeek" style="background:var(--panel);color:var(--ink-2)"><span class="n">아직 조용해요</span><span class="q">첫 제안을 남겨보세요</span></span>
               </button>
-              <button class="feedcard" data-go="detail">
+              <button class="feedcard" data-go="itemchat">
                 <span class="ph"></span>
                 <span class="pad">
                   <span class="tt">자세교정 방석 (거의 새것)</span>
                   <span class="meta">14기 · 뉴비 · 어제</span>
                   <span class="price">8,000원 <span class="badge sale">판매</span></span>
                 </span>
-                <span class="agorapeek" style="background:var(--panel);color:var(--ink-2)"><span class="n">아직 조용해요</span><span class="q">첫 제안을 남겨보세요</span></span>
               </button>
-              <button class="feedcard" data-go="detail">
+              <button class="feedcard" data-go="itemchat">
                 <span class="ph"></span>
                 <span class="pad">
                   <span class="tt">클린 코드 ↔ 아무 소설책</span>
                   <span class="meta">12기 · 책벌레 · 2일 전</span>
                   <span class="price">교환 희망 <span class="badge swap">교환</span></span>
                 </span>
-                <span class="agorapeek"><span class="n">💬 1명 협상 중</span><span class="q">"삼체 1권 있어요"</span></span>
               </button>
             </div>
           </div>
         </section>
 
-        <!-- detail -->
-        <section class="screen" data-s="detail">
-          <div class="body narrow" style="max-width:680px">
+        <!-- item + 1:1 chat (merged) -->
+        <section class="screen" data-s="itemchat">
+          <div class="body narrow" style="max-width:640px;flex:1">
             <button class="btn sm" data-go="home" style="align-self:flex-start">‹ 피드로</button>
-            <div class="detailtop">
+            <div class="itemhead">
               <div class="ph"></div>
               <div style="flex:1;display:flex;flex-direction:column;gap:8px;min-width:0">
                 <div class="sellerrow">
@@ -590,35 +559,34 @@ textarea.input{resize:none;font:inherit;width:100%}
                   <span style="margin-left:auto"><span class="badge state" data-role="item-state">판매중</span></span>
                 </div>
                 <div>
-                  <div style="font-size:1.12rem;font-weight:700">해피해킹 키보드 (무각인)</div>
-                  <div class="muted">10분 전</div>
-                  <div style="font-size:1.15rem;font-weight:700;margin-top:4px">120,000원 <span class="badge sale">판매</span></div>
+                  <div style="font-size:1.08rem;font-weight:700">해피해킹 키보드 (무각인)</div>
+                  <div style="font-size:1.1rem;font-weight:700">120,000원 <span class="badge sale">판매</span></div>
                 </div>
-                <p class="muted" style="font-size:.9rem">정글 오기 전에 샀는데 결국 멤브레인으로 돌아갔습니다. 상태 최상, 강의장 앞자리에서 직거래해요.</p>
-                <div class="ctarow">
+                <p class="muted" style="font-size:.88rem">상태 최상, 강의장 앞자리에서 직거래해요.</p>
+                <div style="display:flex;gap:8px;align-items:center">
                   <button class="heart" id="heart" aria-label="찜" title="찜 (P2)">♡</button>
-                  <button class="btn primary" id="buy-btn">구매하기 → <span class="tag bs">modal</span></button>
+                  <span class="caption">찜 = <span class="tag p2">P2</span> · 글 수정 = <span class="tag p1">P1</span> · 삭제 = P0</span>
                 </div>
-                <span class="caption">찜 = <span class="tag p2">P2</span> · 글 수정 = <span class="tag p1">P1</span> · 삭제 = P0</span>
               </div>
             </div>
             <hr class="hr">
             <div class="secrow">
-              <h4>아고라 — 공개 협상 스레드</h4>
+              <h4>판매자와의 1:1 채팅</h4>
               <span class="tag ajax">AJAX 폴링</span>
-              <span class="sp"></span><span class="muted">로그인 유저 전체 공개</span>
+              <span class="sp"></span><span class="muted">카드 클릭 시 자동 개설</span>
             </div>
-            <div class="thread">
-              <div class="msg"><div class="avatar"></div><div><div class="who">13기 · 새벽코딩러</div><div class="bubble">10만 원에 주시면 지금 바로 갑니다</div><button class="dealbtn" data-accept>🤝 이 사람과 거래 (판매자에게만 보임)</button></div></div>
-              <div class="msg"><div class="avatar"></div><div><div class="who">14기 · 뉴비</div><div class="bubble">저는 105,000원이요!</div><button class="dealbtn" data-accept>🤝 이 사람과 거래 (판매자에게만 보임)</button></div></div>
-              <div class="msg"><div class="avatar"></div><div><div class="who">12기 · 큰손</div><div class="bubble">110,000원 드릴게요. 오늘 바로 가능해요</div><button class="dealbtn" data-accept>🤝 이 사람과 거래 (판매자에게만 보임)</button></div></div>
-              <div class="syscard" id="accepted-card" style="display:none">
-                거래가 확정되었어요 — 두 사람의 1:1 채팅이 열렸습니다. 상태: 예약중
-                <div style="margin-top:6px"><button class="btn sm" data-go="chatroom">1:1 채팅으로 이동 →</button></div>
-              </div>
+            <div class="syscard">채팅이 시작되었어요. 가격·시간·장소를 편하게 이야기해 보세요.</div>
+            <div class="msg me"><div class="avatar"></div><div><div class="bubble">안녕하세요! 10만 원에 가능할까요?</div></div></div>
+            <div class="msg"><div class="avatar"></div><div><div class="who">조진근 (판매자)</div><div class="bubble">110,000원까지는 맞춰드릴게요. 오늘 저녁 어떠세요?</div></div></div>
+            <div class="acct">
+              <span class="mono">카카오뱅크 3333-00-0000000</span>
+              <button class="btn sm" id="copy-acct">복사 <span class="tag ajax">AJAX</span></button>
             </div>
-            <div class="inputrow"><div class="input">아고라에 공개 메시지 남기기…</div><button class="btn sm primary">전송</button></div>
-            <p class="anno">협상은 자유 채팅만 — 판매자가 메시지 옆 🤝 버튼으로 상대를 확정</p>
+            <div class="syscard" id="done-card" style="display:none">🎉 판매자가 판매완료 처리했어요. 거래가 끝났습니다.</div>
+            <div style="margin-top:auto;display:flex;flex-direction:column;gap:8px">
+              <button class="btn" id="seller-done">판매완료 처리 (판매자에게만 보임) <span class="tag ajax">AJAX</span></button>
+              <div class="inputrow" style="padding:0"><div class="input">메시지 입력…</div><button class="btn sm primary">전송</button></div>
+            </div>
           </div>
         </section>
 
@@ -648,8 +616,8 @@ textarea.input{resize:none;font:inherit;width:100%}
             </div>
             <div class="field" id="f-acct"><label>계좌번호 <span class="opt">(선택)</span></label><div class="input">카카오뱅크 3333-00-0000000</div></div>
             <div class="field"><label>내용</label><textarea class="input" rows="3" disabled placeholder="물건 상태, 거래 희망 장소 등"></textarea></div>
-            <button class="btn primary" data-go="detail">등록하기</button>
-            <p class="anno">P0는 판매 유형만 완성해도 성립 — 나눔/교환은 필드 분기라 나중에 붙이기 쉬움</p>
+            <button class="btn primary" data-go="home">등록하기</button>
+            <p class="anno">P0는 판매 유형만 완성해도 성립 — 등록 후 홈 피드로 이동</p>
           </div>
         </section>
 
@@ -716,49 +684,24 @@ textarea.input{resize:none;font:inherit;width:100%}
         <!-- chat list -->
         <section class="screen" data-s="chats">
           <div class="body narrow" style="max-width:680px">
-            <div class="secrow"><h4>채팅목록 — 확정된 1:1 거래</h4><span class="tag ajax">AJAX 폴링</span></div>
-            <p class="muted">아고라에서 판매자가 상대를 확정하면 여기에 방이 생겨요. 공개 협상은 홈의 각 물건 카드에서 진행돼요.</p>
-            <button class="chatitem" data-go="chatroom">
+            <div class="secrow"><h4>채팅목록 — 진행 중인 1:1 거래</h4><span class="tag ajax">AJAX 폴링</span></div>
+            <p class="muted">홈에서 카드를 누르면 방이 생기고, 같은 글은 기존 방을 재사용해요.</p>
+            <button class="chatitem" data-go="itemchat">
               <span class="ph"></span>
               <span style="min-width:0">
-                <span class="tt">큰손 (12기) <span class="muted" style="font-weight:400">· 해피해킹 키보드 · 110,000원</span></span><br>
-                <span class="last">계좌 보내드렸어요! 확인 부탁드립니다</span>
+                <span class="tt">조진근 (13기) <span class="muted" style="font-weight:400">· 해피해킹 키보드 · 120,000원</span></span><br>
+                <span class="last">110,000원까지는 맞춰드릴게요. 오늘 저녁 어떠세요?</span>
               </span>
-              <span style="margin-left:auto"><span class="badge state rsv">예약중</span></span>
+              <span style="margin-left:auto"><span class="badge state" data-role="item-state">판매중</span></span>
             </button>
-            <button class="chatitem" style="opacity:.6" data-go="chatroom">
+            <button class="chatitem" style="opacity:.6" data-go="itemchat">
               <span class="ph"></span>
               <span style="min-width:0">
                 <span class="tt">수료생 (12기) <span class="muted" style="font-weight:400">· 라꾸라꾸 침대 · 나눔</span></span><br>
                 <span class="last">내일 오전에 3층으로 오세요~</span>
               </span>
-              <span style="margin-left:auto"><span class="badge state done">완료</span></span>
+              <span style="margin-left:auto"><span class="badge state done">판매완료</span></span>
             </button>
-          </div>
-        </section>
-
-        <!-- chat room -->
-        <section class="screen" data-s="chatroom">
-          <div class="body narrow" style="max-width:640px;flex:1">
-            <button class="btn sm" data-go="chats" style="align-self:flex-start">‹ 채팅목록</button>
-            <div class="pincard">
-              <div class="ph"></div>
-              <div><div class="tt">해피해킹 키보드 · 110,000원</div><div style="font-size:.76rem"><span class="badge state rsv" data-role="item-state">예약중</span></div></div>
-              <span style="margin-left:auto" class="caption">큰손 (12기)와의 1:1</span>
-            </div>
-            <div class="syscard">아고라에서 거래가 확정되어 채팅이 시작되었어요.</div>
-            <div class="msg"><div class="avatar"></div><div><div class="who">큰손</div><div class="bubble">안녕하세요! 오늘 저녁 강의장 앞 어떠세요?</div></div></div>
-            <div class="msg me"><div class="avatar"></div><div><div class="bubble">좋아요. 계좌 공유드릴게요.</div></div></div>
-            <div class="acct">
-              <span class="mono">카카오뱅크 3333-00-0000000</span>
-              <button class="btn sm" id="copy-acct">복사 <span class="tag ajax">AJAX</span></button>
-            </div>
-            <div class="msg"><div class="avatar"></div><div><div class="who">큰손</div><div class="bubble">보냈습니다! 확인 부탁드려요.</div></div></div>
-            <div class="syscard" id="done-card" style="display:none">🎉 판매자가 판매완료 처리했어요. 거래가 끝났습니다.</div>
-            <div style="margin-top:auto;display:flex;flex-direction:column;gap:8px">
-              <button class="btn" id="seller-done">판매완료 처리 (판매자에게만 보임) <span class="tag ajax">AJAX</span></button>
-              <div class="inputrow" style="padding:0"><div class="input">메시지 입력…</div><button class="btn sm primary">전송</button></div>
-            </div>
           </div>
         </section>
 
@@ -771,55 +714,43 @@ textarea.input{resize:none;font:inherit;width:100%}
               <button class="chip" data-htab="buy">구매 <span class="tag p1">P1</span></button>
             </div>
             <div id="htab-sell">
-              <button class="chatitem" data-go="detail">
+              <button class="chatitem" data-go="itemchat">
                 <span class="ph"></span>
                 <span style="min-width:0">
                   <span class="tt">해피해킹 키보드 (무각인)</span><br>
-                  <span class="last">120,000원 · 아고라 3명</span>
+                  <span class="last">120,000원 · 채팅 2건</span>
                 </span>
                 <span style="margin-left:auto"><span class="badge state" data-role="item-state">판매중</span></span>
               </button>
-              <button class="chatitem" data-go="detail">
+              <button class="chatitem" data-go="itemchat">
                 <span class="ph"></span>
                 <span style="min-width:0">
                   <span class="tt">사놓고 안 읽은 운영체제 책</span><br>
-                  <span class="last">나눔 · 아고라 1명</span>
+                  <span class="last">나눔 · 채팅 1건</span>
                 </span>
-                <span style="margin-left:auto"><span class="badge state done">완료</span></span>
+                <span style="margin-left:auto"><span class="badge state done">판매완료</span></span>
               </button>
-              <p class="anno">내 글의 상태 관리가 이 탭의 존재 이유 — 마이페이지의 대체물</p>
+              <p class="anno">내 글의 관리 거점 — 수정(P1)·삭제·판매완료가 여기서 출발</p>
             </div>
             <div id="htab-buy" style="display:none">
-              <button class="chatitem" data-go="chatroom">
+              <button class="chatitem" data-go="itemchat">
                 <span class="ph"></span>
                 <span style="min-width:0">
                   <span class="tt">라꾸라꾸 접이식 침대</span><br>
                   <span class="last">나눔 · 수료생 (12기)</span>
                 </span>
-                <span style="margin-left:auto"><span class="badge state done">완료</span></span>
+                <span style="margin-left:auto"><span class="badge state done">판매완료</span></span>
               </button>
-              <p class="muted">내가 참여해서 확정된 거래가 여기 모여요. (P1 — 판매 탭이 먼저)</p>
+              <p class="muted">내가 채팅으로 참여한 거래가 여기 모여요. (P1 — 판매 탭이 먼저)</p>
             </div>
           </div>
         </section>
 
       </div><!-- /screens -->
 
-      <!-- transfer modal -->
-      <div class="overlay" id="buy-overlay">
-        <div class="modal">
-          <h4>계좌이체 안내 <span class="tag bs">modal</span></h4>
-          <p class="muted">판매자가 등록한 계좌로 직접 이체해 주세요. 이체 후 1:1 채팅으로 판매자와 마무리해 주세요.</p>
-          <div class="acct"><span class="mono">카카오뱅크 3333-00-0000000</span><button class="btn sm" id="copy-acct2">복사</button></div>
-          <div style="display:flex;justify-content:space-between;align-items:center"><span class="muted">금액</span><b>120,000원</b></div>
-          <button class="btn primary" data-go="chatroom">1:1 채팅으로 이동</button>
-          <button class="btn" id="popup-close">닫기</button>
-        </div>
-      </div>
-
       <div class="toast" id="toast">복사되었어요</div>
     </div>
-    <p class="caption">클릭해서 이동 · 햄버거 → 사이드바 5항목 · 피드 카드 → 상세+아고라 → 🤝 확정 → 1:1 → 판매완료 처리</p>
+    <p class="caption">클릭해서 이동 · 햄버거 → 사이드바 5항목 · 피드 카드 → 물건 정보 + 1:1 채팅 → 판매완료 처리</p>
   </div>
 </div>
 
@@ -835,22 +766,23 @@ textarea.input{resize:none;font:inherit;width:100%}
       '기수는 칩 선택, 검증 없음 (신뢰 표시용 데이터)',
       '아이디 중복 확인은 등록 시 서버에서 한 번만'
     ]},
-    {id:'home', name:'2. Home — 피드+아고라', grp:'Home', url:'jungle-carrot.kr/', title:'홈', notes:[
-      '피드 강화형: 카드마다 아고라 미리보기(참여 수+최근 발언 1줄)',
-      '미리보기 쿼리 = 글별 최근 발언 1건 — 구현 비용 낮음',
-      '그리드는 row-cols-1 row-cols-md-3 — 📱 버튼으로 확인',
-      '검색·유형 필터는 P2 — 자리만 잡아둠'
+    {id:'home', name:'2. Home — 거래 피드', grp:'Home', url:'jungle-carrot.kr/', title:'홈', notes:[
+      '카드 클릭 = 판매자와의 1:1 채팅 화면으로 이동 (SSR)',
+      '같은 글은 기존 방 재사용 — 방은 (글, 구매자) 조합당 1개',
+      '본인 글 카드를 누르면 거래내역(판매 탭)으로 안내',
+      '그리드는 row-cols-1 row-cols-md-3 — 📱 버튼으로 확인'
     ]},
-    {id:'detail', name:'3. 거래 상세 + 아고라', grp:'Home', url:'jungle-carrot.kr/items/42', title:'거래 글', notes:[
-      '아고라는 자유 채팅만 — 제안 카드는 범위에서 제외(부록 참고)',
-      '판매자에게만 메시지 옆 🤝 버튼 렌더링 (Jinja if로 분기)',
-      '🤝 클릭 → 예약중 전환 + 1:1 개설 — 눌러보세요',
-      '폴링: setInterval 3초 + 스레드 영역 innerHTML 전체 교체'
+    {id:'itemchat', name:'3. 물건 + 1:1 채팅 (합체)', grp:'Home', url:'jungle-carrot.kr/items/42/chat', title:'1:1 채팅', notes:[
+      '상단 = 물건 정보(사진·가격·상태·판매자), 하단 = 1:1 채팅',
+      '방 자동 생성 — 아고라·확정 단계 없음 (부록 참고)',
+      '폴링: setInterval 3초 + 메시지 영역 innerHTML 전체 교체',
+      '계좌는 이 화면에서만 노출 · 복사 버튼',
+      '판매자 전용 "판매완료 처리" — 눌러보세요 (상태 2단계)'
     ]},
     {id:'write', name:'4. 거래 글 작성', grp:'Home', url:'jungle-carrot.kr/items/new', title:'글쓰기', notes:[
       '사진 1장 고정 — 다중 업로드 제거로 난이도 하락',
       'P0는 판매 유형만, 나눔/교환 필드 분기는 P1',
-      '계좌번호는 선택 입력 — modal과 1:1 방에서만 노출'
+      '계좌번호는 선택 입력 — 채팅 화면에서만 노출'
     ]},
     {id:'community', name:'5. Community 목록', grp:'Community (P2)', url:'jungle-carrot.kr/community', title:'커뮤니티', notes:[
       'P2 — 거래 CRUD 코드를 복사해 만드는 반복 연습',
@@ -863,19 +795,12 @@ textarea.input{resize:none;font:inherit;width:100%}
       '작성 → 등록 → 목록으로 리다이렉트 (SSR)'
     ]},
     {id:'chats', name:'8. 채팅목록 (1:1)', grp:'채팅', url:'jungle-carrot.kr/chats', title:'채팅목록', notes:[
-      '1:1 방 전용 — 아고라 진입은 홈 카드가 담당',
+      '내가 참여한 모든 1:1 거래 방',
       'navbar 💬 안 읽음 뱃지는 P1 (AJAX 폴링 카운트)'
     ]},
-    {id:'chatroom', name:'9. 1:1 채팅방', grp:'채팅', url:'jungle-carrot.kr/chats/3', title:'1:1 채팅', notes:[
-      '아고라와 같은 폴링 코드 재사용 — 채팅 구현은 사실상 1번',
-      '계좌 복사 — 계좌는 이 방과 modal에서만 노출',
-      '판매자 단독 "판매완료 처리" 버튼 — 눌러보세요',
-      '양측 확인 방식은 범위에서 제외(부록 참고)'
-    ]},
-    {id:'history', name:'10. 거래내역', grp:'거래내역', url:'jungle-carrot.kr/history', title:'거래내역', notes:[
-      '마이페이지의 대체물 — 판매 탭 = 내 글 상태 관리',
-      '구매 탭은 P1 (판매 탭이 먼저)',
-      '내 커뮤니티 글 모아보기는 범위에서 제외'
+    {id:'history', name:'9. 거래내역', grp:'거래내역', url:'jungle-carrot.kr/history', title:'거래내역', notes:[
+      '판매 탭 = 내 글 관리 거점 (수정 P1 · 삭제 · 판매완료)',
+      '구매 탭은 P1 (판매 탭이 먼저)'
     ]}
   ];
 
@@ -893,9 +818,9 @@ textarea.input{resize:none;font:inherit;width:100%}
     map.appendChild(b);
   });
 
-  var MENU_OF = {home:'home', detail:'home', write:'home',
+  var MENU_OF = {home:'home', itemchat:'home', write:'home',
                  community:'community', post:'community', postwrite:'community',
-                 chats:'chats', chatroom:'chats', history:'history'};
+                 chats:'chats', history:'history'};
 
   function show(id){
     document.querySelectorAll('.screen').forEach(function(el){
@@ -933,7 +858,6 @@ textarea.input{resize:none;font:inherit;width:100%}
     if(go){
       show(go.dataset.go);
       offwrap.classList.remove('on');
-      closeOverlay();
     }
   });
 
@@ -943,23 +867,13 @@ textarea.input{resize:none;font:inherit;width:100%}
   vd.addEventListener('click', function(){ browser.classList.remove('mobile'); vd.classList.add('on'); vm.classList.remove('on'); });
   vm.addEventListener('click', function(){ browser.classList.add('mobile'); vm.classList.add('on'); vd.classList.remove('on'); });
 
-  /* item status simulation */
-  var states = {'판매중':'', '예약중':'rsv', '판매완료':'done'};
+  /* item status: 2-state (판매중 → 판매완료) */
   function setStatus(txt){
     document.querySelectorAll('[data-role="item-state"]').forEach(function(el){
       el.textContent = txt;
-      el.className = 'badge state ' + (states[txt]||'');
+      el.className = 'badge state ' + (txt === '판매완료' ? 'done' : '');
     });
   }
-
-  /* agora: seller confirms a partner */
-  document.querySelectorAll('[data-accept]').forEach(function(b){
-    b.addEventListener('click', function(){
-      document.getElementById('accepted-card').style.display = 'block';
-      setStatus('예약중');
-      toast('거래 확정 → 예약중, 1:1 채팅 개설');
-    });
-  });
 
   /* heart (P2) */
   var heart = document.getElementById('heart');
@@ -969,18 +883,8 @@ textarea.input{resize:none;font:inherit;width:100%}
     toast(heart.classList.contains('on') ? '찜했어요 (P2)' : '찜 해제 (P2)');
   });
 
-  /* buy modal */
-  var overlay = document.getElementById('buy-overlay');
-  document.getElementById('buy-btn').addEventListener('click', function(){ overlay.classList.add('on'); });
-  document.getElementById('popup-close').addEventListener('click', closeOverlay);
-  overlay.addEventListener('click', function(e){ if(e.target === overlay) closeOverlay(); });
-  function closeOverlay(){ overlay.classList.remove('on'); }
-
-  /* copy buttons */
-  ['copy-acct','copy-acct2'].forEach(function(id){
-    var el = document.getElementById(id);
-    if(el) el.addEventListener('click', function(){ toast('계좌번호가 복사되었어요'); });
-  });
+  /* copy */
+  document.getElementById('copy-acct').addEventListener('click', function(){ toast('계좌번호가 복사되었어요'); });
 
   /* seller-only done */
   var sellerDone = document.getElementById('seller-done');
