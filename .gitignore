@@ -1,0 +1,17 @@
+# secrets
+.env
+
+# python
+__pycache__/
+*.py[cod]
+venv/
+.venv/
+
+# uploads (사용자가 올린 사진은 repo에 넣지 않는다)
+static/uploads/*
+!static/uploads/.gitkeep
+
+# editor / os
+.vscode/
+.idea/
+.DS_Store
