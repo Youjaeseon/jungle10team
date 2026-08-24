@@ -1,0 +1,1015 @@
+<title>크래프톤 당근 와이어프레임</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;700&family=IBM+Plex+Mono:wght@500&family=Nanum+Pen+Script&display=swap">
+<style>
+:root{
+  --ground:#F6F6F3;
+  --panel:#EFEFEA;
+  --box:#FFFFFF;
+  --line:#C7C8C4;
+  --line-soft:#DDDED9;
+  --ink:#26282B;
+  --ink-2:#63666B;
+  --blue:#3B6FE0;
+  --blue-soft:#E7EDFB;
+  --amber:#B97A0B;
+  --amber-soft:#F6ECD8;
+  --note:#7A4FBF;
+  --ok:#2E7D4F;
+  --ok-soft:#E1F0E7;
+  --bs:#C05299;
+  --bs-soft:#F7E6F1;
+  --ph1:#ECECE8;
+  --ph2:#D8D8D2;
+  --shadow:0 10px 30px rgba(38,40,43,.12);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#1B1C1E; --panel:#222327; --box:#2A2B30;
+    --line:#4B4D53; --line-soft:#3A3B40;
+    --ink:#E8E8E4; --ink-2:#A2A4A8;
+    --blue:#7CA1F2; --blue-soft:#2C3856;
+    --amber:#E0A83E; --amber-soft:#453722;
+    --note:#B79AE8; --ok:#6FBF8F; --ok-soft:#243B2E;
+    --bs:#E08BC4; --bs-soft:#46293C;
+    --ph1:#33343A; --ph2:#44454C;
+    --shadow:0 10px 30px rgba(0,0,0,.4);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#1B1C1E; --panel:#222327; --box:#2A2B30;
+  --line:#4B4D53; --line-soft:#3A3B40;
+  --ink:#E8E8E4; --ink-2:#A2A4A8;
+  --blue:#7CA1F2; --blue-soft:#2C3856;
+  --amber:#E0A83E; --amber-soft:#453722;
+  --note:#B79AE8; --ok:#6FBF8F; --ok-soft:#243B2E;
+  --bs:#E08BC4; --bs-soft:#46293C;
+  --ph1:#33343A; --ph2:#44454C;
+  --shadow:0 10px 30px rgba(0,0,0,.4);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  background:var(--ground);color:var(--ink);
+  font-family:"IBM Plex Sans KR",system-ui,sans-serif;
+  font-size:15px;line-height:1.55;
+}
+button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
+.mono{font-family:"IBM Plex Mono",monospace}
+
+/* ===== page layout ===== */
+.wrap{display:flex;gap:28px;max-width:1400px;margin:0 auto;padding:28px 24px 64px;align-items:flex-start}
+.sidepanel{
+  flex:0 0 330px;position:sticky;top:20px;
+  display:flex;flex-direction:column;gap:16px;
+}
+.stage{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;align-items:center;gap:12px}
+@media (max-width:980px){
+  .wrap{flex-direction:column;align-items:stretch}
+  .sidepanel{position:static;flex:1 1 auto;order:2}
+  .stage{order:1}
+}
+
+/* ===== side panel ===== */
+.brand h1{font-size:1.35rem;font-weight:700;letter-spacing:-.01em;text-wrap:balance}
+.brand .sub{color:var(--ink-2);margin-top:4px;font-size:.9rem}
+.tag{
+  display:inline-block;font-family:"IBM Plex Mono",monospace;font-size:.66rem;font-weight:500;
+  padding:1px 6px;border-radius:4px;letter-spacing:.02em;vertical-align:1px;
+}
+.tag.ssr{background:var(--line-soft);color:var(--ink-2)}
+.tag.ajax{background:var(--blue-soft);color:var(--blue)}
+.tag.extra{background:var(--amber-soft);color:var(--amber)}
+.tag.bs{background:var(--bs-soft);color:var(--bs)}
+.card{background:var(--box);border:1.5px solid var(--line);border-radius:10px;padding:14px 16px}
+.card h2{font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-2);margin-bottom:8px}
+.screenmap{display:flex;flex-direction:column;gap:1px}
+.screenmap .grp{font-size:.7rem;font-weight:700;letter-spacing:.06em;color:var(--ink-2);margin:7px 0 2px}
+.screenmap .grp:first-child{margin-top:0}
+.screenmap button{text-align:left;padding:4px 8px;border-radius:6px;font-size:.88rem}
+.screenmap button:hover{background:var(--panel)}
+.screenmap button.on{background:var(--blue-soft);color:var(--blue);font-weight:500}
+.legend ul{list-style:none;display:flex;flex-direction:column;gap:6px;font-size:.84rem;color:var(--ink-2)}
+.notes ul{list-style:none;display:flex;flex-direction:column;gap:7px}
+.notes li{
+  font-family:"Nanum Pen Script",cursive;font-size:1.18rem;line-height:1.3;color:var(--note);
+  padding-left:16px;position:relative;
+}
+.notes li::before{content:"↳";position:absolute;left:0;top:0}
+details.appendix summary{cursor:pointer;font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-2)}
+details.appendix .item{margin-top:10px;font-size:.86rem}
+details.appendix .item b{display:block;margin-bottom:2px}
+details.appendix .item p{color:var(--ink-2)}
+.muted{color:var(--ink-2);font-size:.84rem}
+.anno{
+  font-family:"Nanum Pen Script",cursive;font-size:1.1rem;color:var(--note);
+  border:1.5px dashed var(--note);border-radius:8px;padding:4px 10px;line-height:1.25;width:fit-content;max-width:100%;
+}
+.caption{font-family:"IBM Plex Mono",monospace;font-size:.7rem;color:var(--ink-2);letter-spacing:.03em}
+
+/* ===== viewport toggle ===== */
+.vwtoggle{display:flex;gap:0;border:1.5px solid var(--line);border-radius:8px;overflow:hidden;background:var(--box)}
+.vwtoggle button{padding:7px 16px;font-size:.85rem;color:var(--ink-2)}
+.vwtoggle button.on{background:var(--ink);color:var(--ground);font-weight:700}
+
+/* ===== browser frame ===== */
+.browser{
+  width:100%;max-width:960px;background:var(--box);
+  border:2px solid var(--ink);border-radius:14px;box-shadow:var(--shadow);
+  display:flex;flex-direction:column;overflow:hidden;
+  height:780px;position:relative;
+}
+.browser.mobile{max-width:420px}
+.chrome{
+  flex:0 0 auto;display:flex;align-items:center;gap:10px;
+  padding:9px 14px;border-bottom:1.5px solid var(--line);background:var(--panel);
+}
+.dots{display:flex;gap:5px}
+.dots i{width:10px;height:10px;border-radius:50%;border:1.5px solid var(--line);background:var(--ph1);display:block}
+.urlbar{
+  flex:1;border:1.5px solid var(--line);border-radius:999px;padding:4px 14px;
+  font-family:"IBM Plex Mono",monospace;font-size:.72rem;color:var(--ink-2);background:var(--box);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+
+/* ===== app navbar (Bootstrap: navbar) ===== */
+.navbar{
+  flex:0 0 auto;display:flex;align-items:center;gap:12px;
+  padding:10px 16px;border-bottom:2px solid var(--ink);background:var(--box);
+  position:relative;z-index:6;
+}
+.burger{
+  width:38px;height:34px;border:1.5px solid var(--line);border-radius:8px;
+  display:flex;flex-direction:column;justify-content:center;align-items:center;gap:4px;flex:none;
+}
+.burger i{display:block;width:16px;height:2px;background:var(--ink);border-radius:2px}
+.burger:hover{border-color:var(--blue)}
+.navbar .brandname{font-weight:700;font-size:1.02rem;white-space:nowrap}
+.navbar .pagename{color:var(--ink-2);font-size:.86rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.navbar .right{margin-left:auto;display:flex;gap:8px;align-items:center}
+.icobtn{
+  width:36px;height:34px;border:1.5px solid var(--line);border-radius:8px;
+  display:flex;align-items:center;justify-content:center;font-size:1rem;position:relative;flex:none;color:var(--ink-2);
+}
+.icobtn:hover{border-color:var(--blue);color:var(--blue)}
+.icobtn .unread{
+  position:absolute;top:-6px;right:-6px;background:var(--blue);color:#fff;
+  font-size:.62rem;font-weight:700;border-radius:999px;padding:1px 5px;min-width:16px;text-align:center;
+}
+
+/* ===== offcanvas sidebar ===== */
+.offwrap{position:absolute;inset:0;z-index:20;display:none}
+.offwrap.on{display:block}
+.offback{position:absolute;inset:0;background:rgba(20,21,23,.45)}
+.offcanvas{
+  position:absolute;top:0;left:0;bottom:0;width:280px;max-width:82%;
+  background:var(--box);border-right:2px solid var(--ink);
+  padding:16px;display:flex;flex-direction:column;gap:12px;overflow-y:auto;
+}
+.offcanvas .head{display:flex;align-items:center;justify-content:space-between}
+.offcanvas .head b{font-size:1.05rem}
+.offcanvas .close{font-size:1.2rem;padding:2px 8px;border:1.5px solid var(--line);border-radius:6px}
+.menucard{
+  border:1.5px solid var(--line);border-radius:10px;padding:13px 14px;background:var(--box);
+  display:flex;align-items:center;gap:12px;text-align:left;
+}
+.menucard:hover{border-color:var(--blue)}
+.menucard.on{border-color:var(--blue);background:var(--blue-soft)}
+.menucard .ic{width:34px;height:34px;border:1.5px solid var(--line);border-radius:8px;background:var(--ph1);flex:none}
+.menucard .en{font-weight:700}
+.menucard .ko{font-size:.78rem;color:var(--ink-2)}
+.offcanvas .foot{margin-top:auto;border-top:1.5px dashed var(--line-soft);padding-top:12px;display:flex;justify-content:space-between;align-items:center;font-size:.86rem;color:var(--ink-2)}
+
+/* ===== screens ===== */
+.screens{flex:1 1 auto;position:relative;overflow:hidden;background:var(--box)}
+.screen{position:absolute;inset:0;display:none;flex-direction:column;overflow-y:auto}
+.screen.on{display:flex}
+.body{padding:18px 22px 28px;display:flex;flex-direction:column;gap:14px;width:100%}
+.narrow{max-width:640px;margin:0 auto}
+.browser.mobile .body{padding:14px 16px 24px}
+
+/* wireframe atoms */
+.ph{
+  background:
+    linear-gradient(to top right, transparent calc(50% - 1px), var(--ph2) 50%, transparent calc(50% + 1px)),
+    linear-gradient(to bottom right, transparent calc(50% - 1px), var(--ph2) 50%, transparent calc(50% + 1px)),
+    var(--ph1);
+  border:1.5px solid var(--line);border-radius:8px;flex:none;
+}
+.field{display:flex;flex-direction:column;gap:5px}
+.field label{font-size:.8rem;font-weight:500;color:var(--ink-2)}
+.field .opt{color:var(--ink-2);font-weight:400}
+.input{border:1.5px solid var(--line);border-radius:8px;padding:9px 12px;background:var(--box);color:var(--ink-2);font-size:.9rem}
+textarea.input{resize:none;font:inherit;width:100%}
+.btn{border:1.5px solid var(--ink);border-radius:8px;padding:10px 14px;font-weight:700;font-size:.92rem;text-align:center;background:var(--box)}
+.btn:hover{border-color:var(--blue);color:var(--blue)}
+.btn.primary{background:var(--ink);color:var(--ground)}
+.btn.primary:hover{background:var(--blue);border-color:var(--blue);color:#fff}
+.btn.sm{padding:5px 10px;font-size:.8rem;border-radius:6px}
+.btn.done{background:var(--ok-soft);border-color:var(--ok);color:var(--ok)}
+.chip{
+  display:inline-flex;align-items:center;gap:4px;border:1.5px solid var(--line);border-radius:999px;
+  padding:3px 11px;font-size:.8rem;color:var(--ink-2);background:var(--box);
+}
+.chip.on{border-color:var(--blue);color:var(--blue);background:var(--blue-soft);font-weight:500}
+.chiprow{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.badge{display:inline-block;font-size:.7rem;font-weight:700;padding:2px 8px;border-radius:5px;border:1.5px solid currentColor}
+.badge.sale{color:var(--blue)}
+.badge.free{color:var(--ok)}
+.badge.swap{color:var(--amber)}
+.badge.state{color:var(--ink-2);border-style:dashed}
+.badge.state.rsv{color:var(--amber)}
+.badge.state.done{color:var(--ok)}
+.hr{border:none;border-top:1.5px dashed var(--line-soft)}
+
+/* section header row */
+.secrow{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.secrow h4{font-size:1rem}
+.secrow .sp{flex:1}
+
+/* feed grid (Bootstrap: row-cols) */
+.feedgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.browser.mobile .feedgrid{grid-template-columns:1fr}
+@media (max-width:700px){.feedgrid{grid-template-columns:1fr}}
+.feedcard{
+  border:1.5px solid var(--line);border-radius:10px;background:var(--box);
+  overflow:hidden;cursor:pointer;display:flex;flex-direction:column;text-align:left;
+}
+.feedcard:hover{border-color:var(--blue)}
+.feedcard .ph{height:120px;border:none;border-bottom:1.5px solid var(--line);border-radius:0;width:100%}
+.feedcard .pad{padding:10px 12px;display:flex;flex-direction:column;gap:4px}
+.feedcard .tt{font-weight:500;font-size:.94rem}
+.feedcard .meta{font-size:.76rem;color:var(--ink-2)}
+.feedcard .price{font-weight:700}
+.agorapeek{
+  border-top:1.5px dashed var(--line-soft);padding:7px 12px;font-size:.78rem;color:var(--blue);
+  background:var(--blue-soft);display:flex;gap:6px;align-items:center;
+}
+.agorapeek .n{font-weight:700;white-space:nowrap}
+.agorapeek .q{color:var(--ink-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* agora thread */
+.thread{display:flex;flex-direction:column;gap:10px}
+.msg{display:flex;gap:8px;align-items:flex-start}
+.msg .avatar{width:30px;height:30px;border-radius:50%;border:1.5px solid var(--line);background:var(--ph1);flex:none}
+.msg .bubble{background:var(--panel);border:1.5px solid var(--line-soft);border-radius:10px;padding:7px 11px;font-size:.9rem;max-width:82%}
+.msg .who{font-size:.72rem;color:var(--ink-2);margin-bottom:2px}
+.msg.me{flex-direction:row-reverse}
+.msg.me .bubble{background:var(--blue-soft);border-color:var(--blue)}
+.offercard{
+  border:1.5px solid var(--blue);border-radius:10px;padding:10px 12px;background:var(--box);
+  display:flex;flex-direction:column;gap:8px;max-width:340px;
+}
+.offercard .amt{font-weight:700;font-size:1.05rem}
+.offercard .row{display:flex;gap:8px;align-items:center;justify-content:space-between}
+.syscard{
+  border:1.5px dashed var(--ok);border-radius:10px;padding:10px 12px;background:var(--ok-soft);
+  color:var(--ok);font-size:.88rem;text-align:center;font-weight:500;
+}
+.inputrow{display:flex;gap:8px;padding:10px 0 0}
+.inputrow .input{flex:1}
+
+/* detail */
+.detailtop{display:flex;gap:18px;align-items:flex-start}
+.detailtop .ph{width:240px;height:200px}
+.browser.mobile .detailtop{flex-direction:column}
+.browser.mobile .detailtop .ph{width:100%;height:180px}
+@media (max-width:700px){
+  .detailtop{flex-direction:column}
+  .detailtop .ph{width:100%;height:180px}
+}
+.sellerrow{display:flex;gap:10px;align-items:center}
+.sellerrow .avatar{width:38px;height:38px;border-radius:50%;border:1.5px solid var(--line);background:var(--ph1)}
+.sellerrow .nm{font-weight:500}
+.sellerrow .gen{font-size:.78rem;color:var(--ink-2)}
+.heart{
+  width:42px;height:40px;border:1.5px solid var(--line);border-radius:8px;font-size:1.15rem;
+  display:flex;align-items:center;justify-content:center;flex:none;color:var(--ink-2);
+}
+.heart.on{color:var(--blue);border-color:var(--blue);background:var(--blue-soft)}
+.ctarow{display:flex;gap:10px;align-items:center}
+.ctarow .btn{flex:1}
+
+/* community */
+.postitem{padding:12px 2px;border-bottom:1.5px solid var(--line-soft);cursor:pointer;border-radius:6px;text-align:left;width:100%}
+.postitem:hover{background:var(--panel)}
+.postitem .tt{font-weight:500}
+.postitem .meta{font-size:.8rem;color:var(--ink-2);margin-top:3px}
+.cat{font-size:.76rem;font-weight:700;color:var(--blue);margin-right:6px}
+.comment{display:flex;gap:8px;padding:9px 0;border-bottom:1.5px dashed var(--line-soft);font-size:.88rem}
+.comment .avatar{width:26px;height:26px;border-radius:50%;border:1.5px solid var(--line);background:var(--ph1);flex:none}
+.comment .who{font-size:.74rem;color:var(--ink-2)}
+
+/* chat list */
+.chatitem{display:flex;gap:12px;padding:12px 2px;border-bottom:1.5px solid var(--line-soft);cursor:pointer;border-radius:6px;align-items:center;text-align:left;width:100%}
+.chatitem:hover{background:var(--panel)}
+.chatitem .ph{width:52px;height:52px}
+.chatitem .tt{font-weight:500}
+.chatitem .last{font-size:.82rem;color:var(--ink-2);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:380px}
+
+/* 1:1 room */
+.pincard{
+  display:flex;gap:10px;align-items:center;padding:10px 14px;
+  border:1.5px solid var(--line);border-radius:10px;background:var(--panel);
+}
+.pincard .ph{width:44px;height:44px}
+.pincard .tt{font-size:.88rem;font-weight:500}
+.acct{
+  display:flex;justify-content:space-between;align-items:center;gap:8px;
+  border:1.5px solid var(--line);border-radius:8px;padding:8px 12px;font-size:.86rem;background:var(--box);
+}
+.donebar{display:flex;gap:8px}
+.donebar .btn{flex:1}
+
+/* mypage */
+.myhead{display:flex;gap:12px;align-items:center}
+.myhead .avatar{width:56px;height:56px;border-radius:50%;border:1.5px solid var(--line);background:var(--ph1)}
+.mylist{display:flex;flex-direction:column}
+.mylist button{display:flex;justify-content:space-between;padding:12px 4px;border-bottom:1.5px solid var(--line-soft);font-size:.94rem;text-align:left}
+.mylist button:hover{color:var(--blue)}
+
+/* modal / toast */
+.overlay{position:absolute;inset:0;background:rgba(20,21,23,.45);z-index:30;display:none;align-items:center;justify-content:center;padding:24px}
+.overlay.on{display:flex}
+.modal{
+  background:var(--box);border:2px solid var(--ink);border-radius:14px;padding:20px;
+  width:100%;max-width:340px;display:flex;flex-direction:column;gap:12px;
+}
+.modal h4{font-size:1.05rem}
+.toast{
+  position:absolute;left:50%;bottom:26px;transform:translateX(-50%);
+  background:var(--ink);color:var(--ground);font-size:.84rem;padding:8px 16px;border-radius:999px;
+  opacity:0;transition:opacity .25s ease-out;pointer-events:none;z-index:40;white-space:nowrap;
+}
+.toast.on{opacity:1}
+@media (prefers-reduced-motion:reduce){.toast{transition:none}}
+:where(button,a):focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+</style>
+
+<div class="wrap">
+
+  <!-- ============ side panel ============ -->
+  <aside class="sidepanel">
+    <div class="brand">
+      <h1>크래프톤 당근 · 와이어프레임 v2</h1>
+      <p class="sub">웹페이지 UI 개편판 — 햄버거 + offcanvas 사이드바, Bootstrap 문법, 아고라의 홈 통합. Flask + Jinja SSR + Ajax + MongoDB.</p>
+    </div>
+
+    <div class="card">
+      <h2>화면 지도</h2>
+      <nav class="screenmap" id="screenmap"></nav>
+    </div>
+
+    <div class="card legend">
+      <h2>범례</h2>
+      <ul>
+        <li><span class="tag ssr">SSR</span> 화면 전환 — Jinja가 새 페이지를 렌더링해요. 위 URL 표시줄이 함께 바뀌어요.</li>
+        <li><span class="tag ajax">AJAX</span> 제자리 갱신 — 찜 · 댓글 · 채팅 폴링 · 상태 전환.</li>
+        <li><span class="tag extra">★여유</span> 필수가 아닌 기능이에요.</li>
+        <li><span class="tag bs">offcanvas</span> 분홍 태그 = 대응하는 <b>Bootstrap 컴포넌트 이름</b>. 공식 문서에서 그 이름을 찾으면 돼요.</li>
+        <li><span class="anno" style="font-size:1rem;padding:2px 8px">보라 손글씨</span> 는 구현 메모예요. 화면 이동 시 아래 메모가 바뀌어요.</li>
+      </ul>
+    </div>
+
+    <div class="card notes">
+      <h2>이 화면의 메모</h2>
+      <ul id="notes-list"></ul>
+    </div>
+
+    <div class="card">
+      <details class="appendix">
+        <summary>부록 — 팀 회의 안건 2건</summary>
+        <div class="item">
+          <b>1. JWT 보관 위치 <span class="muted">(추천: httpOnly 쿠키)</span></b>
+          <p>Jinja SSR에서는 브라우저가 매 요청에 쿠키를 자동 첨부하므로 페이지 렌더링과 자연스럽게 맞물리고, XSS로 토큰을 탈취당하지 않아요. localStorage + Authorization 헤더 방식은 일반 페이지 이동에 헤더를 붙일 수 없어서 SSR과 충돌해요.</p>
+        </div>
+        <div class="item">
+          <b>2. SSR / Ajax 경계 <span class="muted">(추천: 아래 규칙)</span></b>
+          <p>페이지 이동(목록 → 상세 → 작성)은 전부 SSR 페이지 전환으로, Ajax는 찜 토글 · 댓글 등록 · 채팅 송수신(폴링) · 거래 상태 전환 네 곳에만 써요.</p>
+        </div>
+      </details>
+    </div>
+
+    <div class="card">
+      <details class="appendix">
+        <summary>부록 — Bootstrap 도입 메모</summary>
+        <div class="item">
+          <b>CDN 두 줄이면 끝</b>
+          <p>bootstrap.min.css + bootstrap.bundle.min.js (offcanvas·modal은 JS 번들 필수, Popper 포함). 빌드 도구 불필요 — Jinja base.html의 head에 한 번만.</p>
+        </div>
+        <div class="item">
+          <b>이 와이어프레임의 진짜 Bootstrap 파일 여부</b>
+          <p>Artifact 보안 정책상 외부 CDN을 못 불러와서 룩은 수제 재현이에요. 대신 구조와 분홍 태그가 실제 컴포넌트와 1:1로 대응하니, 구현 시 해당 컴포넌트를 그대로 쓰면 같은 화면이 나와요.</p>
+        </div>
+        <div class="item">
+          <b>그리드 비용</b>
+          <p>3열↔1열 반응형은 row-cols-1 row-cols-md-3 클래스 하나예요. 위의 데스크톱/모바일 버튼으로 직접 확인해 보세요 — 별도 구현이 아니에요.</p>
+        </div>
+        <div class="item">
+          <b>테마는 기본값 유지</b>
+          <p>기본 파랑 테마 그대로 + 색 변수 최소 수정. 커스텀 CSS는 2박 3일의 함정이에요.</p>
+        </div>
+      </details>
+    </div>
+  </aside>
+
+  <!-- ============ browser frame ============ -->
+  <div class="stage">
+    <div class="vwtoggle" role="group" aria-label="미리보기 폭">
+      <button id="vw-desktop" class="on">🖥 데스크톱</button>
+      <button id="vw-mobile">📱 모바일</button>
+    </div>
+
+    <div class="browser" id="browser">
+      <div class="chrome">
+        <div class="dots"><i></i><i></i><i></i></div>
+        <div class="urlbar" id="urlbar">jungle-carrot.kr/</div>
+      </div>
+
+      <!-- app navbar -->
+      <div class="navbar">
+        <button class="burger" id="burger" aria-label="메뉴 열기"><i></i><i></i><i></i></button>
+        <span class="brandname">🥕 크래프톤 당근</span>
+        <span class="pagename" id="pagename">홈</span>
+        <span class="right">
+          <button class="icobtn" data-go="home" aria-label="검색" title="검색 ★여유">⌕</button>
+          <button class="icobtn" data-go="chats" aria-label="채팅"><span>💬</span><span class="unread">2</span></button>
+          <button class="icobtn" data-go="my" aria-label="마이페이지">👤</button>
+        </span>
+        <span class="caption" style="position:absolute;right:16px;top:-9px"><span class="tag bs">navbar</span></span>
+      </div>
+
+      <!-- offcanvas sidebar -->
+      <div class="offwrap" id="offwrap">
+        <div class="offback" id="offback"></div>
+        <div class="offcanvas" role="dialog" aria-label="메뉴">
+          <div class="head"><b>메뉴</b> <span class="tag bs">offcanvas</span> <button class="close" id="offclose" aria-label="닫기">×</button></div>
+          <button class="menucard" data-go="home" data-menu="home"><span class="ic"></span><span><span class="en">Home</span><br><span class="ko">거래 피드 · 아고라</span></span></button>
+          <button class="menucard" data-go="community" data-menu="community"><span class="ic"></span><span><span class="en">Community</span><br><span class="ko">질문 · 정보공유 게시판</span></span></button>
+          <button class="menucard" data-go="chats" data-menu="chats"><span class="ic"></span><span><span class="en">Chatting</span><br><span class="ko">확정된 1:1 거래 방</span></span></button>
+          <button class="menucard" data-go="my" data-menu="my"><span class="ic"></span><span><span class="en">MyPage</span><br><span class="ko">내 글 · 거래 내역</span></span></button>
+          <span class="caption" style="align-self:center">menu card = <span class="tag bs">card</span></span>
+          <div class="foot"><span>조진근 · 13기</span><button class="btn sm" data-go="login">로그아웃</button></div>
+        </div>
+      </div>
+
+      <div class="screens" id="screens">
+
+        <!-- login -->
+        <section class="screen" data-s="login">
+          <div class="body narrow" style="justify-content:center;flex:1;gap:16px;max-width:420px">
+            <div style="text-align:center;margin-bottom:6px">
+              <div class="ph" style="width:80px;height:80px;margin:0 auto 10px"></div>
+              <div style="font-size:1.3rem;font-weight:700">크래프톤 당근</div>
+              <p class="muted">정글 안에서 팔고, 나누고, 바꿔요</p>
+            </div>
+            <div class="field"><label>아이디</label><div class="input">jungler13 <span class="tag bs" style="float:right">form-control</span></div></div>
+            <div class="field"><label>비밀번호</label><div class="input">••••••••</div></div>
+            <button class="btn primary" data-go="home">로그인 <span class="tag ajax">AJAX</span></button>
+            <button class="btn" data-go="signup">회원가입 <span class="tag ssr">SSR</span></button>
+            <p class="anno" style="align-self:center">로그인 성공 시 JWT 발급 → 쿠키 저장 → 홈으로</p>
+          </div>
+        </section>
+
+        <!-- signup -->
+        <section class="screen" data-s="signup">
+          <div class="body narrow" style="max-width:480px">
+            <h3 style="font-size:1.15rem">회원가입</h3>
+            <div class="field"><label>아이디</label><div class="input">영문·숫자 4자 이상</div></div>
+            <div class="field"><label>비밀번호</label><div class="input">8자 이상</div></div>
+            <div class="field"><label>이름</label><div class="input">조진근</div></div>
+            <div class="field"><label>기수</label>
+              <div class="chiprow"><span class="chip">12기</span><span class="chip on">13기</span><span class="chip">14기</span><span class="chip">코치/운영진</span><span class="tag bs">btn-group</span></div>
+            </div>
+            <button class="btn primary" data-go="login">가입하기</button>
+            <p class="anno">기수·이름은 프로필 표시용, 엄격한 검증은 하지 않음</p>
+          </div>
+        </section>
+
+        <!-- home -->
+        <section class="screen" data-s="home">
+          <div class="body">
+            <div class="secrow">
+              <h4>거래 피드</h4>
+              <span class="muted">협상 중인 아고라가 카드에 보여요</span>
+              <span class="sp"></span>
+              <button class="btn sm" style="border-style:dashed">⌕ 검색 <span class="tag extra">★여유</span></button>
+              <button class="btn sm primary" data-go="write">＋ 글쓰기 <span class="tag bs">btn</span></button>
+            </div>
+            <div class="chiprow">
+              <span class="chip on">전체</span><span class="chip">판매</span><span class="chip">나눔</span><span class="chip">교환</span>
+              <span class="tag bs">nav-pills</span><span class="tag extra">카테고리 필터 ★여유</span>
+            </div>
+            <div class="feedgrid" id="feedgrid">
+              <span class="caption" style="grid-column:1/-1">grid = <span class="tag bs">row-cols-1 row-cols-md-3</span> — 위 📱 버튼으로 1열 접힘을 확인해 보세요</span>
+              <button class="feedcard" data-go="detail">
+                <span class="ph"></span>
+                <span class="pad">
+                  <span class="tt">해피해킹 키보드 (무각인)</span>
+                  <span class="meta">13기 · 조진근 · 10분 전</span>
+                  <span class="price">120,000원 <span class="badge sale">판매</span> <span class="badge state" data-role="item-state">판매중</span></span>
+                </span>
+                <span class="agorapeek"><span class="n">💬 3명 협상 중</span><span class="q">"저는 105,000원이요!"</span></span>
+              </button>
+              <button class="feedcard" data-go="detail">
+                <span class="ph"></span>
+                <span class="pad">
+                  <span class="tt">라꾸라꾸 접이식 침대</span>
+                  <span class="meta">12기 · 수료생 · 1시간 전</span>
+                  <span class="price">나눔 <span class="badge free">나눔</span></span>
+                </span>
+                <span class="agorapeek"><span class="n">💬 5명 대기 중</span><span class="q">"선착순인가요??"</span></span>
+              </button>
+              <button class="feedcard" data-go="detail">
+                <span class="ph"></span>
+                <span class="pad">
+                  <span class="tt">백준 문제집 ↔ 몬스터 한 박스</span>
+                  <span class="meta">13기 · 익명의 정글러 · 3시간 전</span>
+                  <span class="price">아무거나 환영 <span class="badge swap">교환</span></span>
+                </span>
+                <span class="agorapeek"><span class="n">💬 2명 협상 중</span><span class="q">"핫식스 한 박스는 어때요"</span></span>
+              </button>
+              <button class="feedcard" data-go="detail">
+                <span class="ph"></span>
+                <span class="pad">
+                  <span class="tt">모니터 받침대 + C타입 허브</span>
+                  <span class="meta">13기 · 옆자리사람 · 어제</span>
+                  <span class="price">15,000원 <span class="badge sale">판매</span></span>
+                </span>
+                <span class="agorapeek" style="background:var(--panel);color:var(--ink-2)"><span class="n">아직 조용해요</span><span class="q">첫 제안을 남겨보세요</span></span>
+              </button>
+              <button class="feedcard" data-go="detail">
+                <span class="ph"></span>
+                <span class="pad">
+                  <span class="tt">자세교정 방석 (거의 새것)</span>
+                  <span class="meta">14기 · 뉴비 · 어제</span>
+                  <span class="price">8,000원 <span class="badge sale">판매</span></span>
+                </span>
+                <span class="agorapeek" style="background:var(--panel);color:var(--ink-2)"><span class="n">아직 조용해요</span><span class="q">첫 제안을 남겨보세요</span></span>
+              </button>
+              <button class="feedcard" data-go="detail">
+                <span class="ph"></span>
+                <span class="pad">
+                  <span class="tt">클린 코드 ↔ 아무 소설책</span>
+                  <span class="meta">12기 · 책벌레 · 2일 전</span>
+                  <span class="price">교환 희망 <span class="badge swap">교환</span></span>
+                </span>
+                <span class="agorapeek"><span class="n">💬 1명 협상 중</span><span class="q">"삼체 1권 있어요"</span></span>
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- detail -->
+        <section class="screen" data-s="detail">
+          <div class="body narrow" style="max-width:680px">
+            <button class="btn sm" data-go="home" style="align-self:flex-start">‹ 피드로</button>
+            <div class="detailtop">
+              <div class="ph"></div>
+              <div style="flex:1;display:flex;flex-direction:column;gap:8px;min-width:0">
+                <div class="sellerrow">
+                  <div class="avatar"></div>
+                  <div><div class="nm">조진근</div><div class="gen">크래프톤 정글 13기</div></div>
+                  <span style="margin-left:auto"><span class="badge state" data-role="item-state">판매중</span></span>
+                </div>
+                <div>
+                  <div style="font-size:1.12rem;font-weight:700">해피해킹 키보드 (무각인)</div>
+                  <div class="muted">디지털 · 10분 전</div>
+                  <div style="font-size:1.15rem;font-weight:700;margin-top:4px">120,000원 <span class="badge sale">판매</span></div>
+                </div>
+                <p class="muted" style="font-size:.9rem">정글 오기 전에 샀는데 결국 멤브레인으로 돌아갔습니다. 상태 최상, 강의장 앞자리에서 직거래해요.</p>
+                <div class="ctarow">
+                  <button class="heart" id="heart" aria-label="찜">♡</button>
+                  <button class="btn primary" id="buy-btn">구매하기 → <span class="tag bs">modal</span></button>
+                </div>
+              </div>
+            </div>
+            <hr class="hr">
+            <div class="secrow">
+              <h4>아고라 — 공개 협상 스레드</h4>
+              <span class="tag ajax">AJAX 폴링</span>
+              <span class="sp"></span><span class="muted">로그인 유저 전체 공개</span>
+            </div>
+            <div class="thread">
+              <div class="msg"><div class="avatar"></div><div><div class="who">13기 · 새벽코딩러</div><div class="bubble">10만 원에 주시면 지금 바로 갑니다</div></div></div>
+              <div class="msg"><div class="avatar"></div><div><div class="who">14기 · 뉴비</div><div class="bubble">저는 105,000원이요!</div></div></div>
+              <div class="msg">
+                <div class="avatar"></div>
+                <div style="max-width:85%;min-width:0">
+                  <div class="who">12기 · 큰손 <span class="tag extra">★여유</span></div>
+                  <div class="offercard">
+                    <div class="row"><span class="muted">가격 제안</span>
+                      <span style="display:inline-flex;gap:6px;align-items:center">
+                        <button class="btn sm" data-amt="-1000" aria-label="1000원 내리기">−</button>
+                        <span class="amt" id="offer-amt">110,000원</span>
+                        <button class="btn sm" data-amt="1000" aria-label="1000원 올리기">＋</button>
+                      </span>
+                    </div>
+                    <div class="row">
+                      <span class="caption">OFFER CARD</span>
+                      <button class="btn sm primary" id="accept-offer">수락 (판매자만)</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="syscard" id="accepted-card" style="display:none">
+                제안이 수락되었어요 — 두 사람의 1:1 채팅이 열렸습니다.
+                <div style="margin-top:6px"><button class="btn sm" data-go="chatroom">1:1 채팅으로 이동 →</button></div>
+              </div>
+            </div>
+            <div class="inputrow"><div class="input">아고라에 공개 메시지 남기기…</div><button class="btn sm primary">전송</button></div>
+          </div>
+        </section>
+
+        <!-- write -->
+        <section class="screen" data-s="write">
+          <div class="body narrow" style="max-width:560px">
+            <h3 style="font-size:1.15rem">거래 글 작성 <span class="tag ssr">SSR</span></h3>
+            <div class="field"><label>사진</label>
+              <div style="display:flex;gap:8px">
+                <div class="ph" style="width:72px;height:72px;display:flex;align-items:center;justify-content:center"><span style="font-size:1.4rem;color:var(--ink-2);background:var(--ph1);border-radius:4px;padding:0 4px">+</span></div>
+                <div class="ph" style="width:72px;height:72px"></div>
+                <div class="ph" style="width:72px;height:72px"></div>
+              </div>
+            </div>
+            <div class="field"><label>거래 유형</label>
+              <div class="chiprow" id="type-chips">
+                <button class="chip on" data-type="sale">판매</button>
+                <button class="chip" data-type="free">나눔</button>
+                <button class="chip" data-type="swap">교환</button>
+                <span class="tag bs">btn-group</span>
+              </div>
+            </div>
+            <div class="field"><label>제목</label><div class="input">해피해킹 키보드 (무각인)</div></div>
+            <div class="field" id="f-price"><label>가격</label><div class="input">120,000원</div></div>
+            <div class="field" id="f-want" style="display:none"><label>원하는 물건</label>
+              <div class="chiprow" id="want-chips" style="margin-bottom:6px"><button class="chip on" id="want-any">아무거나 (제안 받아요)</button><button class="chip">직접 입력</button></div>
+              <div class="input" id="want-input" style="display:none">예: 세미나실 간식, 자세교정 방석…</div>
+            </div>
+            <div class="field" id="f-acct"><label>계좌번호 <span class="opt">(선택)</span></label><div class="input">카카오뱅크 3333-00-0000000</div></div>
+            <div class="field"><label>내용</label><textarea class="input" rows="3" disabled placeholder="물건 상태, 거래 희망 장소 등"></textarea></div>
+            <button class="btn primary" data-go="detail">등록하기</button>
+            <p class="anno">유형을 바꾸면 가격 ↔ 원하는 물건 필드가 전환돼요 (위 칩을 눌러보세요)</p>
+          </div>
+        </section>
+
+        <!-- community list -->
+        <section class="screen" data-s="community">
+          <div class="body narrow" style="max-width:680px">
+            <div class="secrow">
+              <h4>커뮤니티</h4>
+              <span class="sp"></span>
+              <button class="btn sm primary" data-go="postwrite">＋ 글쓰기</button>
+            </div>
+            <div class="chiprow"><span class="chip on">전체</span><span class="chip">질문</span><span class="chip">정보공유</span><span class="tag bs">nav-pills</span></div>
+            <div>
+              <button class="postitem" data-go="post">
+                <div class="tt"><span class="cat">질문</span>강의장 근처에 프린터 쓸 수 있는 곳 있나요?</div>
+                <div class="meta">13기 · 뚜벅이 · 25분 전 · 댓글 3</div>
+              </button>
+              <button class="postitem" data-go="post">
+                <div class="tt"><span class="cat">정보공유</span>이번 주 세탁실 건조기 2번 고장 → 4번 쓰세요</div>
+                <div class="meta">12기 · 정보요정 · 2시간 전 · 댓글 7</div>
+              </button>
+              <button class="postitem" data-go="post">
+                <div class="tt"><span class="cat">질문</span>알고리즘 스터디 몇 시에 모이는 게 좋을까요</div>
+                <div class="meta">14기 · 뉴비 · 5시간 전 · 댓글 12</div>
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- post detail -->
+        <section class="screen" data-s="post">
+          <div class="body narrow" style="max-width:680px">
+            <button class="btn sm" data-go="community" style="align-self:flex-start">‹ 목록으로</button>
+            <div>
+              <div style="font-weight:700;font-size:1.05rem"><span class="cat">질문</span>강의장 근처에 프린터 쓸 수 있는 곳 있나요?</div>
+              <div class="muted">13기 · 뚜벅이 · 25분 전</div>
+            </div>
+            <p class="muted" style="font-size:.92rem">면접 서류를 급하게 출력해야 하는데 근처에 인쇄소가 안 보여서요. 다들 어디서 출력하시나요?</p>
+            <hr class="hr">
+            <div class="secrow"><h4 style="font-size:.95rem">댓글 3</h4><span class="tag ajax">AJAX</span></div>
+            <div>
+              <div class="comment"><div class="avatar"></div><div><div class="who">12기 · 정보요정</div>2층 라운지 복합기 학생증 태그하면 돼요</div></div>
+              <div class="comment"><div class="avatar"></div><div><div class="who">13기 · 새벽코딩러</div>편의점 앞 무인 인쇄기도 있어요. 흑백 100원</div></div>
+              <div class="comment"><div class="avatar"></div><div><div class="who">13기 · 뚜벅이</div>둘 다 감사합니다 🙏</div></div>
+            </div>
+            <div class="inputrow"><div class="input">댓글 남기기…</div><button class="btn sm primary">등록</button></div>
+          </div>
+        </section>
+
+        <!-- post write -->
+        <section class="screen" data-s="postwrite">
+          <div class="body narrow" style="max-width:560px">
+            <h3 style="font-size:1.15rem">커뮤니티 글 작성 <span class="tag ssr">SSR</span></h3>
+            <div class="field"><label>말머리</label>
+              <div class="chiprow"><span class="chip on">질문</span><span class="chip">정보공유</span></div>
+            </div>
+            <div class="field"><label>제목</label><div class="input">제목을 입력하세요</div></div>
+            <div class="field"><label>내용</label><textarea class="input" rows="6" disabled placeholder="내용을 입력하세요"></textarea></div>
+            <button class="btn primary" data-go="community">등록하기</button>
+          </div>
+        </section>
+
+        <!-- chat list -->
+        <section class="screen" data-s="chats">
+          <div class="body narrow" style="max-width:680px">
+            <div class="secrow"><h4>Chatting — 확정된 1:1 거래</h4><span class="tag ajax">AJAX 폴링</span></div>
+            <p class="muted">아고라에서 제안이 수락되면 여기에 방이 생겨요. 공개 협상은 홈의 각 물건 카드에서 진행돼요.</p>
+            <button class="chatitem" data-go="chatroom">
+              <span class="ph"></span>
+              <span style="min-width:0">
+                <span class="tt">큰손 (12기) <span class="muted" style="font-weight:400">· 해피해킹 키보드 · 110,000원</span></span><br>
+                <span class="last">계좌 보내드렸어요! 확인 부탁드립니다</span>
+              </span>
+              <span style="margin-left:auto"><span class="badge state rsv">예약중</span></span>
+            </button>
+            <button class="chatitem" style="opacity:.6" data-go="chatroom">
+              <span class="ph"></span>
+              <span style="min-width:0">
+                <span class="tt">수료생 (12기) <span class="muted" style="font-weight:400">· 라꾸라꾸 침대 · 나눔</span></span><br>
+                <span class="last">내일 오전에 3층으로 오세요~</span>
+              </span>
+              <span style="margin-left:auto"><span class="badge state done">완료</span></span>
+            </button>
+          </div>
+        </section>
+
+        <!-- chat room -->
+        <section class="screen" data-s="chatroom">
+          <div class="body narrow" style="max-width:640px;flex:1">
+            <button class="btn sm" data-go="chats" style="align-self:flex-start">‹ 채팅 목록</button>
+            <div class="pincard">
+              <div class="ph"></div>
+              <div><div class="tt">해피해킹 키보드 · 110,000원</div><div style="font-size:.76rem"><span class="badge state rsv" data-role="item-state">예약중</span></div></div>
+              <span style="margin-left:auto" class="caption">큰손 (12기)와의 1:1</span>
+            </div>
+            <div class="syscard">아고라 제안 수락으로 채팅이 시작되었어요.</div>
+            <div class="msg"><div class="avatar"></div><div><div class="who">큰손</div><div class="bubble">안녕하세요! 오늘 저녁 강의장 앞 어떠세요?</div></div></div>
+            <div class="msg me"><div class="avatar"></div><div><div class="bubble">좋아요. 계좌 공유드릴게요.</div></div></div>
+            <div class="acct">
+              <span class="mono">카카오뱅크 3333-00-0000000</span>
+              <button class="btn sm" id="copy-acct">복사 <span class="tag ajax">AJAX</span></button>
+            </div>
+            <div class="msg"><div class="avatar"></div><div><div class="who">큰손</div><div class="bubble">보냈습니다! 확인 부탁드려요.</div></div></div>
+            <div class="syscard" id="done-card" style="display:none">🎉 양쪽 모두 완료를 눌렀어요 — 판매완료로 전환되었습니다.</div>
+            <div class="donebar" style="margin-top:auto">
+              <button class="btn" id="my-done">거래 완료 (나)</button>
+              <button class="btn" id="their-done">상대방도 완료 <span class="caption">시연용</span></button>
+            </div>
+            <div class="inputrow"><div class="input">메시지 입력…</div><button class="btn sm primary">전송</button></div>
+          </div>
+        </section>
+
+        <!-- mypage -->
+        <section class="screen" data-s="my">
+          <div class="body narrow" style="max-width:560px">
+            <h3 style="font-size:1.15rem">MyPage</h3>
+            <div class="myhead">
+              <div class="avatar"></div>
+              <div><div style="font-weight:700">조진근</div><div class="muted">크래프톤 정글 13기</div></div>
+            </div>
+            <hr class="hr">
+            <div class="mylist">
+              <button>내가 쓴 거래 글 <span class="muted">3</span></button>
+              <button>내가 쓴 커뮤니티 글 <span class="muted">1</span></button>
+              <button>찜 목록 <span style="display:inline-flex;gap:6px;align-items:center"><span class="muted">2</span><span class="tag extra">★여유</span></span></button>
+              <button>거래 내역 <span class="muted">판매완료 1</span></button>
+              <button style="color:var(--ink-2)" data-go="login">로그아웃</button>
+            </div>
+            <p class="anno">거래 상태 전환은 상세·1:1에서 일어나고, 여기서는 조회만</p>
+          </div>
+        </section>
+
+      </div><!-- /screens -->
+
+      <!-- transfer modal -->
+      <div class="overlay" id="buy-overlay">
+        <div class="modal">
+          <h4>계좌이체 안내 <span class="tag bs">modal</span></h4>
+          <p class="muted">판매자가 등록한 계좌로 직접 이체해 주세요. 이체 후 1:1 채팅에서 "거래 완료"를 눌러 주세요.</p>
+          <div class="acct"><span class="mono">카카오뱅크 3333-00-0000000</span><button class="btn sm" id="copy-acct2">복사</button></div>
+          <div style="display:flex;justify-content:space-between;align-items:center"><span class="muted">금액</span><b>120,000원</b></div>
+          <button class="btn primary" data-go="chatroom">1:1 채팅으로 이동</button>
+          <button class="btn" id="popup-close">닫기</button>
+        </div>
+      </div>
+
+      <div class="toast" id="toast">복사되었어요 <span class="tag bs" style="background:rgba(255,255,255,.2);color:inherit">toast</span></div>
+    </div>
+    <p class="caption">클릭해서 이동 · 햄버거 → 사이드바 · 피드 카드 → 상세+아고라 → 수락 → 1:1 → 판매완료</p>
+  </div>
+</div>
+
+<script>
+(function(){
+  var SCREENS = [
+    {id:'login', name:'0. 로그인', grp:'인증', url:'jungle-carrot.kr/login', title:'로그인', notes:[
+      '로그인 성공 → JWT 발급 → httpOnly 쿠키(팀 안건 1)',
+      '실패 시 인라인 에러: "아이디 또는 비밀번호가 달라요"',
+      '비로그인 상태에서는 navbar 우측 아이콘 숨김'
+    ]},
+    {id:'signup', name:'1. 회원가입', grp:'인증', url:'jungle-carrot.kr/signup', title:'회원가입', notes:[
+      '기수는 칩 선택, 검증 없음 (신뢰 표시용 데이터)',
+      '아이디 중복 확인은 등록 시 서버에서 한 번만'
+    ]},
+    {id:'home', name:'2. Home — 피드+아고라', grp:'Home', url:'jungle-carrot.kr/', title:'홈', notes:[
+      '피드 강화형: 카드마다 아고라 미리보기(참여 수+최근 발언 1줄)',
+      '미리보기 쿼리 = 글별 최근 발언 1건 — 구현 비용 낮음',
+      '그리드는 row-cols-1 row-cols-md-3 — 📱 버튼으로 확인',
+      '＋ 글쓰기는 상단 btn — 플로팅 버튼(앱 문법) 제거'
+    ]},
+    {id:'detail', name:'3. 거래 상세 + 아고라', grp:'Home', url:'jungle-carrot.kr/items/42', title:'거래 글', notes:[
+      '상세와 아고라 스레드를 한 페이지에 (SSR 1회 렌더 + 폴링)',
+      '제안 카드(금액 조절 오퍼)는 ★여유 — 수락을 눌러보세요',
+      '수락 → 예약중 전환 + 1:1 개설 (시스템 카드)',
+      '구매하기 → Bootstrap modal로 계좌 안내'
+    ]},
+    {id:'write', name:'4. 거래 글 작성', grp:'Home', url:'jungle-carrot.kr/items/new', title:'글쓰기', notes:[
+      '유형 칩 전환: 판매=가격 / 나눔=가격·계좌 숨김 / 교환=원하는 물건',
+      '교환은 "아무거나(제안 받아요)" 또는 직접 입력',
+      '계좌번호는 선택 입력 — modal과 1:1 방에서만 노출'
+    ]},
+    {id:'community', name:'5. Community 목록', grp:'Community', url:'jungle-carrot.kr/community', title:'커뮤니티', notes:[
+      '말머리 2개: 질문 · 정보공유',
+      '팀원 1명이 독립적으로 맡기 좋은 CRUD 단위'
+    ]},
+    {id:'post', name:'6. 커뮤니티 글 + 댓글', grp:'Community', url:'jungle-carrot.kr/community/7', title:'커뮤니티 글', notes:[
+      '댓글 등록만 AJAX, 나머지는 SSR'
+    ]},
+    {id:'postwrite', name:'7. 커뮤니티 글 작성', grp:'Community', url:'jungle-carrot.kr/community/new', title:'글쓰기', notes:[
+      '작성 → 등록 → 목록으로 리다이렉트 (SSR)'
+    ]},
+    {id:'chats', name:'8. Chatting — 1:1 목록', grp:'Chatting', url:'jungle-carrot.kr/chats', title:'채팅', notes:[
+      '이제 1:1 방 전용 — 아고라 바로가기는 홈 카드로 이동',
+      'navbar 💬 아이콘의 안 읽음 뱃지가 이 화면의 진입점 (AJAX 폴링)'
+    ]},
+    {id:'chatroom', name:'9. 1:1 채팅방', grp:'Chatting', url:'jungle-carrot.kr/chats/3', title:'1:1 채팅', notes:[
+      '상단 카드 고정: 무슨 거래의 방인지',
+      '계좌 복사 — 계좌는 이 방과 modal에서만 노출',
+      '양쪽 모두 "거래 완료" → 시스템 카드 + 판매완료 전환',
+      '송수신은 AJAX 폴링 (WebSocket은 추후 확장)'
+    ]},
+    {id:'my', name:'10. MyPage', grp:'MyPage', url:'jungle-carrot.kr/me', title:'마이페이지', notes:[
+      '내 글 · 거래 내역 조회, 찜 목록은 ★여유',
+      '로그아웃 = JWT 쿠키 삭제'
+    ]}
+  ];
+
+  var map = document.getElementById('screenmap');
+  var notesList = document.getElementById('notes-list');
+  var lastGrp = null;
+  SCREENS.forEach(function(s){
+    if(s.grp !== lastGrp){
+      var g = document.createElement('div');
+      g.className = 'grp'; g.textContent = s.grp;
+      map.appendChild(g); lastGrp = s.grp;
+    }
+    var b = document.createElement('button');
+    b.textContent = s.name; b.dataset.go = s.id;
+    map.appendChild(b);
+  });
+
+  var MENU_OF = {home:'home', detail:'home', write:'home',
+                 community:'community', post:'community', postwrite:'community',
+                 chats:'chats', chatroom:'chats', my:'my'};
+
+  function show(id){
+    document.querySelectorAll('.screen').forEach(function(el){
+      el.classList.toggle('on', el.dataset.s === id);
+    });
+    map.querySelectorAll('button').forEach(function(b){
+      b.classList.toggle('on', b.dataset.go === id);
+    });
+    document.querySelectorAll('.menucard').forEach(function(b){
+      b.classList.toggle('on', b.dataset.menu === MENU_OF[id]);
+    });
+    var s = SCREENS.filter(function(x){return x.id===id})[0];
+    if(s){
+      document.getElementById('urlbar').textContent = s.url;
+      document.getElementById('pagename').textContent = '· ' + s.title;
+      notesList.innerHTML = '';
+      s.notes.forEach(function(n){
+        var li = document.createElement('li'); li.textContent = n;
+        notesList.appendChild(li);
+      });
+    }
+    var active = document.querySelector('.screen.on');
+    if(active) active.scrollTop = 0;
+  }
+
+  /* offcanvas */
+  var offwrap = document.getElementById('offwrap');
+  document.getElementById('burger').addEventListener('click', function(){ offwrap.classList.add('on'); });
+  document.getElementById('offclose').addEventListener('click', function(){ offwrap.classList.remove('on'); });
+  document.getElementById('offback').addEventListener('click', function(){ offwrap.classList.remove('on'); });
+
+  /* nav delegation */
+  document.addEventListener('click', function(e){
+    var go = e.target.closest('[data-go]');
+    if(go){
+      show(go.dataset.go);
+      offwrap.classList.remove('on');
+      closeOverlay();
+    }
+  });
+
+  /* viewport toggle */
+  var browser = document.getElementById('browser');
+  var vd = document.getElementById('vw-desktop'), vm = document.getElementById('vw-mobile');
+  vd.addEventListener('click', function(){ browser.classList.remove('mobile'); vd.classList.add('on'); vm.classList.remove('on'); });
+  vm.addEventListener('click', function(){ browser.classList.add('mobile'); vm.classList.add('on'); vd.classList.remove('on'); });
+
+  /* item status simulation */
+  var states = {'판매중':'', '예약중':'rsv', '판매완료':'done'};
+  function setStatus(txt){
+    document.querySelectorAll('[data-role="item-state"]').forEach(function(el){
+      el.textContent = txt;
+      el.className = 'badge state ' + (states[txt]||'');
+    });
+  }
+
+  /* offer card */
+  var amt = 110000;
+  var amtEl = document.getElementById('offer-amt');
+  document.querySelectorAll('[data-amt]').forEach(function(b){
+    b.addEventListener('click', function(){
+      amt += parseInt(b.dataset.amt, 10);
+      if(amt < 0) amt = 0;
+      amtEl.textContent = amt.toLocaleString('ko-KR') + '원';
+    });
+  });
+  document.getElementById('accept-offer').addEventListener('click', function(){
+    document.getElementById('accepted-card').style.display = 'block';
+    setStatus('예약중');
+    toast('제안 수락 → 예약중, 1:1 채팅 개설');
+  });
+
+  /* heart */
+  var heart = document.getElementById('heart');
+  heart.addEventListener('click', function(){
+    heart.classList.toggle('on');
+    heart.textContent = heart.classList.contains('on') ? '♥' : '♡';
+    toast(heart.classList.contains('on') ? '찜했어요 (AJAX)' : '찜 해제 (AJAX)');
+  });
+
+  /* buy modal */
+  var overlay = document.getElementById('buy-overlay');
+  document.getElementById('buy-btn').addEventListener('click', function(){ overlay.classList.add('on'); });
+  document.getElementById('popup-close').addEventListener('click', closeOverlay);
+  overlay.addEventListener('click', function(e){ if(e.target === overlay) closeOverlay(); });
+  function closeOverlay(){ overlay.classList.remove('on'); }
+
+  /* copy buttons */
+  ['copy-acct','copy-acct2'].forEach(function(id){
+    var el = document.getElementById(id);
+    if(el) el.addEventListener('click', function(){ toast('계좌번호가 복사되었어요'); });
+  });
+
+  /* both-done flow */
+  var myDone = false, theirDone = false;
+  var myBtn = document.getElementById('my-done'), theirBtn = document.getElementById('their-done');
+  function checkDone(){
+    if(myDone && theirDone){
+      document.getElementById('done-card').style.display = 'block';
+      setStatus('판매완료');
+      toast('양측 완료 → 판매완료');
+    }
+  }
+  myBtn.addEventListener('click', function(){
+    myDone = true; myBtn.classList.add('done'); myBtn.textContent = '✓ 완료 (나)'; checkDone();
+  });
+  theirBtn.addEventListener('click', function(){
+    theirDone = true; theirBtn.classList.add('done'); theirBtn.textContent = '✓ 상대방 완료'; checkDone();
+  });
+
+  /* write-screen type chips */
+  var typeChips = document.getElementById('type-chips');
+  typeChips.addEventListener('click', function(e){
+    var c = e.target.closest('.chip'); if(!c) return;
+    typeChips.querySelectorAll('.chip').forEach(function(x){ x.classList.remove('on'); });
+    c.classList.add('on');
+    var t = c.dataset.type;
+    document.getElementById('f-price').style.display = (t === 'sale') ? '' : 'none';
+    document.getElementById('f-want').style.display = (t === 'swap') ? '' : 'none';
+    document.getElementById('f-acct').style.display = (t === 'free') ? 'none' : '';
+  });
+  document.getElementById('want-chips').addEventListener('click', function(e){
+    var c = e.target.closest('.chip'); if(!c) return;
+    this.querySelectorAll('.chip').forEach(function(x){ x.classList.remove('on'); });
+    c.classList.add('on');
+    document.getElementById('want-input').style.display = (c.id === 'want-any') ? 'none' : '';
+  });
+
+  /* toast */
+  var toastEl = document.getElementById('toast'), toastTimer = null;
+  var toastHTML = toastEl.innerHTML;
+  function toast(msg){
+    toastEl.textContent = msg;
+    toastEl.classList.add('on');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ toastEl.classList.remove('on'); }, 1800);
+  }
+
+  show('home');
+})();
+</script>
