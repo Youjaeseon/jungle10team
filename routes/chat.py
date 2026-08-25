@@ -223,4 +223,44 @@ def chat_room(room_id):
 
    is_seller = user_id == room["seller_id"]
 
-   #
+   #과거 메세지
+   raw_messages = list(
+        db.messages.find({
+            "room_id": room_oid,
+        }).sort("created_at", 1)
+    )
+
+   messages = []
+
+   for message in raw_messages:
+        sender = db.users.find_one({
+            "_id": message["sender_id"]
+        })
+
+        messages.append(
+            _serialize_message(message, sender)
+        )
+
+    # 판매자만
+    # 같은 상품에 달린 다른 구매자 방들을 페이지처럼 표시
+   sibling_rooms = []
+
+   if is_seller:
+        sibling_rooms = list(
+            db.rooms.find({
+                "item_id": room["item_id"],
+            }).sort("created_at", 1)
+        )
+
+   return render_template(
+        "chat_room.html",
+        room=room,
+        item=item,
+        messages=messages,
+        is_seller=is_seller,
+        sibling_rooms=sibling_rooms,
+    )
+
+#==========================================================
+#과거 메세지 조회(GET)
+#==========================================================
