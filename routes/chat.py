@@ -212,4 +212,15 @@ def chat_room(room_id):
 
    user_id = g.user["_id"]
 
+   # 방 당사자가 아니면 접근 금지
+   if not _is_room_member(room, user_id):
+        return "접근 권한이 없습니다.", 403
+
+   item = db.items.find_one({"_id": room["item_id"]})
+
+   if not item:
+        return "존재하지 않는 상품입니다.", 404
+
+   is_seller = user_id == room["seller_id"]
+
    #
