@@ -11,6 +11,27 @@ from auth_util import login_required
 
 chat_bp = Blueprint('chat', __name__)
 
+socketio = SocketIO()
+
+# Socket 접속 상태 관리
+# 브라우저 탭/재접속 고려
+# ex) 같은 사용자가 같은 방에 여러개의 연결을 하는것을 방지하기 위해 연결 개수를 따로 센다.
+
+_socket_connetions = {}
+
+# 현재 연결 갯수 ex) 2개의 탭을 사용할 경우 하나만 껐을때 2->0이 아니라 2->1
+_presence_counts = defaultdict(int)
+
+#공통함수
+# ==========================================================================
+
+#문자열 ObjectId를 변환
+def _to_object_id(value):
+    try:
+        return ObjectId(value)
+    except Exception:
+        return None
+
 @chat_bp.route('/items/<item_id>')
 @login_required
 def item_chat(item_id):
