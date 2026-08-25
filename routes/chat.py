@@ -51,6 +51,36 @@ def _serialize_message(message, sender=None):
         "created_at": message["created_at"].isoformat(),
     }
 
+#SocketIo에서 token쿠키에서 로그인 사용자를 가져오는 함수
+def _get_socket_user():
+    token = request.cookies.get("token")
+
+    if not token:
+       return None
+
+    secret = os.getenv("JWT_SECRET")
+
+    if not secret:
+      return None
+
+    try:
+      payload = jwt.decode(token, secret, algorithms=["HS256"])
+    except jwt.PyJWTError:
+      return None
+
+    user_id = payload.get("user_id")
+
+    if not user_id:
+      return None
+
+    user_oid = _to_object_id(user_id)
+
+    if not user_oid:
+      return None
+
+    return db.users.find_one({"_id": user_oid})
+
+
 
    
 
