@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block styles %}
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/chat.css') }}"
+    >
+{% endblock %}
+{% block title %}
+    채팅 목록 | 정글장터
+{% endblock %}
+
+{% block content %}
+    <section class="chat-list-page">
+        <div class="chat-list-header">
+            <div>
+                <h1 class="h3 fw-bold mb-1">
+                    채팅 목록
+                </h1>
+
+                <p class="text-secondary mb-0">
+                    진행 중인 1:1 거래 대화를 확인하세요.
+                </p>
+            </div>
+        </div>
+
+        {% if chat_rooms %}
+            <div class="chat-room-list">
+                {% for room in chat_rooms %}
+                    <a
+                        href="/chats/{{ room._id }}"
+                        class="chat-room-card"
+                    >
+                        <div
+                            class="chat-partner-avatar"
+                            aria-hidden="true"
+                        >
+                            {{ room.partner.initial }}
+                        </div>
+
+                        <div class="chat-room-content">
+                            <div class="chat-room-top">
+                                <div class="chat-room-title-group">
+                                    <strong class="chat-partner-name">
+                                        {{ room.partner.name }}
+                                    </strong>
+
+                                    <span class="chat-item-title">
+                                        {{ room.item.title }}
+                                    </span>
+                                </div>
+
+                                <time
+                                    class="chat-last-time"
+                                    datetime="{{ room.last_message.created_at }}"
+                                >
+                                    {{ room.last_message.display_time }}
+                                </time>
+                            </div>
+
+                            <div class="chat-room-bottom">
+                                <p class="chat-last-message">
+                                    {{ room.last_message.text }}
+                                </p>
+
+                                <div class="chat-room-meta">
+                                    <span class="chat-role">
+                                        {{ "판매" if room.role == "seller" else "구매" }}
+                                    </span>
+
+                                    <span class="chat-status {{ 'chat-status-completed' if room.item.status == 'done' else 'chat-status-available' }}">
+                                        {{ "거래 완료" if room.item.status == "done" else "판매 중" }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="chat-empty-state">
+                <div
+                    class="chat-empty-icon"
+                    aria-hidden="true"
+                >
+                    💬
+                </div>
+
+                <h2 class="h5 fw-bold">
+                    아직 진행 중인 채팅이 없습니다
+                </h2>
+
+                <p class="text-secondary mb-3">
+                    관심 있는 물품에서 채팅을 시작해 보세요.
+                </p>
+
+                <a
+                    href="/"
+                    class="btn btn-success"
+                >
+                    거래 피드 둘러보기
+                </a>
+            </div>
+        {% endif %}
+    </section>
+{% endblock %}

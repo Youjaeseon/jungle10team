@@ -1,9 +1,101 @@
 {% extends "base.html" %}
 
-{% block title %}홈{% endblock %}
+{% block styles %}
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/item.css') }}"
+    >
+{% endblock %}
+{% block title %}
+    홈 | 정글장터
+{% endblock %}
 
 {% block content %}
-  {# 확인용 자리표. [담당 B] 가 실제 피드 그리드로 교체한다 #}
-  <h4 class="mb-3">피드 자리</h4>
-  <p class="text-muted">base.html 이 잘 붙었다면 위에 회색 헤더 막대가 보인다.</p>
+    <section class="feed-page">
+        <div class="d-flex flex-column flex-md-row justify-content-between gap-3 mb-4">
+            <div>
+                <h1 class="h3 fw-bold mb-1">
+                    거래 피드
+                </h1>
+
+                <p class="text-secondary mb-0">
+                    정글 구성원들의 물품을 확인해 보세요.
+                </p>
+            </div>
+
+            <a
+                href="/items/new"
+                class="btn btn-success align-self-md-center"
+            >
+                거래 글 작성
+            </a>
+        </div>
+
+        <div class="feed-filter d-flex flex-wrap gap-2 mb-4">
+            <a
+                href="{{ url_for('home', page=1) }}"
+                class="btn {{ 'btn-success' if not selected_type else 'btn-outline-success' }}"
+            >
+                전체
+            </a>
+
+            <a
+                href="{{ url_for('home', page=1, type='sale') }}"
+                class="btn {{ 'btn-primary' if selected_type == 'sale' else 'btn-outline-primary' }}"
+            >
+                판매
+            </a>
+
+            <a
+                href="{{ url_for('home', page=1, type='free') }}"
+                class="btn {{ 'btn-success' if selected_type == 'free' else 'btn-outline-success' }}"
+            >
+                나눔
+            </a>
+
+            <a
+                href="{{ url_for('home', page=1, type='swap') }}"
+                class="btn {{ 'btn-warning' if selected_type == 'swap' else 'btn-outline-warning' }}"
+            >
+                교환
+            </a>
+        </div>
+
+        <div class="row g-4">
+            {% for item in items %}
+                <div class="col-12 col-sm-6 col-lg-4">
+                    {% include "_item_card.html" %}
+                </div>
+            {% else %}
+                <div class="col-12">
+                    <div class="alert alert-light border text-center">
+                        아직 등록된 물품이 없습니다.
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        {% if total_pages > 1 %}
+            <nav
+                class="feed-pagination mt-5"
+                aria-label="거래 피드 페이지"
+            >
+                <ul class="pagination justify-content-center">
+                    {% for page_number in range(1, total_pages + 1) %}
+                        <li class="page-item {{ 'active' if page_number == page }}">
+                            <a
+                                class="page-link"
+                                href="{{ url_for('home', page=page_number, type=selected_type or None) }}"
+                                {% if page_number == page %}
+                                    aria-current="page"
+                                {% endif %}
+                            >
+                                {{ page_number }}
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </nav>
+        {% endif %}
+    </section>
 {% endblock %}

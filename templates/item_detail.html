@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+
+{% block styles %}
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/item.css') }}"
+    >
+{% endblock %}
+{% block title %}
+    {{ item.title }} | 정글장터
+{% endblock %}
+
+{% block content %}
+    <section
+        class="item-detail-page"
+        data-item-id="{{ item._id }}"
+    >
+        <a
+            href="/"
+            class="btn btn-sm btn-outline-secondary mb-4"
+        >
+            &larr; 거래 피드로 돌아가기
+        </a>
+
+        <div class="row g-4 g-lg-5">
+            <div class="col-12 col-lg-7">
+                <div class="item-detail-image-wrap {{ 'item-detail-image-done' if item.status == 'done' }}">
+                    {% if item.photo %}
+                        <img
+                            src="{{ url_for('static', filename='uploads/' ~ item.photo) }}"
+                            alt="{{ item.title }}"
+                            class="item-detail-image"
+                        >
+                    {% else %}
+                        <div class="item-detail-placeholder">
+                            물품 사진
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="col-12 col-lg-5">
+                <div class="item-detail-panel">
+                    <div class="d-flex flex-wrap gap-2 mb-3">
+                        {% if item.type == "sale" %}
+                            <span class="badge bg-primary fs-6">
+                                판매
+                            </span>
+                        {% elif item.type == "free" %}
+                            <span class="badge bg-success fs-6">
+                                나눔
+                            </span>
+                        {% elif item.type == "swap" %}
+                            <span class="badge bg-warning text-dark fs-6">
+                                교환
+                            </span>
+                        {% endif %}
+
+                        <span
+                            id="itemStatusBadge"
+                            class="badge fs-6 {{ 'text-bg-dark' if item.status == 'done' else 'text-bg-secondary' }}"
+                        >
+                            {{ "완료" if item.status == "done" else "판매 중" }}
+                        </span>
+                    </div>
+
+                    <h1 class="item-detail-title">
+                        {{ item.title }}
+                    </h1>
+
+                    {% if item.type == "sale" %}
+                        <p class="item-detail-price">
+                            {{ "{:,}원".format(item.price) }}
+                        </p>
+                    {% elif item.type == "free" %}
+                        <p class="item-detail-price text-success">
+                            무료 나눔
+                        </p>
+                    {% elif item.type == "swap" %}
+                        <p class="item-detail-price">
+                            원하는 물품: {{ item.want or "아무거나" }}
+                        </p>
+                    {% endif %}
+
+                    <div class="seller-profile">
+                        <div
+                            class="seller-avatar"
+                            aria-hidden="true"
+                        >
+                            {{ seller.name[0] }}
+                        </div>
+
+                        <div>
+                            <p class="fw-bold mb-0">
+                                {{ seller.name }}
+                            </p>
+
+                            <small class="text-secondary">
+                                {{ seller.lab }}
+                            </small>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="item-detail-description">
+                        {{ item.description }}
+                    </div>
+
+                    <div class="d-grid gap-2 mt-4">
+                        {% if is_seller %}
+                            <button
+                                type="button"
+                                id="toggleItemStatus"
+                                class="btn btn-outline-warning"
+                            >
+                                {{ "거래완료 해제" if item.status == "done" else "거래완료 처리" }}
+                            </button>
+
+                            <form
+                                action="/items/{{ item._id }}/delete"
+                                method="post"
+                                class="d-grid"
+                            >
+                                <button
+                                    type="submit"
+                                    class="btn btn-outline-danger"
+                                >
+                                    게시글 삭제
+                                </button>
+                            </form>
+                        {% elif item.status == "done" %}
+                            <button
+                                type="button"
+                                class="btn btn-secondary"
+                                disabled
+                            >
+                                거래가 완료된 물품입니다
+                            </button>
+                        {% else %}
+                            <a
+                                href="/items/{{ item._id }}/chat"
+                                class="btn btn-success btn-lg"
+                            >
+                                채팅 바로가기
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}
+
+{% block scripts %}
+    <script src="{{ url_for('static', filename='js/item.js') }}">
+    </script>
+{% endblock %}
