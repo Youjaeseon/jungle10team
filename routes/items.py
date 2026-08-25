@@ -101,3 +101,11 @@ def feed():
         total_pages=total_pages,
         type=None,
     )
+
+#==========================================================================
+#거래 글 작성 화면(GET)
+#==========================================================================
+@items_bp.route("/items/new")
+@login_required
+def new_item():
+    return render_template("item_write.html")
