@@ -186,3 +186,15 @@ def enter_chat(item_id):
          "seller_id": item["seller_id"],
          "created_at": datetime.now(timezone.utc),
       })
+
+      room_id = result.inserted_id
+
+   else:
+      room_id = room["_id"]
+
+   return redirect(f"/chats/{room_id}")
+
+# =========================================================
+# 채팅방 페이지(GET)
+# =========================================================
+
