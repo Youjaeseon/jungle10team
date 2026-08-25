@@ -70,6 +70,7 @@ def home():
 
 
 @app.get("/items/<item_id>")
+@login_required
 def item_detail(item_id):
     """백엔드 연동 전 공식 물품·판매자 컨텍스트를 확인한다."""
     sample_item = {
@@ -88,12 +89,14 @@ def item_detail(item_id):
 
 
 @app.get("/items/new")
+@login_required
 def item_write():
     """백엔드 연동 전 거래 글 작성 UI를 확인한다."""
     return render_template("item_write.html")
 
 
 @app.get("/chats")
+@login_required
 def chat_list():
     """조인 결과를 템플릿용 뷰 모델로 가공한 채팅 목록 예시."""
     sample_chat_rooms = [
@@ -126,6 +129,7 @@ def chat_list():
 
 
 @app.get("/chats/<room_id>")
+@login_required
 def chat_room(room_id):
     """공식 room·message 계약으로 1:1 채팅 UI를 확인한다."""
     sample_room = {
