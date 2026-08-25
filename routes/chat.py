@@ -197,4 +197,19 @@ def enter_chat(item_id):
 # =========================================================
 # 채팅방 페이지(GET)
 # =========================================================
+@chat_bp.route("/chats/<room_id>")
+@login_required
+def chat_room(room_id):
+   room_oid = _to_object_id(room_id)
 
+   if not room_oid:
+      return "존재하지 않는 채팅방입니다.",404
+
+   room = db.rooms.find_one({"_id": room_oid})
+
+   if not room:
+      return "존재하지 않는 채팅방입니다.",404
+
+   user_id = g.user["_id"]
+
+   #
