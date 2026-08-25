@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}회원가입 · 정글장터{% endblock %}
+
+{% block content %}
+<div class="mx-auto" style="max-width: 400px;">
+  <h1 class="h4 mb-3">회원가입</h1>
+
+  {# error 가 있을 때만 그린다. 없으면 이 블록 전체가 HTML 에 나타나지 않는다. #}
+  {% if error %}
+    <div class="alert alert-danger py-2">{{ error }}</div>
+  {% endif %}
+
+  <form method="post" action="/signup">
+    <div class="mb-3">
+      <label class="form-label" for="username">아이디</label>
+      {# value 를 되살려서, 실패해도 처음부터 다시 치지 않게 한다.
+         username 이 없는 첫 방문에서는 Jinja 가 빈 문자열로 그린다. #}
+      <input class="form-control" id="username" name="username" value="{{ username or '' }}" required>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label" for="password">비밀번호</label>
+      <input class="form-control" id="password" name="password" type="password" required>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label" for="name">이름</label>
+      <input class="form-control" id="name" name="name" value="{{ name or '' }}" required>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label" for="lab">소속</label>
+      <select class="form-select" id="lab" name="lab" required>
+        <option value="" disabled selected>선택해 주세요</option>
+        {% for l in labs %}
+          <option value="{{ l }}">{{ l }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <button class="btn btn-primary w-100" type="submit">가입하기</button>
+  </form>
+
+  <p class="text-center mt-3 mb-0">
+    이미 계정이 있나요? <a href="/login">로그인</a>
+  </p>
+</div>
+{% endblock %}
