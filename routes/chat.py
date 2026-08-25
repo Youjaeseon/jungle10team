@@ -138,3 +138,39 @@ def chat_list():
             구매와 판매 채팅을 각각 넘긴다.
             """
       return render_template("chat_list.html", selling_rooms=selling_rooms, buying_rooms=buying_rooms)
+
+# =========================================================
+# 채팅 입구(GET)
+# 구매자:
+#   (상품, 구매자) 조합의 기존 방 조회
+#   없으면 새 방 생성
+# 판매자:
+#   해당 상품의 가장 오래된 첫 번째 방으로 이동
+#   방이 하나도 없으면 상품 상세로 복귀
+# =========================================================
+@chat_bp.route("/chat/<item_id>/chat")
+@login_required
+def enter_chat(item_id):
+
+   item_oid = _to_object_id(item_id)
+
+   if not item_oid:
+      return "존재하지 않거나 삭제된 상품입니다.",404
+
+   item = db.items.find_one({"_id": item_oid})
+
+   if not item:
+      return "존재하지 않거나 삭제된 상품입니다.",404
+
+   user_id = g.user["_id"]
+
+   #판매자 본인이 누를 경우
+   if item["seller_id"] == user_id:
+
+      room = db.rooms.find_one({"item_id": item_oid}, sort=[("created_at", 1)])
+
+      if not room:
+         flash("아직 문의가 없습니다.")
+         return redirect(f"/item/{item_id}")
+
+      return redirect(f"/chats/{room['_id']}")
