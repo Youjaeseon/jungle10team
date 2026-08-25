@@ -5,6 +5,7 @@
 """
 from flask import Flask, render_template
 
+from auth_util import login_required
 from routes.auth import bp as auth_bp
 
 app = Flask(__name__)
@@ -12,6 +13,7 @@ app.register_blueprint(auth_bp)   # [진근] /signup /login /logout
 
 
 @app.get("/")
+@login_required
 def home():
     # TODO: [재성] routes/items.py 의 Blueprint 로 옮긴다
     return render_template("feed.html")
