@@ -174,3 +174,15 @@ def enter_chat(item_id):
          return redirect(f"/item/{item_id}")
 
       return redirect(f"/chats/{room['_id']}")
+
+   #구매자
+   room = db.rooms.find_one({"item_id": item_oid, "buyer_id": user_id})
+
+   #없으면 생성
+   if not room:
+      result = db.rooms.insert_one({
+         "item_id": item_oid,
+         "buyer_id": user_id,
+         "seller_id": item["seller_id"],
+         "created_at": datetime.now(timezone.utc),
+      })
