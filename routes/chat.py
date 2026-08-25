@@ -17,8 +17,7 @@ socketio = SocketIO()
 # Socket 접속 상태 관리
 # 브라우저 탭/재접속 고려
 # ex) 같은 사용자가 같은 방에 여러개의 연결을 하는것을 방지하기 위해 연결 개수를 따로 센다.
-
-_socket_connetions = {}
+_socket_connections = {}
 
 # 현재 연결 갯수 ex) 2개의 탭을 사용할 경우 하나만 껐을때 2->0이 아니라 2->1
 _presence_counts = defaultdict(int)
@@ -92,7 +91,7 @@ def _get_room_messages(room_id):
 def chat_list():
    user_id = g.user["_id"]
 
-   room = list(
+   rooms = list(
    db.rooms.find({
      "$or": [
          {"seller_id": user_id},
@@ -120,3 +119,22 @@ def chat_list():
             room_type = "buying"
 
       peer = db.users.find_one({"_id": peer_id})
+
+      #마지막 메세지
+      last_message = db.message.find_one({"room_id": room["_id"]}, sort=[("created_at", -1)])
+
+      room_data = {
+         "room" : room,
+         "item" : item,
+         "peer" : peer,
+         "last_message" : last_message,
+      }
+
+      if room_type == "selling":
+            selling_rooms.append(room_data)
+      else:
+            buying_rooms.append(room_data)
+            """
+            구매와 판매 채팅을 각각 넘긴다.
+            """
+      return render_template("chat_list.html", selling_rooms=selling_rooms, buying_rooms=buying_rooms)
