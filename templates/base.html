@@ -20,7 +20,6 @@
         <a href="/chats" class="btn">💬</a>
       </div>
     </nav>
-    {% endif %}
     <div class="offcanvas offcanvas-start" id="sideMenu">
       <div class="offcanvas-header">
         <h5>메뉴</h5>
@@ -34,6 +33,7 @@
         <a href="/logout" class="card text-decoration-none"><div class="card-body">로그아웃</div></a>
       </div>
     </div>
+    {% endif %}
 
 	<main class="container py-3">
 	  {% block content %}{% endblock %}
