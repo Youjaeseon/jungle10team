@@ -1,0 +1,172 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8">
+<title>아키텍처</title>
+<link rel="stylesheet" href="_slide.css">
+<style>
+.legend{margin-left:auto;display:flex;gap:18px;font-size:12.5px;color:var(--ink-2);align-items:center}
+.legend i{display:inline-block;width:26px;height:0;border-top:3px solid;vertical-align:middle;margin-right:6px}
+
+.stage{flex:1;display:grid;grid-template-columns:300px 156px 410px 136px 222px;
+       align-items:stretch;margin-top:20px;gap:0}
+.stage > div{display:flex;flex-direction:column;min-height:0}
+.stage > div > .panel,.stage > div > .ec2{flex:1;display:flex;flex-direction:column}
+
+.col-label{font-size:12px;color:var(--ink-3);letter-spacing:.06em;margin-bottom:8px;font-weight:700}
+
+.panel{border:2px solid var(--line);border-radius:12px;background:var(--box);padding:16px 16px 14px}
+.panel > .nm{font-size:21px;font-weight:700;margin-bottom:2px}
+.panel > .role{font-size:13px;color:var(--ink-2);line-height:1.4}
+
+.unit{border:1.5px solid var(--soft);border-radius:9px;background:var(--box);padding:12px 13px;margin-top:12px}
+.unit .nm{font-size:16px;font-weight:700}
+.unit .role{font-size:12.8px;color:var(--ink-2);margin-top:3px;line-height:1.45}
+
+.ec2{border:2px solid var(--warm-line);border-radius:14px;background:var(--warm);padding:14px 16px 16px}
+.ec2 > .nm{font-size:21px;font-weight:700;text-align:center}
+.ec2 > .cap{font-size:12px;color:#8a6d24;text-align:center;margin-bottom:10px}
+
+.branch{margin-top:auto;padding-top:12px;padding-left:14px;border-left:3px solid var(--soft)}
+.branch .row{display:flex;gap:8px;align-items:flex-start;margin-top:8px}
+.branch .row:first-child{margin-top:0}
+.branch .dot{flex:none;width:9px;height:9px;border-radius:50%;margin-top:5px}
+.branch .txt{font-size:13px;line-height:1.4}
+.branch .txt b{font-size:14px}
+.branch .txt span{color:var(--ink-2)}
+
+.flow{display:flex;flex-direction:column;justify-content:center;gap:40px;padding:0 6px}
+.panel > .unit:first-of-type{margin-top:auto}
+.panel > .unit:last-of-type{margin-bottom:auto}
+.arrow .lbl{font-size:13px;font-weight:700;margin-bottom:3px;text-align:center}
+.arrow .url{font-size:11px;color:var(--ink-2);text-align:center;margin-top:4px;line-height:1.35}
+.arrow svg{display:block;width:100%;height:16px}
+
+.db .coll{display:flex;flex-direction:column;gap:8px;margin-top:auto;padding-top:12px}
+.db .coll span{display:flex;flex-direction:column;gap:2px}
+.db .coll b{font-size:13.5px;color:var(--ink)}
+.db .coll em{font-style:normal;font-size:11.5px;color:var(--ink-2)}
+.db .note{font-size:11.5px;color:var(--ink-3);margin-top:12px;line-height:1.4}
+
+.deploy{flex:none;margin-top:20px;border-top:1.5px dashed var(--soft);padding-top:14px;
+        display:flex;align-items:center;gap:14px;font-size:12.5px;color:var(--ink-2)}
+.deploy .tag{font-size:11px;font-weight:700;color:var(--ink-3);letter-spacing:.06em}
+.deploy .node{border:1.5px solid var(--soft);border-radius:7px;padding:4px 12px;color:var(--ink);font-weight:700;background:var(--box)}
+</style></head><body>
+<div class="slide">
+
+  <div class="slide-head">
+    <h1>아키텍처</h1>
+    <div class="sub">요청 한 건이 흐르는 길 — 브라우저 → Flask → MongoDB</div>
+    <div class="legend">
+      <span><i style="border-color:var(--ssr)"></i>① 화면 전환 (SSR)</span>
+      <span><i style="border-color:var(--ajax)"></i>② 제자리 갱신 (AJAX)</span>
+    </div>
+  </div>
+
+  <div class="stage">
+
+    <!-- 1열: 브라우저 -->
+    <div>
+      <div class="col-label">클라이언트</div>
+      <div class="panel">
+        <div class="nm">브라우저</div>
+        <div class="role">사용자 PC. 서버가 완성해서 보낸 HTML을 그대로 그린다.</div>
+        <div class="unit">
+          <div class="nm">Bootstrap 5</div>
+          <div class="role">CDN 두 줄. CSS 클래스만으로 레이아웃과 컴포넌트를 만든다.</div>
+        </div>
+        <div class="unit">
+          <div class="nm">poll.js</div>
+          <div class="role">3초마다 fetch를 보내 채팅 영역을 통째로 교체한다.</div>
+        </div>
+        <div class="unit">
+          <div class="nm">JWT 쿠키 (httpOnly)</div>
+          <div class="role">브라우저가 모든 요청에 자동으로 실어 보낸다. JS는 건드리지 못한다.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2열: 요청 화살표 -->
+    <div class="flow">
+      <div class="arrow">
+        <div class="lbl" style="color:var(--ssr)">① 페이지 이동</div>
+        <svg viewBox="0 0 140 16"><defs><marker id="ar" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="var(--ssr)"/></marker></defs>
+          <line x1="2" y1="8" x2="128" y2="8" stroke="var(--ssr)" stroke-width="3" marker-end="url(#ar)"/></svg>
+        <div class="url mono">GET /items/42<br>→ 302 /chats/&lt;id&gt;</div>
+      </div>
+      <div class="arrow">
+        <div class="lbl" style="color:var(--ajax)">② 제자리 갱신</div>
+        <svg viewBox="0 0 140 16"><defs><marker id="ag" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="var(--ajax)"/></marker></defs>
+          <line x1="2" y1="8" x2="128" y2="8" stroke="var(--ajax)" stroke-width="3" marker-end="url(#ag)"/></svg>
+        <div class="url mono">GET /api/rooms/&lt;id&gt;/messages<br>POST /api/items/&lt;id&gt;/done</div>
+      </div>
+    </div>
+
+    <!-- 3열: EC2 -->
+    <div>
+      <div class="col-label" style="text-align:center">클라우드 컴퓨팅</div>
+      <div class="ec2">
+        <div class="nm">Amazon EC2</div>
+        <div class="cap">Ubuntu 한 대. 서버는 이 안에서만 돈다.</div>
+
+        <div class="unit" style="border-color:var(--warm-line)">
+          <div class="nm">Flask <span style="font-weight:400;font-size:12px;color:var(--ink-2)">app.py</span></div>
+          <div class="role">URL을 파이썬 함수에 연결한다. Blueprint 3개로 갈라 놓는다 —
+            <span class="mono">auth.py · items.py · chat.py</span></div>
+        </div>
+
+        <div class="unit" style="border-color:var(--warm-line)">
+          <div class="nm">@login_required <span style="font-weight:400;font-size:12px;color:var(--ink-2)">auth_util.py</span></div>
+          <div class="role">쿠키의 JWT를 검증하고 g.user를 채운다. 모든 라우트가 이 관문을 지난다.</div>
+        </div>
+
+        <div class="branch">
+          <div class="row">
+            <span class="dot" style="background:var(--ssr)"></span>
+            <span class="txt"><b>Jinja2</b> — <span>HTML을 서버에서 완성해 통째로 반환한다.</span><br>
+              <span class="mono" style="font-size:11px">render_template("chat_room.html")</span></span>
+          </div>
+          <div class="row">
+            <span class="dot" style="background:var(--ajax)"></span>
+            <span class="txt"><b>jsonify</b> — <span>파이썬 dict를 JSON으로 반환한다. 주소는 그대로.</span><br>
+              <span class="mono" style="font-size:11px">jsonify(messages)</span></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4열: DB 화살표 -->
+    <div class="flow">
+      <div class="arrow">
+        <div class="lbl" style="color:var(--ink-2)">pymongo</div>
+        <svg viewBox="0 0 120 16"><defs><marker id="ad" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="var(--line)"/></marker></defs>
+          <line x1="2" y1="8" x2="108" y2="8" stroke="var(--line)" stroke-width="3" marker-end="url(#ad)"/></svg>
+        <div class="url">파이썬 dict를<br>그대로 문서로 저장</div>
+      </div>
+    </div>
+
+    <!-- 5열: MongoDB -->
+    <div>
+      <div class="col-label">데이터베이스</div>
+      <div class="panel db">
+        <div class="nm">MongoDB</div>
+        <div class="role">스키마 선언이 없다. 컬렉션 4개로 끝난다.</div>
+        <div class="coll">
+          <span><b class="mono">users</b><em>계정 · 비밀번호 해시</em></span>
+          <span><b class="mono">items</b><em>거래 글. 상태의 주인</em></span>
+          <span><b class="mono">rooms</b><em>1:1 방. 글×구매자당 1개</em></span>
+          <span><b class="mono">messages</b><em>채팅 한 줄씩</em></span>
+        </div>
+        <div class="note">인덱스는 <span class="mono">users.username</span> 유니크 하나로 시작한다.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="deploy">
+    <span class="tag">배포</span>
+    <span class="node">GitHub</span>
+    <span>—— <span class="mono">git pull</span> ——▶</span>
+    <span class="node">EC2</span>
+    <span>빌드 도구 없이 소스를 당겨 <span class="mono">python app.py</span>로 띄운다.</span>
+  </div>
+
+</div></body></html>

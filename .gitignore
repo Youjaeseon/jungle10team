@@ -15,3 +15,10 @@ static/uploads/*
 .vscode/
 .idea/
 .DS_Store
+
+# personal agent instructions (not shared with the team)
+CLAUDE.md
+
+# 발표용 캔버스 빌드 산출물 (bodies/ + _style.css 로 언제든 다시 만든다)
+docs/wireframe/canvas/_probe/
+docs/wireframe/canvas/krafton-carrot-wireframe.html

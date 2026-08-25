@@ -1,0 +1,28 @@
+/* 공통 슬라이드 스타일 — 고딕체(Noto Sans CJK KR) 기준 */
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --ground:#faf7f0;      /* 기존 덱과 같은 크림 배경 */
+  --ink:#1f1f1f;
+  --ink-2:#6b6b6b;
+  --ink-3:#9a9a9a;
+  --line:#2b2b2b;
+  --soft:#d8d3c8;
+  --box:#ffffff;
+  --ssr:#c1121f;         /* 빨강 = 화면 전환(SSR) */
+  --ajax:#1b7f4b;        /* 초록 = 제자리 갱신(AJAX) */
+  --warm:#fdf0cf;        /* EC2 박스 배경 */
+  --warm-line:#e0be6a;
+}
+html,body{width:1280px;height:760px}
+body{
+  background:var(--ground);
+  color:var(--ink);
+  font-family:"Noto Sans CJK KR","NanumSquare Neo","Noto Sans KR",sans-serif;
+  font-size:14px;line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+}
+.slide{width:1280px;height:760px;padding:40px 48px;display:flex;flex-direction:column}
+.slide-head{display:flex;align-items:baseline;gap:16px;flex:none}
+.slide-head h1{font-size:30px;font-weight:700;letter-spacing:-.02em}
+.slide-head .sub{font-size:14px;color:var(--ink-2)}
+.mono{font-family:"D2Coding","Noto Sans Mono CJK KR",monospace}
