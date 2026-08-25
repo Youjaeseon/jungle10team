@@ -109,3 +109,25 @@ def feed():
 @login_required
 def new_item():
     return render_template("item_write.html")
+
+#=========================================================================
+#거래 글 등록(POST)
+#=========================================================================
+@items_bp.route("/items", methods=["POST"])
+@login_required
+def create_item():
+    title = request.form.get("title", "").strip() #strip()로 공백 제거
+    description = request.form.get("description", "").strip()
+    item_type = request.form.get("item_type", "").strip()
+    price = request.form.get("price", "").strip()
+    want_raw = request.form.get("want", "").strip()
+    phone_file = request.files.get("phone")
+
+    #필수 입력 확인
+    if not title:
+        flash("제목을 입력해주세요.")
+        return redirect("/items/new")
+
+    if not description:
+        flash("설명을 입력해주세요.")
+        return redirect("/items/new")
