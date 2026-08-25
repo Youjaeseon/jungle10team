@@ -80,9 +80,13 @@ def _get_socket_user():
 
     return db.users.find_one({"_id": user_oid})
 
+#채팅방 메세지 조회
+def _get_room_messages(room_id):
+    return f"chat: {room_id}"
 
-
-   
+#==========================================================================
+# 채팅목록
+#==========================================================================
 
 @chat_bp.route('/items/<item_id>')
 @login_required
