@@ -1,7 +1,7 @@
 # Jinja 템플릿 사용법 — 크래프톤 당근
 
 > 각자 맡은 페이지 템플릿을 쓰기 전에 한 번 읽는 문서. 15분이면 충분하다. (v6 기준 —
-> 템플릿 파일은 A와 B가 쓰고, C는 라우트에서 컨텍스트 변수를 넘기는 쪽이다.)
+> 템플릿 파일은 진근과 래혁이 쓰고, 재성은 라우트에서 컨텍스트 변수를 넘기는 쪽이다.)
 > 관련 문서: 디렉토리·담당 배분은 `ARCHITECTURE.md`, 라우트 계약은 `API.md`,
 > Bootstrap 클래스는 `BOOTSTRAP.md`.
 
@@ -126,21 +126,22 @@ def feed():
 ⚠️ 단, `bootstrap.bundle.min.js`(bundle 버전)를 넣어야 동작한다. bundle이 아닌 파일을 넣으면
 offcanvas가 **에러 없이 조용히 안 열린다.** 제일 흔한 삽질이다.
 
-> **이 두 덩어리는 `base.html`에 딱 한 번만 등장한다.** B·C는 navbar도 offcanvas도
+> **이 두 덩어리는 `base.html`에 딱 한 번만 등장한다.** 래혁·재성은 navbar도 offcanvas도
 > 자기 파일에 쓰지 않는다. 물려받으면 저절로 화면에 있다.
 
 ## 4. base.html 상속 — 우리 팀의 계약 (여기가 제일 중요)
 
-`base.html`(담당 A)이 `<html>` · `<head>` · navbar · offcanvas · Bootstrap CDN을 전부 들고
+`base.html`(담당 진근)이 `<html>` · `<head>` · navbar · offcanvas · Bootstrap CDN을 전부 들고
 있고, 그 안에 **구멍(block)** 세 개를 뚫어 둔다. 나머지 템플릿은 그 구멍만 채운다.
 
 ### 규칙 3줄
 
 1. 모든 템플릿은 `{% extends "base.html" %}`로 **첫 줄을** 시작한다.
 2. 쓸 수 있는 block은 **`title` · `content` · `scripts` 세 개뿐**이며, **이름은 고정**이다.
-   이름을 바꾸거나 새로 만들면 다른 사람 파일이 같이 깨진다. 필요하면 A에게 말한다.
+   이름을 바꾸거나 새로 만들면 다른 사람 파일이 같이 깨진다. 필요하면 진근에게 말한다.
 3. **커스텀 CSS를 쓰지 않는다.** Bootstrap 유틸리티 클래스만 쓴다.
-   CSS의 유일한 주인은 `base.html`이다 (`BOOTSTRAP.md` § 3).
+   CSS의 유일한 주인은 `base.html`이다 — `.card-done` 흑백 한 줄도 base.html에 있다
+   (`BOOTSTRAP.md` § 2·§ 3).
 
 ### 복붙용 시작 골격
 
@@ -171,18 +172,18 @@ offcanvas가 **에러 없이 조용히 안 열린다.** 제일 흔한 삽질이�
 페이지에만 필요하다. 이 구멍이 없으면 각자 `base.html`을 열어서 `<script>` 줄을 추가하게 되고,
 "한 사람 = 파일 하나"라는 충돌 격리가 그 순간 깨진다.
 
-> **`base.html`은 A만 수정한다.** 헤더·사이드바·전역 CSS에 손댈 일이 생기면 직접 고치지 말고
-> A에게 말한다. 셋이 같은 파일을 고치면 merge 충돌이 난다.
+> **`base.html`은 진근만 수정한다.** 헤더·사이드바·전역 CSS에 손댈 일이 생기면 직접 고치지
+> 말고 진근에게 말한다. 셋이 같은 파일을 고치면 merge 충돌이 난다.
 
 ## 5. 자주 쓰게 될 패턴 6개
 
-> 각 패턴 제목 옆의 **[A][B][C]** 는 주로 누가 쓰게 되는지다. 표시가 없는 사람도
-> 읽어는 두자. 남의 코드를 볼 일이 생긴다.
+> 각 패턴 제목 옆의 이름은 주로 누가 쓰게 되는지다. 표시가 없는 사람도 읽어는 두자.
+> 남의 코드를 볼 일이 생긴다.
 
-### 5-1. 반복 — 목록을 화면에 뿌린다 **[A][B][C] 전원**
+### 5-1. 반복 — 목록을 화면에 뿌린다 **[진근][래혁]**
 
 MongoDB에서 꺼낸 리스트를 카드 여러 장으로 펼치는, 가장 많이 쓸 패턴이다.
-B는 피드 카드와 채팅 메시지 목록에, A는 거래내역 목록에 쓴다.
+래혁은 피드 카드와 채팅 메시지 목록에, 진근은 거래내역·검색 결과 목록에 쓴다.
 
 ```html
 {# items는 라우트에서 render_template("feed.html", items=items)로 넘겨준 리스트 #}
@@ -203,10 +204,10 @@ B는 피드 카드와 채팅 메시지 목록에, A는 거래내역 목록에 �
 {% endfor %}
 ```
 
-### 5-2. 조건 — 사람에 따라 버튼을 보이거나 감춘다 **[B] 주로, [A] 일부**
+### 5-2. 조건 — 사람에 따라 버튼을 보이거나 감춘다 **[래혁] 주로, [진근] 일부**
 
-B의 `item_detail.html`에서 거래완료 토글과 삭제 버튼은 판매자에게만 보여야 한다.
-A는 로그인 여부에 따른 navbar 표시에 같은 패턴을 쓴다.
+래혁의 `item_detail.html`에서 거래완료 토글과 삭제 버튼은 판매자에게만 보여야 한다.
+진근은 로그인 여부에 따른 navbar 표시에 같은 패턴을 쓴다.
 
 ```html
 {# g.user는 @login_required 데코레이터가 넣어 준 "지금 로그인한 사람" 문서다
@@ -227,10 +228,10 @@ A는 로그인 여부에 따른 navbar 표시에 같은 패턴을 쓴다.
 > 같은 검사를 반복하고 아니면 `403 {"error": "not_seller"}`를 돌려준다
 > (`ARCHITECTURE.md` § 4, `API.md` § 2). 시연에서 지적당하기 딱 좋은 지점이다.
 
-### 5-3. 정적 파일 경로 — JS와 업로드 사진을 불러온다 **[B]**
+### 5-3. 정적 파일 경로 — JS와 업로드 사진을 불러온다 **[래혁]**
 
 `static/` 폴더 안의 파일(내가 쓴 JS, 사용자가 올린 사진)을 가리킬 때 쓴다.
-B가 `item.js`·`ws.js`와 업로드 사진에 쓴다.
+래혁이 `item.js`·`ws.js`와 업로드 사진에 쓴다.
 
 ```html
 {# url_for는 Flask가 제공하는 함수다. "static 폴더의 js/ws.js를 가리키는 주소를 만들어라"
@@ -246,13 +247,13 @@ B가 `item.js`·`ws.js`와 업로드 사진에 쓴다.
 `/static/js/ws.js`라고 직접 써도 지금은 동작한다. 다만 `url_for`가 Flask 표준이고
 나중에 경로가 바뀌어도 안 깨지므로 이걸로 통일한다.
 
-### 5-4. 값이 없을 수 있는 필드 — 화면에 `None`이 찍히는 것을 막는다 **[B] 필수**
+### 5-4. 값이 없을 수 있는 필드 — 화면에 `None`이 찍히는 것을 막는다 **[래혁] 필수**
 
 `items` 스키마에서 `price` · `want` · `photo`는 **`None`일 수 있다**
 (`ARCHITECTURE.md` § 3). 나눔 글에는 가격이 없고, 판매 글에는 원하는 물건이 없기 때문이다.
 아무 처리 없이 출력하면 화면에 글자 그대로 **`None`** 이 찍힌다.
 
-B는 작성 폼 · 피드 · `item_detail.html` · `chat_room.html` 상단 물건 요약에서
+래혁은 작성 폼 · 피드 · `item_detail.html` · `chat_room.html` 상단 물건 요약에서
 전부 같은 필드를 읽는다.
 
 ```html
@@ -275,9 +276,9 @@ B는 작성 폼 · 피드 · `item_detail.html` · `chat_room.html` 상단 물�
 {% endif %}
 ```
 
-### 5-5. 폼 재렌더 — 실패했을 때 입력값을 되살린다 **[A] 주로, [B] 일부**
+### 5-5. 폼 재렌더 — 실패했을 때 입력값을 되살린다 **[진근] 주로, [래혁] 일부**
 
-A의 가입 폼에서 아이디가 중복이면 `API.md` § 1대로 폼을 다시 그린다. 이때 아무 처리도
+진근의 가입 폼에서 아이디가 중복이면 `API.md` § 1대로 폼을 다시 그린다. 이때 아무 처리도
 안 하면 사용자가 적은 내용이 전부 날아가서, 처음부터 다시 타이핑하게 된다.
 
 라우트 쪽:
@@ -299,10 +300,10 @@ if db.users.find_one({"username": username}):
 
 > 비밀번호 입력칸에는 이 처리를 하지 않는다. 비밀번호를 HTML에 되돌려 심는 것은 안 좋다.
 
-### 5-6. 상태 뱃지 — 세 화면이 똑같은 코드를 쓴다 **[A][B][C] 전원**
+### 5-6. 상태 뱃지 — 세 화면이 똑같은 코드를 쓴다 **[진근][래혁]**
 
-`items.status`("selling" 또는 "done")를 색깔 있는 뱃지로 그린다. 피드·채팅 화면(둘 다 B) ·
-거래내역(A)에 전부 나오는데, **같은 모양으로 보여야 하므로 코드를 그대로 복사해 쓴다.**
+`items.status`("selling" 또는 "done")를 색깔 있는 뱃지로 그린다. 피드·채팅 화면(둘 다 래혁) ·
+거래내역(진근)에 전부 나오는데, **같은 모양으로 보여야 하므로 코드를 그대로 복사해 쓴다.**
 done 카드에는 뱃지에 더해 사진 흑백 처리가 붙는다 (`BOOTSTRAP.md` § 2).
 
 ```html
@@ -344,9 +345,9 @@ done 카드에는 뱃지에 더해 사진 흑백 처리가 붙는다 (`BOOTSTRAP
 
 | 담당 | 만들 것 | 비고 |
 |---|---|---|
-| **A** | `base.html` → `login.html` `signup.html` `history.html` | base.html이 1일차 오전 크리티컬 패스. navbar·offcanvas의 유일한 주인 |
-| **B** | `feed.html` `item_write.html` `item_detail.html` → `chat_list.html` `chat_room.html` | 메인 화면 템플릿 전부. 5-1 반복 · 5-2 판매자 판별 · 5-4 None 처리가 핵심. `scripts` block에 `item.js`/`ws.js` |
-| **C** | 템플릿 없음 — `routes/items.py` `routes/chat.py` | `render_template()`에 넘기는 컨텍스트 변수 이름이 B와의 계약이다 (`ARCHITECTURE.md` § 6) |
+| **진근** | `base.html` → `login.html` `signup.html` `history.html` `search.html` | base.html이 1일차 오전 크리티컬 패스. navbar·offcanvas의 유일한 주인 |
+| **래혁** | `_item_card.html` `feed.html` `item_write.html` `item_detail.html` → `chat_list.html` `chat_room.html` | 메인 화면 템플릿 전부. 5-1 반복 · 5-2 판매자 판별 · 5-4 None 처리가 핵심. `scripts` block에 `item.js`/`ws.js` |
+| **재성** | 템플릿 없음 — `routes/items.py` `routes/chat.py` | `render_template()`에 넘기는 컨텍스트 변수 이름이 래혁과의 계약이다 (`ARCHITECTURE.md` § 6) |
 
-`base.html`이 나오기 전이라도 B·C는 `{% block content %}` 안쪽 마크업을 먼저 짜 두면 된다.
+`base.html`이 나오기 전이라도 래혁은 `{% block content %}` 안쪽 마크업을 먼저 짜 두면 된다.
 나중에 위아래 세 줄만 붙이면 그대로 붙는다.
