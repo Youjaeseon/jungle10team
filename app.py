@@ -10,7 +10,7 @@ app = Flask(__name__)
 
 @app.get("/")
 def home():
-    # TODO: [담당 B] routes/items.py 의 Blueprint 로 옮긴다
+    # TODO: [재성] routes/items.py 의 Blueprint 로 옮긴다
     return render_template("feed.html")
 
 if __name__ == "__main__":
