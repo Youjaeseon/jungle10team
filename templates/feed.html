@@ -33,28 +33,28 @@
 
         <div class="feed-filter d-flex flex-wrap gap-2 mb-4">
             <a
-                href="{{ url_for('home', page=1) }}"
+                href="{{ url_for('items.feed', page=1) }}"
                 class="btn {{ 'btn-success' if not selected_type else 'btn-outline-success' }}"
             >
                 전체
             </a>
 
             <a
-                href="{{ url_for('home', page=1, type='sale') }}"
+                href="{{ url_for('items.feed', page=1, type='sale') }}"
                 class="btn {{ 'btn-primary' if selected_type == 'sale' else 'btn-outline-primary' }}"
             >
                 판매
             </a>
 
             <a
-                href="{{ url_for('home', page=1, type='free') }}"
+                href="{{ url_for('items.feed', page=1, type='free') }}"
                 class="btn {{ 'btn-success' if selected_type == 'free' else 'btn-outline-success' }}"
             >
                 나눔
             </a>
 
             <a
-                href="{{ url_for('home', page=1, type='swap') }}"
+                href="{{ url_for('items.feed', page=1, type='swap') }}"
                 class="btn {{ 'btn-warning' if selected_type == 'swap' else 'btn-outline-warning' }}"
             >
                 교환
@@ -85,7 +85,7 @@
                         <li class="page-item {{ 'active' if page_number == page }}">
                             <a
                                 class="page-link"
-                                href="{{ url_for('home', page=page_number, type=selected_type or None) }}"
+                                href="{{ url_for('items.feed', page=page_number, type=selected_type or None) }}"
                                 {% if page_number == page %}
                                     aria-current="page"
                                 {% endif %}
