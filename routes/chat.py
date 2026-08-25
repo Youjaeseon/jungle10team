@@ -85,5 +85,38 @@ def _get_room_messages(room_id):
     return f"chat: {room_id}"
 
 #==========================================================================
-# 채팅목록
+# 채팅목록 (GET)
 #==========================================================================
+@chat_bp.route("/chats")
+@login_required
+def chat_list():
+   user_id = g.user["_id"]
+
+   room = list(
+   db.rooms.find({
+     "$or": [
+         {"seller_id": user_id},
+         {"buyer_id": user_id}
+     ] 
+   }).sort("created_at", -1)
+   )
+
+   buying_rooms = []
+   selling_rooms = []
+
+   for room in rooms:
+      item = db.items.find_one({"_id": room["item_id"]})
+
+      # 없으면 제외
+      if not item:
+         continue
+
+      #상대방 찾기
+      if user_id == room["seller_id"]:
+         peer_id = room["buyer_id"]
+         room_type = "selling"
+      else:
+            peer_id = room["seller_id"]
+            room_type = "buying"
+
+      peer = db.users.find_one({"_id": peer_id})
