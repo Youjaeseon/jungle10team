@@ -153,3 +153,9 @@ def create_item():
         if price < 0:
             flash("가격은 0원 이상이어야 합니다.")
             return redirect("/items/new")
+
+    # 교환
+    elif item_type == "swap":
+        # 빈 문자열이면 None
+        # None은 화면에서 '아무거나'로 표현 예정
+        want = want_raw if want_raw else None
