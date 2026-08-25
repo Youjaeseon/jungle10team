@@ -131,3 +131,25 @@ def create_item():
     if not description:
         flash("설명을 입력해주세요.")
         return redirect("/items/new")
+
+    #거래 유형별 데이터 처리
+    price = None
+    want = None
+    price_raw = price  # 추가: 원래 입력값을 보관
+    want_raw = want_raw  # 추가: 원래 입력값을 보관
+
+    # 판매
+    if item_type == "sale":
+        if not price_raw:
+            flash("판매 가격을 입력해주세요.")
+            return redirect("/items/new")
+
+        try:
+            price = int(price_raw)
+        except ValueError:
+            flash("가격은 숫자로 입력해주세요.")
+            return redirect("/items/new")
+
+        if price < 0:
+            flash("가격은 0원 이상이어야 합니다.")
+            return redirect("/items/new")
