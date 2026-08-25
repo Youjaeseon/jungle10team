@@ -1,0 +1,245 @@
+{% extends "base.html" %}
+
+{% block styles %}
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/chat.css') }}"
+    >
+{% endblock %}
+{% block title %}
+    {{ room.partner.name }}님과의 채팅 | 정글장터
+{% endblock %}
+
+{% block content %}
+    <section
+        class="chat-room-page"
+        data-room-id="{{ room._id }}"
+        data-current-user-id="{{ current_user_id }}"
+        data-socket-enabled="{{ 'true' if socket_enabled else 'false' }}"
+    >
+        <header class="chat-room-header">
+            <a
+                href="/chats"
+                class="btn btn-sm btn-outline-secondary"
+                aria-label="채팅 목록으로 돌아가기"
+            >
+                &larr; 목록
+            </a>
+
+            <div
+                class="chat-partner-avatar chat-room-header-avatar"
+                aria-hidden="true"
+            >
+                {{ room.partner.initial }}
+            </div>
+
+            <div class="chat-room-header-info">
+                <h1 class="h5 fw-bold mb-0">
+                    {{ room.partner.name }}
+                </h1>
+
+                <small class="text-secondary">
+                    {{ room.partner.lab }}
+                </small>
+
+                <span
+                    id="peerPresence"
+                    class="badge text-bg-success ms-1 d-none"
+                >
+                    상대방이 보고 있어요
+                </span>
+            </div>
+
+            <span
+                id="chatItemStatus"
+                class="chat-status ms-auto {{ 'chat-status-completed' if room.item.status == 'done' else 'chat-status-available' }}"
+            >
+                {{ "거래 완료" if room.item.status == "done" else "판매 중" }}
+            </span>
+        </header>
+
+        <a
+            href="/items/{{ room.item._id }}"
+            class="chat-item-summary"
+        >
+            <div class="chat-item-thumbnail">
+                {% if room.item.photo %}
+                    <img
+                        src="{{ url_for('static', filename='uploads/' ~ room.item.photo) }}"
+                        alt="{{ room.item.title }}"
+                    >
+                {% else %}
+                    <span>
+                        물품 사진
+                    </span>
+                {% endif %}
+            </div>
+
+            <div class="chat-item-information">
+                <strong>
+                    {{ room.item.title }}
+                </strong>
+
+                {% if room.item.type == "sale" %}
+                    <span>
+                        {{ "{:,}원".format(room.item.price) }}
+                    </span>
+                {% elif room.item.type == "free" %}
+                    <span class="text-success">
+                        무료 나눔
+                    </span>
+                {% elif room.item.type == "swap" %}
+                    <span>
+                        원하는 물품: {{ room.item.want or "아무거나" }}
+                    </span>
+                {% endif %}
+            </div>
+
+            <span class="chat-item-arrow" aria-hidden="true">
+                &rsaquo;
+            </span>
+        </a>
+
+        <ol
+            id="messageList"
+            class="chat-message-list"
+            aria-label="{{ room.partner.name }}님과의 메시지"
+            aria-live="polite"
+        >
+            {% for message in messages %}
+                {% if message.date_label %}
+                    <li class="chat-date-divider">
+                        <span>
+                            {{ message.date_label }}
+                        </span>
+                    </li>
+                {% endif %}
+
+                {% if message.sender_id|string == current_user_id|string %}
+                    <li
+                        class="chat-message-row chat-message-row-mine"
+                        data-message-id="{{ message._id }}"
+                    >
+                        <div class="chat-message-mine">
+                            <time
+                                class="chat-message-time"
+                                datetime="{{ message.created_at }}"
+                            >
+                                {{ message.display_time }}
+                            </time>
+
+                            <div class="chat-message-bubble chat-message-bubble-mine">
+                                {{ message.text }}
+                            </div>
+                        </div>
+                    </li>
+                {% else %}
+                    <li
+                        class="chat-message-row chat-message-row-partner"
+                        data-message-id="{{ message._id }}"
+                    >
+                        <div
+                            class="chat-message-avatar"
+                            aria-hidden="true"
+                        >
+                            {{ room.partner.initial }}
+                        </div>
+
+                        <div>
+                            <div class="chat-message-sender">
+                                {{ message.name }}
+                                <small>{{ message.lab }}</small>
+                            </div>
+
+                            <div class="chat-message-partner">
+                                <div class="chat-message-bubble chat-message-bubble-partner">
+                                    {{ message.text }}
+                                </div>
+
+                                <time
+                                    class="chat-message-time"
+                                    datetime="{{ message.created_at }}"
+                                >
+                                    {{ message.display_time }}
+                                </time>
+                            </div>
+                        </div>
+                    </li>
+                {% endif %}
+            {% else %}
+                <li
+                    id="emptyMessageState"
+                    class="chat-message-empty"
+                >
+                    첫 메시지를 보내 거래 대화를 시작해 보세요.
+                </li>
+            {% endfor %}
+        </ol>
+
+        {% if is_seller and sibling_rooms %}
+            <nav
+                class="chat-room-pagination"
+                aria-label="구매자별 채팅방"
+            >
+                <ul class="pagination pagination-sm justify-content-center mb-0">
+                    {% for sibling_room in sibling_rooms %}
+                        <li class="page-item {{ 'active' if sibling_room._id|string == room._id|string }}">
+                            <a
+                                class="page-link"
+                                href="/chats/{{ sibling_room._id }}"
+                            >
+                                {{ loop.index }}
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </nav>
+        {% endif %}
+
+        <form
+            id="chatMessageForm"
+            class="chat-message-form"
+            autocomplete="off"
+        >
+            <label
+                for="chatMessageInput"
+                class="visually-hidden"
+            >
+                메시지 입력
+            </label>
+
+            <input
+                type="text"
+                id="chatMessageInput"
+                name="text"
+                class="form-control form-control-lg"
+                maxlength="500"
+                placeholder="메시지를 입력해 주세요"
+            >
+
+            <button
+                type="submit"
+                id="chatSendButton"
+                class="btn btn-success btn-lg"
+                disabled
+            >
+                전송
+            </button>
+        </form>
+
+        <div
+            id="chatStatusMessage"
+            class="visually-hidden"
+            aria-live="polite"
+        >
+        </div>
+    </section>
+{% endblock %}
+
+{% block scripts %}
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js">
+    </script>
+
+    <script src="{{ url_for('static', filename='js/ws.js') }}">
+    </script>
+{% endblock %}

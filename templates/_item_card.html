@@ -1,0 +1,64 @@
+<article class="card item-card h-100 {{ 'item-card-done' if item.status == 'done' }}">
+    <a
+        href="/items/{{ item._id }}"
+        class="text-decoration-none text-dark"
+    >
+        <div class="item-card-image-wrap">
+            {% if item.photo %}
+                <img
+                    src="{{ url_for('static', filename='uploads/' ~ item.photo) }}"
+                    alt="{{ item.title }}"
+                    class="item-card-image"
+                >
+            {% else %}
+                <div class="item-card-placeholder">
+                    물품 사진
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-start gap-2">
+                <h2 class="item-card-title h5 mb-0">
+                    {{ item.title }}
+                </h2>
+
+                <div class="d-flex flex-wrap justify-content-end gap-1">
+                    {% if item.type == "sale" %}
+                        <span class="badge bg-primary">
+                            판매
+                        </span>
+                    {% elif item.type == "free" %}
+                        <span class="badge bg-success">
+                            나눔
+                        </span>
+                    {% elif item.type == "swap" %}
+                        <span class="badge bg-warning text-dark">
+                            교환
+                        </span>
+                    {% endif %}
+
+                    {% if item.status == "done" %}
+                        <span class="badge text-bg-dark">
+                            완료
+                        </span>
+                    {% endif %}
+                </div>
+            </div>
+
+            {% if item.type == "sale" %}
+                <p class="item-card-price mt-3 mb-0 fw-bold">
+                    {{ "{:,}원".format(item.price) }}
+                </p>
+            {% elif item.type == "free" %}
+                <p class="item-card-price mt-3 mb-0 fw-bold text-success">
+                    무료 나눔
+                </p>
+            {% elif item.type == "swap" %}
+                <p class="item-card-price mt-3 mb-0 fw-bold">
+                    원하는 물품: {{ item.want or "아무거나" }}
+                </p>
+            {% endif %}
+        </div>
+    </a>
+</article>

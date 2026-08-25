@@ -1,0 +1,289 @@
+{% extends "base.html" %}
+
+{% block styles %}
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/item.css') }}"
+    >
+{% endblock %}
+
+{% block title %}
+    거래 글 작성 | 정글장터
+{% endblock %}
+
+{% block content %}
+    <section class="item-write-page">
+        <div class="d-flex align-items-center justify-content-between gap-3 mb-4">
+            <div>
+                <h1 class="h3 fw-bold mb-1">
+                    거래 글 작성
+                </h1>
+
+                <p class="text-secondary mb-0">
+                    거래할 물품의 정보를 입력해 주세요.
+                </p>
+            </div>
+
+            <a
+                href="/"
+                class="btn btn-outline-secondary"
+            >
+                취소
+            </a>
+        </div>
+
+        <form
+            id="itemWriteForm"
+            class="item-write-form"
+            action="/items"
+            method="post"
+            enctype="multipart/form-data"
+            novalidate
+        >
+            <div class="mb-4">
+                <label
+                    for="itemImage"
+                    class="form-label fw-bold"
+                >
+                    물품 사진
+                </label>
+
+                <div class="item-image-upload">
+                    <div
+                        id="imagePreview"
+                        class="item-image-preview"
+                    >
+                        <span id="imagePreviewText">
+                            사진을 선택해 주세요
+                        </span>
+
+                        <img
+                            id="imagePreviewFile"
+                            class="d-none"
+                            src=""
+                            alt="선택한 물품 사진 미리보기"
+                        >
+                    </div>
+
+                    <div>
+                        <input
+                            type="file"
+                            id="itemImage"
+                            name="photo"
+                            class="form-control"
+                            accept="image/jpeg,image/png,image/webp"
+                            required
+                        >
+
+                        <div class="form-text">
+                            JPG, PNG 또는 WEBP 이미지 한 장을 선택할 수 있습니다.
+                        </div>
+
+                        <div
+                            id="imageError"
+                            class="invalid-feedback"
+                        >
+                            물품 사진을 선택해 주세요.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <fieldset class="mb-4">
+                <legend class="form-label fw-bold">
+                    거래 유형
+                </legend>
+
+                <div class="item-type-selector">
+                    <input
+                        type="radio"
+                        class="btn-check"
+                        name="type"
+                        id="typeSale"
+                        value="sale"
+                        checked
+                    >
+
+                    <label
+                        class="btn btn-outline-primary"
+                        for="typeSale"
+                    >
+                        판매
+                    </label>
+
+                    <input
+                        type="radio"
+                        class="btn-check"
+                        name="type"
+                        id="typeFree"
+                        value="free"
+                    >
+
+                    <label
+                        class="btn btn-outline-success"
+                        for="typeFree"
+                    >
+                        나눔
+                    </label>
+
+                    <input
+                        type="radio"
+                        class="btn-check"
+                        name="type"
+                        id="typeSwap"
+                        value="swap"
+                    >
+
+                    <label
+                        class="btn btn-outline-warning"
+                        for="typeSwap"
+                    >
+                        교환
+                    </label>
+                </div>
+            </fieldset>
+
+            <div class="mb-4">
+                <label
+                    for="itemTitle"
+                    class="form-label fw-bold"
+                >
+                    제목
+                </label>
+
+                <input
+                    type="text"
+                    id="itemTitle"
+                    name="title"
+                    class="form-control form-control-lg"
+                    maxlength="60"
+                    placeholder="물품 제목을 입력해 주세요"
+                    required
+                >
+
+                <div class="invalid-feedback">
+                    제목을 입력해 주세요.
+                </div>
+            </div>
+
+            <div
+                id="priceField"
+                class="mb-4"
+            >
+                <label
+                    for="itemPrice"
+                    class="form-label fw-bold"
+                >
+                    가격
+                </label>
+
+                <div class="input-group input-group-lg">
+                    <input
+                        type="number"
+                        id="itemPrice"
+                        name="price"
+                        class="form-control"
+                        min="0"
+                        step="100"
+                        placeholder="0"
+                    >
+
+                    <span class="input-group-text">
+                        원
+                    </span>
+                </div>
+
+                <div class="form-text">
+                    판매 유형일 때만 입력합니다.
+                </div>
+            </div>
+
+            <div
+                id="wantedItemField"
+                class="mb-4 d-none"
+            >
+                <label
+                    for="wantedItem"
+                    class="form-label fw-bold"
+                >
+                    원하는 물품
+                </label>
+
+                <input
+                    type="text"
+                    id="wantedItem"
+                    name="want"
+                    class="form-control form-control-lg"
+                    maxlength="60"
+                    placeholder="교환하고 싶은 물품을 입력해 주세요"
+                >
+
+                <div class="form-check mt-2">
+                    <input
+                        type="checkbox"
+                        id="acceptAnything"
+                        class="form-check-input"
+                        value="true"
+                    >
+
+                    <label
+                        for="acceptAnything"
+                        class="form-check-label"
+                    >
+                        아무거나 제안받을게요
+                    </label>
+                </div>
+
+                <div class="form-text">
+                    교환 유형일 때만 입력합니다.
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <div class="d-flex justify-content-between gap-3">
+                    <label
+                        for="itemDescription"
+                        class="form-label fw-bold"
+                    >
+                        내용
+                    </label>
+
+                    <small class="text-secondary">
+                        <span id="descriptionCount">0</span>/1000
+                    </small>
+                </div>
+
+                <textarea
+                    id="itemDescription"
+                    name="description"
+                    class="form-control"
+                    rows="7"
+                    maxlength="1000"
+                    placeholder="물품 상태와 거래 장소 등을 자세히 작성해 주세요."
+                    required
+                ></textarea>
+
+                <div class="invalid-feedback">
+                    물품 내용을 입력해 주세요.
+                </div>
+            </div>
+
+            <div class="d-grid">
+                <button
+                    type="submit"
+                    id="itemSubmitButton"
+                    class="btn btn-success btn-lg"
+                    disabled
+                    title="다음 단계에서 등록 기능을 연결합니다."
+                >
+                    등록하기
+                </button>
+            </div>
+        </form>
+    </section>
+{% endblock %}
+
+{% block scripts %}
+    <script src="{{ url_for('static', filename='js/item.js') }}">
+    </script>
+{% endblock %}
