@@ -1,0 +1,81 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8">
+<title>와이어프레임 — 홈 거래 피드</title>
+<link rel="stylesheet" href="_slide.css">
+<style>
+.stage{flex:1;display:flex;gap:26px;margin-top:18px;min-height:0}
+.frames{flex:1;display:flex;gap:22px;align-items:flex-start;justify-content:center}
+.frame{display:flex;flex-direction:column;align-items:center;gap:7px}
+.shell{width:813px;height:551px;overflow:hidden;position:relative}
+.shell iframe{width:1180px;height:800px;border:0;position:absolute;top:0;left:0;
+              transform:scale(0.6887);transform-origin:0 0}
+.frame .cap{font-size:11.5px;color:var(--ink-2);font-family:"D2Coding","Noto Sans Mono CJK KR",monospace}
+.link{align-self:center;width:34px;height:0;border-top:3px solid var(--ssr);margin-top:-24px}
+
+.notes{width:240px;flex:none;display:flex;flex-direction:column;gap:12px;padding-top:2px}
+.notes h2{font-size:11.5px;font-weight:700;letter-spacing:.08em;color:var(--ink-3)}
+.note{display:flex;gap:9px;font-size:12.5px;line-height:1.5}
+.note .dot{flex:none;width:8px;height:8px;border-radius:50%;margin-top:5px}
+.note.ssr .dot{background:var(--ssr)}
+.note.ajax .dot{background:var(--ajax)}
+.note.gray .dot{background:var(--ink-3)}
+.note .tx{color:var(--ink)}
+.note.gray .tx{color:var(--ink-2)}
+.foot{flex:none;margin-top:14px;border-top:1.5px dashed var(--soft);padding-top:10px;
+      font-size:11.5px;color:var(--ink-3)}
+</style></head><body>
+<div class="slide">
+  <div class="slide-head">
+    <h1>와이어프레임 — 홈 거래 피드</h1>
+    <div class="sub">카드 한 장이 곧 물건 상세 입구다</div>
+    <div style="margin-left:auto;display:flex;gap:16px;font-size:12px;color:var(--ink-2);align-items:center">
+      <span><i style="display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--ssr);margin-right:6px"></i>화면 전환 (SSR)</span>
+      <span><i style="display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--ajax);margin-right:6px"></i>제자리 갱신 (AJAX)</span>
+    </div>
+  </div>
+
+  <div class="stage">
+    <div class="frames"><div class="frame"><div class="shell"><iframe src="../wireframe-v4-mvp.html" scrolling="no"></iframe></div><div class="cap">GET /</div></div></div>
+    <div class="notes">
+      <h2>구현 메모</h2>
+      <div class="note ssr"><span class="dot"></span><span class="tx">카드 클릭 = 물건 상세 화면으로 이동한다. 이 단계에서는 방을 만들지 않는다.</span></div>
+      <div class="note ssr"><span class="dot"></span><span class="tx">본인 글 카드도 똑같이 상세로 간다. 화면 템플릿은 구매자와 하나다.</span></div>
+      <div class="note gray"><span class="dot"></span><span class="tx">내 글을 모아 보는 자리는 사이드바의 거래내역(판매 탭)이다.</span></div>
+      <div class="note gray"><span class="dot"></span><span class="tx">그리드는 <span class='mono'>row-cols-1 row-cols-md-3</span> 한 줄이다. 3열↔1열 반응형이 여기서 끝난다.</span></div>
+      <div class="note gray"><span class="dot"></span><span class="tx">검색 · 필터 · 찜은 P2다. P0 시연에는 없어도 된다.</span></div>
+    </div>
+  </div>
+
+  <div class="foot">화면은 <span class="mono">docs/wireframe/wireframe-v4-mvp.html</span>을 그대로 실어 온 것이다 — 그 파일을 고치면 이 슬라이드도 따라 바뀐다.</div>
+</div>
+<script>
+var CFG = [{id:"home",burger:false}];
+document.querySelectorAll('iframe').forEach(function(f, i){
+  f.addEventListener('load', function(){
+    var d = f.contentDocument;
+    var st = d.createElement('style');
+    st.textContent = ".wrap{display:block !important;padding:0 !important}"
+      + ".sidepanel,.caption,.vwtoggle{display:none !important}"
+      + ".stagecol{gap:0 !important}"
+      + ".browser{max-width:none !important;width:100% !important;margin:0 !important}"
+      + ".anno,.notes li{font-family:'Noto Sans CJK KR','NanumSquare Neo',sans-serif !important;"
+      + "font-size:.8rem !important;line-height:1.45 !important}";
+    d.head.appendChild(st);
+    // 헤드리스 환경에 이모지 폰트가 없어 두부 글자가 나온다. SVG 아이콘으로 갈아 끼운다.
+    var brand = d.querySelector('.navbar .brandname');
+    if (brand) brand.innerHTML =
+      '<svg width="13" height="13" viewBox="0 0 16 16" style="vertical-align:-1px;margin-right:3px">'
+      + '<path d="M4 12 L11 5 L13 7 L6 14 Z" fill="#e8792b"/>'
+      + '<path d="M11 5 L12 2 M12 4 L15 3" stroke="#3a8a3a" stroke-width="1.4" fill="none"/></svg>'
+      + '크래프톤 당근';
+    var chat = d.querySelector('[aria-label="채팅"] span');
+    if (chat) chat.innerHTML =
+      '<svg width="15" height="15" viewBox="0 0 16 16"><path d="M2 3h12v8H7l-3.5 3V11H2z"'
+      + ' fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>';
+
+    var go = d.querySelector('[data-go=\"' + CFG[i].id + '\"]');
+    if (go) go.click();
+    if (CFG[i].burger) d.getElementById('burger').click();
+  });
+});
+</script>
+</body></html>

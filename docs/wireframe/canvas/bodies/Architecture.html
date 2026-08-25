@@ -1,0 +1,66 @@
+<div class="board">
+  <div style="display:flex;align-items:baseline;gap:18px">
+    <div class="btitle">아키텍처</div>
+    <div class="bsub">브라우저가 두 갈래로 묻고, Flask가 두 갈래로 답한다</div>
+    <div class="legend"><span><i class="i-red"></i>① 화면 전환 (SSR)</span><span><i class="i-green"></i>② 제자리 갱신 (AJAX)</span></div>
+  </div>
+
+  <div class="arch" style="display:flex;flex-direction:column;gap:30px;flex:1;min-height:0;justify-content:center">
+
+    <div class="band">
+      <div style="display:flex;align-items:baseline;gap:14px">
+        <div class="bandhead">브라우저</div>
+        <div class="bandsub">Jinja가 내려준 HTML · Bootstrap (CDN) · poll.js</div>
+      </div>
+    </div>
+
+    <div class="paths">
+      <div class="path">
+        <div class="varr red" style="height:auto"></div>
+        <div class="pathtx">
+          <div class="pathhead r">① 링크 · 폼 제출 — 주소가 바뀐다</div>
+          <div class="mono">GET /items/42<span style="color:#8a8a83"> · POST /items</span></div>
+        </div>
+      </div>
+      <div class="path">
+        <div class="varr green" style="height:auto"></div>
+        <div class="pathtx">
+          <div class="pathhead g">② fetch — 주소가 그대로다</div>
+          <div class="mono">GET /api/rooms/7/messages<span style="color:#8a8a83"> · 3초 폴링</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="band warm">
+      <div style="display:flex;align-items:baseline;gap:14px">
+        <div class="bandhead">Amazon EC2 — Flask</div>
+        <div class="bandsub">Blueprint 4개 · <span class="mono">@login_required</span>가 쿠키의 JWT를 푼다</div>
+      </div>
+      <div style="display:flex;gap:14px">
+        <div class="chipbox" style="flex:1;border-color:#d63030;color:#d63030">① <span class="mono" style="color:#d63030">render_template(...)</span> → HTML</div>
+        <div class="chipbox" style="flex:1;border-color:#1f8a4c;color:#1f8a4c">② <span class="mono" style="color:#1f8a4c">jsonify(...)</span> → JSON</div>
+      </div>
+    </div>
+
+    <div style="display:flex;align-items:center;gap:12px;flex:none;padding-left:34px">
+      <div class="varr" style="height:34px"></div>
+      <div class="bandsub">pymongo — 라우트 함수가 컬렉션을 바로 부른다</div>
+    </div>
+
+    <div class="band db">
+      <div style="display:flex;align-items:baseline;gap:14px">
+        <div class="bandhead">MongoDB</div>
+        <div class="bandsub"><span class="mono">users · items · rooms · messages</span> — 상태의 주인은 items 하나다</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="deploy">
+    <span>형상관리 · 배포</span>
+    <div class="deploybox">GitHub</div>
+    <span>—</span><span class="mono">git pull</span><span>→</span>
+    <div class="deploybox">EC2</div>
+    <span>수동 배포</span>
+  </div>
+</div>

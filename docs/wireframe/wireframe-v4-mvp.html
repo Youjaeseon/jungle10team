@@ -325,7 +325,7 @@ textarea.input{resize:none;font:inherit;width:100%}
     <div class="card prio">
       <h2>구현 우선순위</h2>
       <ul>
-        <li><b>P0 (표시 없음)</b> — 이것만 되면 시연 성립: 인증 · 거래 글 작성/삭제(사진 1장) · 홈 피드 · 카드 → 1:1 채팅(폴링) · 판매완료(판매자 단독) · 계좌 복사</li>
+        <li><b>P0 (표시 없음)</b> — 이것만 되면 시연 성립: 인증 · 거래 글 작성/삭제(사진 1장) · 홈 피드 · 카드 → 물건 상세 → 1:1 채팅(폴링) · 판매완료(판매자 단독)</li>
         <li><span class="tag p1">P1</span> 코어 완성 후: 거래내역 구매 탭 · 글 수정 · 안 읽음 뱃지 · 나눔/교환 분기</li>
         <li><span class="tag p2">P2</span> 시간이 남으면: 커뮤니티 전체 · 검색 · 필터 · 찜</li>
       </ul>
@@ -390,8 +390,8 @@ textarea.input{resize:none;font:inherit;width:100%}
           <p>글별 공개 협상 + 판매자 확정 버튼 구조를 통째로 제거. 구매자-판매자 사이의 결정 레이어를 하나 줄이고, 데이터 모델을 "글 + 1:1 방 + 메시지"로 축소. 아이디어는 확장 후보로 보존.</p>
         </div>
         <div class="item">
-          <b>"예약중" 상태 · 계좌 안내 modal</b>
-          <p>확정 단계가 사라지며 예약중도 함께 제거(판매중 → 판매완료 2단계). 계좌는 modal 없이 채팅 화면의 계좌 줄에서 복사.</p>
+          <b>"예약중" 상태 · 계좌 안내 modal · 계좌 입력란</b>
+          <p>확정 단계가 사라지며 예약중도 함께 제거(판매중 → 판매완료 2단계). 계좌를 다루는 UI는 v5에서 전부 없앴다 — 개인 금융정보를 화면에 상시 띄우고 복사시키는 구조 자체가 위험해서, <code>items.account</code> 필드까지 삭제했다. 계좌는 당사자끼리 채팅 메시지로 주고받는다.</p>
         </div>
         <div class="item">
           <b>제안 카드 (금액 조절 오퍼 UI)</b>
@@ -435,7 +435,7 @@ textarea.input{resize:none;font:inherit;width:100%}
         <div class="offback" id="offback"></div>
         <div class="offcanvas" role="dialog" aria-label="메뉴">
           <div class="head"><b>메뉴</b> <span class="tag bs">offcanvas</span> <button class="close" id="offclose" aria-label="닫기">×</button></div>
-          <button class="menucard" data-go="home" data-menu="home"><span class="ic"></span><span><span class="en">Home</span><br><span class="ko">거래 피드 — 카드가 곧 채팅 입구</span></span></button>
+          <button class="menucard" data-go="home" data-menu="home"><span class="ic"></span><span><span class="en">Home</span><br><span class="ko">거래 피드 — 카드 → 물건 상세</span></span></button>
           <button class="menucard" data-go="community" data-menu="community"><span class="ic"></span><span><span class="en">Community</span> <span class="tag p2">P2</span><br><span class="ko">질문 · 정보공유 게시판</span></span></button>
           <button class="menucard" data-go="chats" data-menu="chats"><span class="ic"></span><span><span class="en">채팅목록</span><br><span class="ko">진행 중인 1:1 거래 방</span></span></button>
           <button class="menucard" data-go="history" data-menu="history"><span class="ic"></span><span><span class="en">거래내역</span><br><span class="ko">판매 · 구매</span></span></button>
@@ -494,7 +494,7 @@ textarea.input{resize:none;font:inherit;width:100%}
             </div>
             <div class="feedgrid" id="feedgrid">
               <span class="caption" style="grid-column:1/-1">grid = <span class="tag bs">row-cols-1 row-cols-md-3</span> — 위 📱 버튼으로 1열 접힘을 확인해 보세요 · 카드 클릭 = 1:1 채팅 <span class="tag ssr">SSR</span></span>
-              <button class="feedcard" data-go="itemchat">
+              <button class="feedcard" data-go="chat">
                 <span class="ph"></span>
                 <span class="pad">
                   <span class="tt">해피해킹 키보드 (무각인)</span>
@@ -502,7 +502,7 @@ textarea.input{resize:none;font:inherit;width:100%}
                   <span class="price">120,000원 <span class="badge sale">판매</span> <span class="badge state" data-role="item-state">판매중</span></span>
                 </span>
               </button>
-              <button class="feedcard" data-go="itemchat">
+              <button class="feedcard" data-go="chat">
                 <span class="ph"></span>
                 <span class="pad">
                   <span class="tt">라꾸라꾸 접이식 침대</span>
@@ -510,7 +510,7 @@ textarea.input{resize:none;font:inherit;width:100%}
                   <span class="price">나눔 <span class="badge free">나눔</span></span>
                 </span>
               </button>
-              <button class="feedcard" data-go="itemchat">
+              <button class="feedcard" data-go="chat">
                 <span class="ph"></span>
                 <span class="pad">
                   <span class="tt">백준 문제집 ↔ 몬스터 한 박스</span>
@@ -518,7 +518,7 @@ textarea.input{resize:none;font:inherit;width:100%}
                   <span class="price">아무거나 환영 <span class="badge swap">교환</span></span>
                 </span>
               </button>
-              <button class="feedcard" data-go="itemchat">
+              <button class="feedcard" data-go="chat">
                 <span class="ph"></span>
                 <span class="pad">
                   <span class="tt">모니터 받침대 + C타입 허브</span>
@@ -526,7 +526,7 @@ textarea.input{resize:none;font:inherit;width:100%}
                   <span class="price">15,000원 <span class="badge sale">판매</span></span>
                 </span>
               </button>
-              <button class="feedcard" data-go="itemchat">
+              <button class="feedcard" data-go="chat">
                 <span class="ph"></span>
                 <span class="pad">
                   <span class="tt">자세교정 방석 (거의 새것)</span>
@@ -534,7 +534,7 @@ textarea.input{resize:none;font:inherit;width:100%}
                   <span class="price">8,000원 <span class="badge sale">판매</span></span>
                 </span>
               </button>
-              <button class="feedcard" data-go="itemchat">
+              <button class="feedcard" data-go="chat">
                 <span class="ph"></span>
                 <span class="pad">
                   <span class="tt">클린 코드 ↔ 아무 소설책</span>
@@ -546,8 +546,8 @@ textarea.input{resize:none;font:inherit;width:100%}
           </div>
         </section>
 
-        <!-- item + 1:1 chat (merged) -->
-        <section class="screen" data-s="itemchat">
+        <!-- item detail -->
+        <section class="screen" data-s="itemdetail">
           <div class="body narrow" style="max-width:640px;flex:1">
             <button class="btn sm" data-go="home" style="align-self:flex-start">‹ 피드로</button>
             <div class="itemhead">
@@ -571,20 +571,52 @@ textarea.input{resize:none;font:inherit;width:100%}
             </div>
             <hr class="hr">
             <div class="secrow">
+              <h4>거래 방법</h4>
+              <span class="sp"></span><span class="muted">직거래 · 강의장</span>
+            </div>
+            <p class="muted" style="font-size:.9rem">배송 · 계좌 안내는 화면에 두지 않아요. 필요하면 채팅에서 직접 이야기해요.</p>
+            <div class="syscard" id="done-card" style="display:none">🎉 판매완료 처리했어요. 거래가 끝났습니다.</div>
+            <div style="margin-top:auto;display:flex;flex-direction:column;gap:8px">
+              <button class="btn" id="seller-done">판매완료 처리 (판매자에게만 보임) <span class="tag ajax">AJAX</span></button>
+              <button class="btn primary" data-go="chat">채팅 바로가기 <span class="tag ssr">SSR</span></button>
+              <p class="anno">구매자 → (글, 나) 방을 찾거나 생성 · 판매자 → 이 글의 첫 번째 방</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- 1:1 chat -->
+        <section class="screen" data-s="chat">
+          <div class="body narrow" style="max-width:640px;flex:1">
+            <button class="btn sm" data-go="itemdetail" style="align-self:flex-start">‹ 물건 상세로</button>
+            <div class="chatitem" style="cursor:default">
+              <span class="ph"></span>
+              <span style="min-width:0">
+                <span class="tt">해피해킹 키보드 (무각인) <span class="muted" style="font-weight:400">· 120,000원</span></span><br>
+                <span class="last">조진근 · 크래프톤 정글 13기</span>
+              </span>
+              <span style="margin-left:auto"><span class="badge state" data-role="item-state">판매중</span></span>
+            </div>
+            <div class="secrow">
               <h4>판매자와의 1:1 채팅</h4>
               <span class="tag ajax">AJAX 폴링</span>
-              <span class="sp"></span><span class="muted">카드 클릭 시 자동 개설</span>
+              <span class="sp"></span><span class="muted">방은 (글, 구매자) 조합당 1개</span>
             </div>
             <div class="syscard">채팅이 시작되었어요. 가격·시간·장소를 편하게 이야기해 보세요.</div>
             <div class="msg me"><div class="avatar"></div><div><div class="bubble">안녕하세요! 10만 원에 가능할까요?</div></div></div>
             <div class="msg"><div class="avatar"></div><div><div class="who">조진근 (판매자)</div><div class="bubble">110,000원까지는 맞춰드릴게요. 오늘 저녁 어떠세요?</div></div></div>
-            <div class="acct">
-              <span class="mono">카카오뱅크 3333-00-0000000</span>
-              <button class="btn sm" id="copy-acct">복사 <span class="tag ajax">AJAX</span></button>
-            </div>
-            <div class="syscard" id="done-card" style="display:none">🎉 판매자가 판매완료 처리했어요. 거래가 끝났습니다.</div>
             <div style="margin-top:auto;display:flex;flex-direction:column;gap:8px">
-              <button class="btn" id="seller-done">판매완료 처리 (판매자에게만 보임) <span class="tag ajax">AJAX</span></button>
+              <div class="secrow" style="gap:8px">
+                <span class="caption">판매자에게만 보임 — 이 글에 붙은 방 목록</span>
+                <span class="sp"></span>
+                <div class="chiprow" id="room-pager">
+                  <button class="chip" data-page="prev">‹</button>
+                  <button class="chip on" data-page="1">1</button>
+                  <button class="chip" data-page="2">2</button>
+                  <button class="chip" data-page="3">3</button>
+                  <button class="chip" data-page="next">›</button>
+                  <span class="tag bs">pagination</span>
+                </div>
+              </div>
               <div class="inputrow" style="padding:0"><div class="input">메시지 입력…</div><button class="btn sm primary">전송</button></div>
             </div>
           </div>
@@ -614,7 +646,6 @@ textarea.input{resize:none;font:inherit;width:100%}
               <div class="chiprow" id="want-chips" style="margin-bottom:6px"><button class="chip on" id="want-any">아무거나 (제안 받아요)</button><button class="chip">직접 입력</button></div>
               <div class="input" id="want-input" style="display:none">예: 세미나실 간식, 자세교정 방석…</div>
             </div>
-            <div class="field" id="f-acct"><label>계좌번호 <span class="opt">(선택)</span></label><div class="input">카카오뱅크 3333-00-0000000</div></div>
             <div class="field"><label>내용</label><textarea class="input" rows="3" disabled placeholder="물건 상태, 거래 희망 장소 등"></textarea></div>
             <button class="btn primary" data-go="home">등록하기</button>
             <p class="anno">P0는 판매 유형만 완성해도 성립 — 등록 후 홈 피드로 이동</p>
@@ -686,7 +717,7 @@ textarea.input{resize:none;font:inherit;width:100%}
           <div class="body narrow" style="max-width:680px">
             <div class="secrow"><h4>채팅목록 — 진행 중인 1:1 거래</h4><span class="tag ajax">AJAX 폴링</span></div>
             <p class="muted">홈에서 카드를 누르면 방이 생기고, 같은 글은 기존 방을 재사용해요.</p>
-            <button class="chatitem" data-go="itemchat">
+            <button class="chatitem" data-go="chat">
               <span class="ph"></span>
               <span style="min-width:0">
                 <span class="tt">조진근 (13기) <span class="muted" style="font-weight:400">· 해피해킹 키보드 · 120,000원</span></span><br>
@@ -694,7 +725,7 @@ textarea.input{resize:none;font:inherit;width:100%}
               </span>
               <span style="margin-left:auto"><span class="badge state" data-role="item-state">판매중</span></span>
             </button>
-            <button class="chatitem" style="opacity:.6" data-go="itemchat">
+            <button class="chatitem" style="opacity:.6" data-go="chat">
               <span class="ph"></span>
               <span style="min-width:0">
                 <span class="tt">수료생 (12기) <span class="muted" style="font-weight:400">· 라꾸라꾸 침대 · 나눔</span></span><br>
@@ -714,7 +745,7 @@ textarea.input{resize:none;font:inherit;width:100%}
               <button class="chip" data-htab="buy">구매 <span class="tag p1">P1</span></button>
             </div>
             <div id="htab-sell">
-              <button class="chatitem" data-go="itemchat">
+              <button class="chatitem" data-go="chat">
                 <span class="ph"></span>
                 <span style="min-width:0">
                   <span class="tt">해피해킹 키보드 (무각인)</span><br>
@@ -722,7 +753,7 @@ textarea.input{resize:none;font:inherit;width:100%}
                 </span>
                 <span style="margin-left:auto"><span class="badge state" data-role="item-state">판매중</span></span>
               </button>
-              <button class="chatitem" data-go="itemchat">
+              <button class="chatitem" data-go="chat">
                 <span class="ph"></span>
                 <span style="min-width:0">
                   <span class="tt">사놓고 안 읽은 운영체제 책</span><br>
@@ -733,7 +764,7 @@ textarea.input{resize:none;font:inherit;width:100%}
               <p class="anno">내 글의 관리 거점 — 수정(P1)·삭제·판매완료가 여기서 출발</p>
             </div>
             <div id="htab-buy" style="display:none">
-              <button class="chatitem" data-go="itemchat">
+              <button class="chatitem" data-go="chat">
                 <span class="ph"></span>
                 <span style="min-width:0">
                   <span class="tt">라꾸라꾸 접이식 침대</span><br>
@@ -767,38 +798,43 @@ textarea.input{resize:none;font:inherit;width:100%}
       '아이디 중복 확인은 등록 시 서버에서 한 번만'
     ]},
     {id:'home', name:'2. Home — 거래 피드', grp:'Home', url:'jungle-carrot.kr/', title:'홈', notes:[
-      '카드 클릭 = 판매자와의 1:1 채팅 화면으로 이동 (SSR)',
-      '같은 글은 기존 방 재사용 — 방은 (글, 구매자) 조합당 1개',
-      '본인 글 카드를 누르면 거래내역(판매 탭)으로 안내',
+      '카드 클릭 = 물건 상세 화면으로 이동 (SSR) — 방은 아직 만들지 않는다',
+      '본인 글 카드도 똑같이 상세로 간다 — 상세 화면은 구매자·판매자 공용',
+      '내 글을 모아 보는 자리는 사이드바의 거래내역(판매 탭)',
       '그리드는 row-cols-1 row-cols-md-3 — 📱 버튼으로 확인'
     ]},
-    {id:'itemchat', name:'3. 물건 + 1:1 채팅 (합체)', grp:'Home', url:'jungle-carrot.kr/items/42/chat', title:'1:1 채팅', notes:[
-      '상단 = 물건 정보(사진·가격·상태·판매자), 하단 = 1:1 채팅',
-      '방 자동 생성 — 아고라·확정 단계 없음 (부록 참고)',
-      '폴링: setInterval 3초 + 메시지 영역 innerHTML 전체 교체',
-      '계좌는 이 화면에서만 노출 · 복사 버튼',
+    {id:'itemdetail', name:'3. 물건 상세', grp:'Home', url:'jungle-carrot.kr/items/42', title:'물건 상세', notes:[
+      '사진 · 제목 · 가격 · 유형 · 상태 · 판매자를 보여주는 화면 (SSR)',
+      '구매자와 판매자가 같은 템플릿을 본다 — 버튼만 갈린다',
+      '"채팅 바로가기" → GET /items/42/chat → 302 /chats/<room_id>',
       '판매자 전용 "판매완료 처리" — 눌러보세요 (상태 2단계)'
     ]},
-    {id:'write', name:'4. 거래 글 작성', grp:'Home', url:'jungle-carrot.kr/items/new', title:'글쓰기', notes:[
+    {id:'chat', name:'4. 1:1 채팅', grp:'Home', url:'jungle-carrot.kr/chats/7', title:'1:1 채팅', notes:[
+      '방은 (글, 구매자) 조합당 1개 — 다시 들어와도 기존 방 재사용',
+      '폴링: setInterval 3초 + 메시지 영역 innerHTML 전체 교체',
+      '전송 성공 직후에는 3초를 기다리지 말고 즉시 한 번 더 당긴다',
+      '하단 페이지네이션은 판매자에게만 — 이 글에 붙은 구매자별 방 목록'
+    ]},
+    {id:'write', name:'5. 거래 글 작성', grp:'Home', url:'jungle-carrot.kr/items/new', title:'글쓰기', notes:[
       '사진 1장 고정 — 다중 업로드 제거로 난이도 하락',
       'P0는 판매 유형만, 나눔/교환 필드 분기는 P1',
-      '계좌번호는 선택 입력 — 채팅 화면에서만 노출'
+      '계좌번호 입력란 없음 — 계좌를 다루는 UI는 v5에서 제거'
     ]},
-    {id:'community', name:'5. Community 목록', grp:'Community (P2)', url:'jungle-carrot.kr/community', title:'커뮤니티', notes:[
+    {id:'community', name:'6. Community 목록', grp:'Community (P2)', url:'jungle-carrot.kr/community', title:'커뮤니티', notes:[
       'P2 — 거래 CRUD 코드를 복사해 만드는 반복 연습',
       '말머리 2개: 질문 · 정보공유'
     ]},
-    {id:'post', name:'6. 커뮤니티 글 + 댓글', grp:'Community (P2)', url:'jungle-carrot.kr/community/7', title:'커뮤니티 글', notes:[
+    {id:'post', name:'7. 커뮤니티 글 + 댓글', grp:'Community (P2)', url:'jungle-carrot.kr/community/7', title:'커뮤니티 글', notes:[
       '댓글 등록만 AJAX, 나머지는 SSR'
     ]},
-    {id:'postwrite', name:'7. 커뮤니티 글 작성', grp:'Community (P2)', url:'jungle-carrot.kr/community/new', title:'글쓰기', notes:[
+    {id:'postwrite', name:'8. 커뮤니티 글 작성', grp:'Community (P2)', url:'jungle-carrot.kr/community/new', title:'글쓰기', notes:[
       '작성 → 등록 → 목록으로 리다이렉트 (SSR)'
     ]},
-    {id:'chats', name:'8. 채팅목록 (1:1)', grp:'채팅', url:'jungle-carrot.kr/chats', title:'채팅목록', notes:[
+    {id:'chats', name:'9. 채팅목록 (1:1)', grp:'채팅', url:'jungle-carrot.kr/chats', title:'채팅목록', notes:[
       '내가 참여한 모든 1:1 거래 방',
       'navbar 💬 안 읽음 뱃지는 P1 (AJAX 폴링 카운트)'
     ]},
-    {id:'history', name:'9. 거래내역', grp:'거래내역', url:'jungle-carrot.kr/history', title:'거래내역', notes:[
+    {id:'history', name:'10. 거래내역', grp:'거래내역', url:'jungle-carrot.kr/history', title:'거래내역', notes:[
       '판매 탭 = 내 글 관리 거점 (수정 P1 · 삭제 · 판매완료)',
       '구매 탭은 P1 (판매 탭이 먼저)'
     ]}
@@ -818,7 +854,7 @@ textarea.input{resize:none;font:inherit;width:100%}
     map.appendChild(b);
   });
 
-  var MENU_OF = {home:'home', itemchat:'home', write:'home',
+  var MENU_OF = {home:'home', itemdetail:'home', chat:'chats', write:'home',
                  community:'community', post:'community', postwrite:'community',
                  chats:'chats', history:'history'};
 
@@ -883,8 +919,16 @@ textarea.input{resize:none;font:inherit;width:100%}
     toast(heart.classList.contains('on') ? '찜했어요 (P2)' : '찜 해제 (P2)');
   });
 
-  /* copy */
-  document.getElementById('copy-acct').addEventListener('click', function(){ toast('계좌번호가 복사되었어요'); });
+  /* seller-only room pagination (판매자에게만 보이는 방 목록) */
+  var pager = document.getElementById('room-pager');
+  pager.addEventListener('click', function(e){
+    var c = e.target.closest('.chip'); if(!c) return;
+    var pg = c.dataset.page;
+    if (pg === 'prev' || pg === 'next') { toast('한 칸 앞뒤로 이동해요'); return; }
+    pager.querySelectorAll('.chip').forEach(function(x){ x.classList.remove('on'); });
+    c.classList.add('on');
+    toast(pg + '번 구매자와의 방으로 이동 — /chats/<room_id>');
+  });
 
   /* seller-only done */
   var sellerDone = document.getElementById('seller-done');
@@ -915,7 +959,6 @@ textarea.input{resize:none;font:inherit;width:100%}
     var t = c.dataset.type;
     document.getElementById('f-price').style.display = (t === 'sale') ? '' : 'none';
     document.getElementById('f-want').style.display = (t === 'swap') ? '' : 'none';
-    document.getElementById('f-acct').style.display = (t === 'free') ? 'none' : '';
   });
   document.getElementById('want-chips').addEventListener('click', function(e){
     var c = e.target.closest('.chip'); if(!c) return;
