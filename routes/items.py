@@ -352,6 +352,7 @@ def item_detail(item_id):
     return render_template(
         "item_detail.html",
         item=item,
+        seller=seller,
         is_seller=is_seller,
     )
 
