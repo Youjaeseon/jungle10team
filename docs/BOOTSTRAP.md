@@ -1,4 +1,4 @@
-# Bootstrap 컴포넌트 지도 — 크래프톤 당근
+# Bootstrap 컴포넌트 지도 — 정글장터
 
 > 기준: 2026-08-25 팀 회의 (v6). 와이어프레임의 분홍 태그(`navbar`, `offcanvas` …)와
 > 실제 Bootstrap 5 구현의 1:1 대응표.
@@ -43,7 +43,7 @@ SocketIO 클라이언트 라이브러리는 CDN 한 줄 — `chat_room.html`의 
 <nav class="navbar bg-body-tertiary sticky-top">
   <div class="container-fluid">
     <button class="btn" data-bs-toggle="offcanvas" data-bs-target="#sideMenu">☰</button>
-    <a class="navbar-brand me-auto" href="/">크래프톤 당근</a>
+    <a class="navbar-brand me-auto" href="/">정글장터</a>
     <form class="d-flex" role="search" action="/search" method="get">
       <input class="form-control form-control-sm" type="search" name="q" placeholder="물품 검색">
     </form>

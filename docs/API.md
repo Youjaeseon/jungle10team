@@ -1,4 +1,4 @@
-# API 명세 — 크래프톤 당근
+# API 명세 — 정글장터
 
 > 기준: 2026-08-25 팀 회의 (v6). 이전 판: `wireframe/wireframe-v4-mvp.html` + `DESIGN.md` (2026-08-24 v5).
 > 원칙: **페이지 이동은 전부 SSR**(Jinja 렌더링), **Ajax는 JSON을 주고받는 `/api/` 경로**에만,
