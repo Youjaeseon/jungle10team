@@ -1,8 +1,11 @@
-import os
-from flask import Blueprint, g, jsonify, redirect, render_template, request
-from bson import ObjectId
-from datetime import datetime, timezone
+import os #JWT 인증
+import jwt
 
+from collections import defaultdict
+from flask import Blueprint, flash, g, jsonify, redirect, render_template, request
+from bson import ObjectId
+from flask_socketio import SocketIO, emit, join_room, leave_room
+from datetime import datetime, timezone
 from db import db
 from auth_util import login_required
 
