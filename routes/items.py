@@ -35,3 +35,69 @@ def to_active_id(value):
     # 파일 확장자 확인
 def _allowed_file(filename):
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
+
+#==========================================================================
+#Home Feed
+#==========================================================================
+@items_bp.route("/")
+@login_required
+def feed():
+    page = request.args.get("page", 1, type=int)
+
+    if page < 1:
+        page = 1
+
+    query = {}
+
+    total_items = db.items.count_documents(query)
+
+    total_pages = max(
+        1,
+        (total_items + ITEMS_PER_PAGE - 1) // ITEMS_PER_PAGE
+    )
+
+    # 존재하지 않는 페이지가 들어오면 마지막 페이지로 보정
+    if page > total_pages:
+        page = total_pages
+
+    skip = (page - 1) * ITEMS_PER_PAGE
+
+    items = list(
+        db.items
+        .find(query)
+        .sort("created_at", -1)
+        .skip(skip)
+        .limit(ITEMS_PER_PAGE)
+    )
+
+    # 피드에서 판매자 이름/소속을 사용하도록
+    seller_ids = list({
+        item["seller_id"]
+        for item in items
+        if item.get("seller_id")
+    })
+
+    sellers = {}
+
+    if seller_ids:
+        seller_docs = db.users.find({
+            "_id": {"$in": seller_ids}
+        })
+
+        sellers = {
+            seller["_id"]: seller
+            for seller in seller_docs
+        }
+
+    for item in items:
+        seller = sellers.get(item.get("seller_id"))
+
+        item["seller"] = seller
+
+    return render_template(
+        "feed.html",
+        items=items,
+        page=page,
+        total_pages=total_pages,
+        type=None,
+    )
