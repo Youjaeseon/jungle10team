@@ -1,4 +1,5 @@
 import os #JWT 인증
+from dns import message
 import jwt
 
 from collections import defaultdict
@@ -32,6 +33,27 @@ def _to_object_id(value):
     except Exception:
         return None
 
+#프론트 전달을 json으로 변환
+def _serialize_message(message, sender=None):
+    """
+    sender을 전달하지 않으면 DB에서 조회하여 가져옴.
+    이미 채팅방이 존재하는 경우에는 sender를 전달하지 않아도 됨.
+    """
+    if sender is None:
+      sender = db.users.find_one({"_id": message["sender_id"]})
+
+    return {
+        "id": str(message["_id"]),
+        "sender_id": str(message["sender_id"]),
+        "name": sender["name"] if sender else "알 수 없음",
+        "lab": sender.get("lab") if sender else None,
+        "text": message["text"],
+        "created_at": message["created_at"].isoformat(),
+    }
+
+
+   
+
 @chat_bp.route('/items/<item_id>')
 @login_required
 def item_chat(item_id):
@@ -57,7 +79,7 @@ def chat_room(room_id):
 
 room = db.rooms.find_one({"_id": room_oid})
 if not room: 
- return "존재하지 않는 채팅방입니다.", 404
+    return "존재하지 않는 채팅방입니다.", 404
 
 user_id = g.user["_id"]
 
