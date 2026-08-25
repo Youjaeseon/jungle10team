@@ -1,6 +1,7 @@
 # Jinja 템플릿 사용법 — 크래프톤 당근
 
-> 각자 맡은 페이지 템플릿을 쓰기 전에 한 번 읽는 문서. 15분이면 충분하다.
+> 각자 맡은 페이지 템플릿을 쓰기 전에 한 번 읽는 문서. 15분이면 충분하다. (v6 기준 —
+> 템플릿 파일은 A와 B가 쓰고, C는 라우트에서 컨텍스트 변수를 넘기는 쪽이다.)
 > 관련 문서: 디렉토리·담당 배분은 `ARCHITECTURE.md`, 라우트 계약은 `API.md`,
 > Bootstrap 클래스는 `BOOTSTRAP.md`.
 
@@ -70,7 +71,7 @@ def feed():
 {% endfor %}                            {# ← 반드시 닫는다 #}
 
 {% if item.status == "done" %}          {# 조건이 참일 때만 아래를 출력 #}
-  <span class="badge text-bg-success">판매완료</span>
+  <span class="badge text-bg-dark">완료</span>
 {% endif %}                             {# ← 반드시 닫는다 #}
 
 {% extends "base.html" %}               {# base.html을 물려받는다 (§4) #}
@@ -98,14 +99,14 @@ def feed():
 │ ☰   🥕 크래프톤 당근   홈        ⌕  💬②  │ ← navbar (화면 맨 위 가로 막대)
 ├──────────────────────────────────────────┤
 │                                          │
-│   {% block content %} ← 여기가 각자 담당   │
+│   {% block content %} ← 여기가 각자 담당 │
 │                                          │
 └──────────────────────────────────────────┘
 ```
 
 - **navbar = 헤더.** 모든 페이지 맨 위에 항상 붙어 있는 가로 막대.
-  왼쪽부터 햄버거 버튼(☰) · 서비스 이름 · 현재 페이지 이름, 오른쪽 끝에 검색(P2)과
-  채팅 뱃지(P1).
+  왼쪽부터 햄버거 버튼(☰) · 서비스 이름 · 현재 페이지 이름, 오른쪽 끝에 검색 폼
+  (P0 — 제출하면 `GET /search`)과 말풍선 아이콘(`/chats` 링크). 안 읽음 뱃지는 P1.
 - **offcanvas = 사이드바.** 이름 그대로 "화면(canvas) 바깥(off)에 숨어 있다가 밀려 들어오는 판".
   ☰ 를 누르면 왼쪽에서 슬라이드해서 나오고, 뒤 본문은 어두워지며, 바깥을 클릭하면 닫힌다.
   모바일 앱의 서랍 메뉴와 같은 물건이다. 메뉴 5항목이 들어간다
@@ -166,8 +167,8 @@ offcanvas가 **에러 없이 조용히 안 열린다.** 제일 흔한 삽질이�
 | `content` | 페이지 본문 전체 | `<main class="container">` 안쪽이라 컨테이너를 또 만들 필요 없다 |
 | `scripts` | 이 페이지 전용 `<script>` | `</body>` 직전 + Bootstrap JS **뒤**에 놓인다 |
 
-`scripts` block이 있는 이유: `poll.js`는 `chat_room.html`에만, `item.js`는 작성 페이지에만
-필요하다. 이 구멍이 없으면 각자 `base.html`을 열어서 `<script>` 줄을 추가하게 되고,
+`scripts` block이 있는 이유: `ws.js`는 `chat_room.html`에만, `item.js`는 상세·작성
+페이지에만 필요하다. 이 구멍이 없으면 각자 `base.html`을 열어서 `<script>` 줄을 추가하게 되고,
 "한 사람 = 파일 하나"라는 충돌 격리가 그 순간 깨진다.
 
 > **`base.html`은 A만 수정한다.** 헤더·사이드바·전역 CSS에 손댈 일이 생기면 직접 고치지 말고
@@ -181,7 +182,7 @@ offcanvas가 **에러 없이 조용히 안 열린다.** 제일 흔한 삽질이�
 ### 5-1. 반복 — 목록을 화면에 뿌린다 **[A][B][C] 전원**
 
 MongoDB에서 꺼낸 리스트를 카드 여러 장으로 펼치는, 가장 많이 쓸 패턴이다.
-B는 피드 카드, C는 채팅 메시지 목록, A는 거래내역 목록에 쓴다.
+B는 피드 카드와 채팅 메시지 목록에, A는 거래내역 목록에 쓴다.
 
 ```html
 {# items는 라우트에서 render_template("feed.html", items=items)로 넘겨준 리스트 #}
@@ -202,17 +203,19 @@ B는 피드 카드, C는 채팅 메시지 목록, A는 거래내역 목록에 �
 {% endfor %}
 ```
 
-### 5-2. 조건 — 사람에 따라 버튼을 보이거나 감춘다 **[C] 주로, [A][B] 일부**
+### 5-2. 조건 — 사람에 따라 버튼을 보이거나 감춘다 **[B] 주로, [A] 일부**
 
-C의 `chat_room.html`에서 "판매완료 처리" 버튼은 판매자에게만 보여야 한다.
-B는 삭제 버튼, A는 로그인 여부에 따른 navbar 아이콘에 같은 패턴을 쓴다.
+B의 `item_detail.html`에서 거래완료 토글과 삭제 버튼은 판매자에게만 보여야 한다.
+A는 로그인 여부에 따른 navbar 표시에 같은 패턴을 쓴다.
 
 ```html
 {# g.user는 @login_required 데코레이터가 넣어 준 "지금 로그인한 사람" 문서다
    (ARCHITECTURE.md § 4). 어느 템플릿에서든 그냥 g.user로 쓸 수 있다. #}
 {% if item.seller_id == g.user._id %}
   {# 지금 이 화면을 보는 사람 == 이 물건을 올린 사람 → 판매자다 #}
-  <button id="btn-done" class="btn btn-success">판매완료 처리</button>
+  <button id="toggle-done" class="btn btn-outline-warning">
+    {{ "거래완료 해제" if item.status == "done" else "거래완료 처리" }}
+  </button>
 {% else %}
   {# 그 외 = 구매자다. 구매자에게는 이 버튼을 아예 안 그린다 #}
   <span class="text-muted small">판매자가 완료 처리하면 상태가 바뀌어요</span>
@@ -220,19 +223,19 @@ B는 삭제 버튼, A는 로그인 여부에 따른 navbar 아이콘에 같은 �
 ```
 
 > ⚠️ **버튼 숨김은 UI이지 보안이 아니다.** 버튼이 안 보여도 구매자가 개발자 도구로
-> `POST /api/items/<id>/done`을 직접 쏘면 그만이다. 그래서 **라우트 함수 안에서도**
+> `POST /api/items/<id>/status`를 직접 쏘면 그만이다. 그래서 **라우트 함수 안에서도**
 > 같은 검사를 반복하고 아니면 `403 {"error": "not_seller"}`를 돌려준다
 > (`ARCHITECTURE.md` § 4, `API.md` § 2). 시연에서 지적당하기 딱 좋은 지점이다.
 
-### 5-3. 정적 파일 경로 — JS와 업로드 사진을 불러온다 **[B][C]**
+### 5-3. 정적 파일 경로 — JS와 업로드 사진을 불러온다 **[B]**
 
 `static/` 폴더 안의 파일(내가 쓴 JS, 사용자가 올린 사진)을 가리킬 때 쓴다.
-B는 `item.js`와 업로드 사진, C는 `poll.js`에 필요하다.
+B가 `item.js`·`ws.js`와 업로드 사진에 쓴다.
 
 ```html
-{# url_for는 Flask가 제공하는 함수다. "static 폴더의 js/poll.js를 가리키는 주소를 만들어라"
-   라는 뜻이고, 결과는 /static/js/poll.js 라는 문자열이 된다. #}
-<script src="{{ url_for('static', filename='js/poll.js') }}"></script>
+{# url_for는 Flask가 제공하는 함수다. "static 폴더의 js/ws.js를 가리키는 주소를 만들어라"
+   라는 뜻이고, 결과는 /static/js/ws.js 라는 문자열이 된다. #}
+<script src="{{ url_for('static', filename='js/ws.js') }}"></script>
 
 {# 사진은 파일명이 물건마다 다르므로 문자열을 이어 붙여야 한다.
    ~ 는 Jinja에서 문자열을 잇는 연산자다. 파이썬의 + 자리라고 보면 된다.
@@ -240,17 +243,17 @@ B는 `item.js`와 업로드 사진, C는 `poll.js`에 필요하다.
 <img src="{{ url_for('static', filename='uploads/' ~ item.photo) }}" class="card-img-top">
 ```
 
-`/static/js/poll.js`라고 직접 써도 지금은 동작한다. 다만 `url_for`가 Flask 표준이고
+`/static/js/ws.js`라고 직접 써도 지금은 동작한다. 다만 `url_for`가 Flask 표준이고
 나중에 경로가 바뀌어도 안 깨지므로 이걸로 통일한다.
 
-### 5-4. 값이 없을 수 있는 필드 — 화면에 `None`이 찍히는 것을 막는다 **[B][C] 필수**
+### 5-4. 값이 없을 수 있는 필드 — 화면에 `None`이 찍히는 것을 막는다 **[B] 필수**
 
-`items` 스키마에서 `price` · `want` · `account` · `photo`는 **`None`일 수 있다**
+`items` 스키마에서 `price` · `want` · `photo`는 **`None`일 수 있다**
 (`ARCHITECTURE.md` § 3). 나눔 글에는 가격이 없고, 판매 글에는 원하는 물건이 없기 때문이다.
 아무 처리 없이 출력하면 화면에 글자 그대로 **`None`** 이 찍힌다.
 
-B는 작성 폼과 피드에서, C는 `chat_room.html` 상단 물건 카드에서 **같은 필드를 읽으므로**
-둘 다 이 처리가 필요하다.
+B는 작성 폼 · 피드 · `item_detail.html` · `chat_room.html` 상단 물건 요약에서
+전부 같은 필드를 읽는다.
 
 ```html
 {# 방법 1 — 삼항 조건. "price가 있으면 그 값, 없으면 '나눔'" #}
@@ -298,15 +301,16 @@ if db.users.find_one({"username": username}):
 
 ### 5-6. 상태 뱃지 — 세 화면이 똑같은 코드를 쓴다 **[A][B][C] 전원**
 
-`items.status`("selling" 또는 "done")를 색깔 있는 뱃지로 그린다. 피드(B) · 채팅 화면(C) ·
-거래내역(A) 세 곳에 전부 나오는데, **같은 모양으로 보여야 하므로 코드를 그대로 복사해 쓴다.**
+`items.status`("selling" 또는 "done")를 색깔 있는 뱃지로 그린다. 피드·채팅 화면(둘 다 B) ·
+거래내역(A)에 전부 나오는데, **같은 모양으로 보여야 하므로 코드를 그대로 복사해 쓴다.**
+done 카드에는 뱃지에 더해 사진 흑백 처리가 붙는다 (`BOOTSTRAP.md` § 2).
 
 ```html
 {# set = 템플릿 안에서 임시 변수를 만든다.
    { } 안은 파이썬 딕셔너리이고, 뒤의 [item.status]로 값 하나를 꺼낸다.
    status가 "selling"이면 badge = ("판매중", "secondary") 라는 짝이 된다. #}
 {% set badge = {"selling": ("판매중", "secondary"),
-                "done":    ("판매완료", "success")}[item.status] %}
+                "done":    ("완료", "dark")}[item.status] %}
 
 {# badge[0]은 표시할 글자, badge[1]은 Bootstrap 색 이름이다.
    결과: <span class="badge text-bg-secondary">판매중</span> #}
@@ -338,11 +342,11 @@ if db.users.find_one({"username": username}):
 
 ## 7. 담당별 첫 파일
 
-| 담당 | 만들 템플릿 | 비고 |
+| 담당 | 만들 것 | 비고 |
 |---|---|---|
 | **A** | `base.html` → `login.html` `signup.html` `history.html` | base.html이 1일차 오전 크리티컬 패스. navbar·offcanvas의 유일한 주인 |
-| **B** | `feed.html` `item_write.html` | 5-1 반복 · 5-3 사진 · 5-4 None 처리가 핵심. `scripts` block에 `item.js` |
-| **C** | `chat_list.html` `chat_room.html` | 5-2 조건(판매자 판별)이 핵심. `scripts` block에 `poll.js`. 상단 물건 카드는 B의 items 스키마를 그대로 읽는다 |
+| **B** | `feed.html` `item_write.html` `item_detail.html` → `chat_list.html` `chat_room.html` | 메인 화면 템플릿 전부. 5-1 반복 · 5-2 판매자 판별 · 5-4 None 처리가 핵심. `scripts` block에 `item.js`/`ws.js` |
+| **C** | 템플릿 없음 — `routes/items.py` `routes/chat.py` | `render_template()`에 넘기는 컨텍스트 변수 이름이 B와의 계약이다 (`ARCHITECTURE.md` § 6) |
 
 `base.html`이 나오기 전이라도 B·C는 `{% block content %}` 안쪽 마크업을 먼저 짜 두면 된다.
 나중에 위아래 세 줄만 붙이면 그대로 붙는다.
