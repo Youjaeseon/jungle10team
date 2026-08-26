@@ -874,4 +874,128 @@ def socket_message(data):
         timezone.utc
     )
 
-    
+    # -----------------------------------------------------
+    # MongoDB 저장
+    # -----------------------------------------------------
+
+    result = db.messages.insert_one({
+        "room_id": room_oid,
+        "sender_id": user_id,
+        "text": text,
+        "created_at": created_at,
+    })
+
+    # -----------------------------------------------------
+    # 방 전체에 메시지 전송
+    #
+    # 보낸 본인도 이 이벤트를 받아 화면에 추가
+    # -----------------------------------------------------
+
+    payload = {
+        "id": str(
+            result.inserted_id
+        ),
+
+        "_id": str(
+            result.inserted_id
+        ),
+
+        "sender_id": str(
+            user_id
+        ),
+
+        "name": user.get(
+            "name",
+            "알 수 없음",
+        ),
+
+        "lab": user.get(
+            "lab",
+            "",
+        ),
+
+        "text": text,
+
+        "created_at": (
+            created_at.isoformat()
+        ),
+
+        "display_time": (
+            _display_time(
+                created_at
+            )
+        ),
+    }
+
+    emit(
+        "message",
+        payload,
+        to=_socket_room_name(
+            room_oid
+        ),
+    )
+
+
+# =========================================================
+# SocketIO 연결 종료
+# =========================================================
+
+@socketio.on("disconnect")
+def socket_disconnect():
+
+    connection = (
+        _socket_connections.pop(
+            request.sid,
+            None,
+        )
+    )
+
+    if not connection:
+        return
+
+    room_oid = connection[
+        "room_id"
+    ]
+
+    user_id = connection[
+        "user_id"
+    ]
+
+    presence_key = (
+        str(room_oid),
+        str(user_id),
+    )
+
+    if _presence_counts.get(
+        presence_key,
+        0,
+    ) > 0:
+
+        _presence_counts[
+            presence_key
+        ] -= 1
+
+    # 같은 사용자의 다른 탭도 모두 닫힌 경우에만 offline
+    if _presence_counts.get(
+        presence_key,
+        0,
+    ) == 0:
+
+        _presence_counts.pop(
+            presence_key,
+            None,
+        )
+
+        emit(
+            "presence",
+            {
+                "user_id": str(
+                    user_id
+                ),
+                "online": False,
+            },
+            to=_socket_room_name(
+                room_oid
+            ),
+            include_self=False,
+        )
