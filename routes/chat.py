@@ -603,5 +603,59 @@ def socket_connet(auth=None):
         return False
 
     return True
+#=========================================================
+# Socket 방 참가
+# =========================================================
+@socketio.on("join")
+def socket_join(data):
 
+   user = _get_socket_user()
+
+   if not user:
+       emit(
+           "error",
+           {"error": "login_required"},
+       )
+       return
+
+   if not isinstance(data, dict):
+         emit(
+            "error",
+            {"error": "room_not_found"},
+         )
+         return
+
+   room_oid = _to_object_id(
+       data.get("room_id")
+   )
+
+   if not room_oid:
+
+         emit(
+            "error",
+            {"error": "room_not_found"},
+         )
+         return
+
+   room = db.rooms.find_one({
+         "_id": room_oid
+      })
    
+   if not room:
+         emit(
+            "error",
+            {"error": "room_not_found"},
+         )
+         return
+
+   user_id = user["_id"]
+
+   if not _is_room_member(
+         room,
+         user_id,
+   ):
+         emit(
+            "error",
+            {"error": "not_member"},
+         )
+         return
