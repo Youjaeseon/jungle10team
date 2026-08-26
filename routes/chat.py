@@ -591,4 +591,17 @@ def get_messages(room_id):
 
         "messages": messages,
     })
+#=========================================================
+#SocketIo 연걸
+#=========================================================
+@socketio.on("connect")
+def socket_connet(auth=None):
 
+    user = _get_socket_user()
+    #연결 거부
+    if not user:
+        return False
+
+    return True
+
+   
