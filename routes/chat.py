@@ -71,6 +71,10 @@ def _is_room_member(room, user_id):
 def _socket_room_name(room_id):
     return f"room:{room_id}"
 
+# 사용자 개인 알림용 소켓 room 이름
+def _user_socket_room_name(user_id):
+    return f"user:{user_id}"
+
 #한국 시간 변환
 def _to_kst(value):
     if not value:
@@ -520,8 +524,6 @@ def chat_room(room_id):
             user_id
         ),
 
-        socket_enabled=True,
-
         is_seller=is_seller,
 
         sibling_rooms=sibling_rooms,
@@ -601,6 +603,18 @@ def socket_connet(auth=None):
     #연결 거부
     if not user:
         return False
+
+    user_id = user["_id"]
+
+    #개인 알림용 room
+    join_room(
+      _user_socket_room_name(user_id)
+    )
+
+    _socket_connections[request.sid] = {
+        "user_id": user_id,
+        "room_id": None,
+    }
 
     return True
 #=========================================================
