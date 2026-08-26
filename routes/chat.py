@@ -659,3 +659,38 @@ def socket_join(data):
             {"error": "not_member"},
          )
          return
+
+   #기존방이 다른 방에 join되어 있으면 정리
+   previous = _socket_connections.get(
+         request.sid
+   )
+
+   if previous:
+
+       old_room_id = previous["room_id"]
+
+       old_user_id = previous["user_id"]
+
+       old_room_name = (_socket_room_name(
+            old_room_id
+        ))
+
+       old_key = (str(old_room_id), str(old_user_id))
+
+       leave_room(old_room_name)
+
+       if _presence_counts[old_key] > 0:
+           _presence_counts[old_key] -= 1
+
+       if _presence_counts[old_key] == 0:
+            _presence_counts.pop(old_key, None)
+
+            emit(
+                "presence",
+                {
+                    "user_id": str(old_user_id),
+                    "online": False,
+                },
+                to=old_room_name,
+                include_self=False,
+            )
