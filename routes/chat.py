@@ -262,7 +262,7 @@ def chat_list():
      "$or": [
          {"seller_id": user_id},
          {"buyer_id": user_id}
-     ] 
+     ]
    })
    )
 
@@ -358,20 +358,20 @@ def chat_list():
             "_sort_time": sort_time,
         })
 
-    # 마지막 대화가 최신인 방부터 표시
-      chat_rooms.sort(
-        key=lambda room: room["_sort_time"],
-        reverse=True,
-    )
+   # 마지막 대화가 최신인 방부터 표시
+   chat_rooms.sort(
+      key=lambda room: room["_sort_time"],
+      reverse=True,
+   )
 
-    # 템플릿에서 필요 없는 정렬용 값 제거
-      for room in chat_rooms:
-        room.pop("_sort_time", None)
+   # 템플릿에서 필요 없는 정렬용 값 제거
+   for room in chat_rooms:
+      room.pop("_sort_time", None)
 
-      return render_template(
-        "chat_list.html",
-        chat_rooms=chat_rooms,
-    )
+   return render_template(
+      "chat_list.html",
+      chat_rooms=chat_rooms,
+   )
 
 # =========================================================
 # 채팅 입구(GET)
@@ -640,7 +640,7 @@ def socket_join(data):
    room = db.rooms.find_one({
          "_id": room_oid
       })
-   
+
    if not room:
          emit(
             "error",
