@@ -151,7 +151,7 @@ def create_item():
     ).strip()
 
     item_type = request.form.get(
-        "item_type",
+        "type",
         ""
     ).strip()
 
