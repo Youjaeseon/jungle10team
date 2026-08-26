@@ -69,6 +69,16 @@ def _is_room_member(room, user_id):
         room["buyer_id"],
     )
 
+#한국시간으로 변환
+def _to_kst(value):
+    if not value:
+      return None
+
+    if value.tzinfo is None:
+       value = value.replace(tzinfo=timezone.utc)
+
+    return value.astimezone(KST)
+
 #프론트 전달을 json으로 변환
 def _serialize_message(message, sender=None):
     """
