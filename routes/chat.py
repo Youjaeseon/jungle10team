@@ -1,14 +1,24 @@
-import os #JWT 인증
-from dns import message
-import jwt
-
+import os
 from collections import defaultdict
-from flask import Blueprint, flash, g, jsonify, redirect, render_template, request
-from bson import ObjectId
-from flask_socketio import SocketIO, emit, join_room, leave_room
 from datetime import datetime, timezone
-from db import db
+from zoneinfo import ZoneInfo
+
+import jwt
+from bson import ObjectId
+from flask import (
+    Blueprint,
+    current_app,
+    flash,
+    g,
+    jsonify,
+    redirect,
+    render_template,
+    request,
+)
+from flask_socketio import SocketIO, emit, join_room, leave_room
+
 from auth_util import login_required
+from db import db
 
 chat_bp = Blueprint('chat', __name__)
 
