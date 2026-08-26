@@ -103,6 +103,23 @@
     {% endif %}
 
 	<main class="container py-3">
+
+	{% for message in get_flashed_messages() %}
+	    <div class="alert alert-warning alert-dismissible fade show"
+			 role="alert"
+		>
+			{{ message }}
+
+			<button
+			class="btn-close"
+			type="button"
+			data-bs-dismiss="alert"
+			aria-label="닫기"
+			>
+			</button>
+		</div>
+	{% endfor %}
+
 	  {% block content %}{% endblock %}
 	</main>
 
