@@ -1,0 +1,190 @@
+/* 정글장터 전역 스타일 — 래혁 견본 기준 (2026-08-26)
+   이 파일이 쥐는 것: 전역 토큰 · 부트스트랩 매핑 · 헤더 · 사이드바.
+   래혁의 화면 컴포넌트(.item-card .bubble .type-badge …)는 여기 넣지 않는다.
+   같은 규칙이 두 파일에 있으면 나중에 무엇이 정본인지 알 수 없다. */
+
+:root {
+    --jungle: #176b3a;
+    --jungle-dark: #12372a;
+    --jungle-light: #eaf5ec;
+    --ink: #183029;
+    --soft: #f3f8f4;
+    --line: #dbe8de;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    background: #fbfdfb;
+    color: var(--ink);
+    font-family:
+        Pretendard,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+}
+
+/* ── 부트스트랩 매핑 ────────────────────────────────────────
+   화면별로 덧칠하지 않고 여기서 한 번 정한다. layout.css 가 부트스트랩보다
+   뒤에 실리므로 !important 없이 변수만 다시 선언하면 이긴다. */
+
+.btn-dark {
+    --bs-btn-bg: var(--jungle-dark);
+    --bs-btn-border-color: var(--jungle-dark);
+    --bs-btn-hover-bg: var(--jungle);
+    --bs-btn-hover-border-color: var(--jungle);
+    --bs-btn-active-bg: var(--jungle);
+    --bs-btn-active-border-color: var(--jungle);
+}
+
+.btn-outline-dark {
+    --bs-btn-color: var(--jungle-dark);
+    --bs-btn-border-color: var(--jungle-dark);
+    --bs-btn-hover-bg: var(--jungle-dark);
+    --bs-btn-hover-border-color: var(--jungle-dark);
+}
+
+.nav-pills {
+    --bs-nav-pills-link-active-bg: var(--jungle);
+}
+
+.pagination {
+    --bs-pagination-color: var(--jungle);
+    --bs-pagination-active-bg: var(--jungle);
+    --bs-pagination-active-border-color: var(--jungle);
+    --bs-pagination-hover-color: var(--jungle-dark);
+}
+
+.link-primary,
+a {
+    --bs-link-color-rgb: 23, 107, 58;
+    --bs-link-hover-color-rgb: 18, 55, 42;
+}
+
+/* ── 공용 유틸 ──────────────────────────────────────────── */
+
+.fw-black {
+    font-weight: 800;
+}
+
+.brand-jungle {
+    color: var(--jungle);
+    font-size: 0.8em;
+}
+
+.section-title {
+    font-weight: 800;
+    letter-spacing: -0.04em;
+}
+
+/* ── 헤더 ──────────────────────────────────────────────────
+   배경과 아래 선은 마크업의 부트스트랩 유틸리티(bg-white border-bottom)가
+   맡는다. 견본이 정한 것은 높이 하나뿐이라 그것만 여기 둔다. */
+
+.navbar {
+    min-height: 68px;
+}
+
+.icon-btn {
+    border: 0;
+}
+
+/* 견본에는 아이콘 폰트를 전제한 크기 규칙이 없다. 헤더의 두 아이콘은
+   인라인 SVG라서(이모지는 OS마다 다르게 그려져 배제했다) 크기를 여기서 준다. */
+.icon-btn svg {
+    width: 20px;
+    height: 20px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.search-box {
+    display: flex;
+    width: 280px;
+    align-items: center;
+    padding: 0.65rem 0.85rem;
+    border-radius: 12px;
+    background: var(--jungle-light);
+    gap: 0.6rem;
+}
+
+.search-box input {
+    width: 100%;
+    border: 0;
+    background: transparent;
+    outline: 0;
+}
+
+/* 검색 입력의 브라우저 기본 지우기 버튼을 없앤다 */
+.search-box input::-webkit-search-cancel-button {
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+/* ── 사이드바 ──────────────────────────────────────────────
+   .menu-card 는 견본 그대로다. offcanvas 폭만 진근이 정한다. */
+
+.app-sidebar {
+    /* 부트스트랩의 실제 선택자는 .offcanvas.offcanvas-start 라서 우선순위가 한 단계
+       높다. 폭을 직접 쓰면 진다. 그쪽이 읽는 변수를 바꿔서 이긴다.
+       320px 인 이유: .menu-card 가 padding 1rem + 아이콘 + 제목/설명 두 줄이라
+       264px 에서는 설명 줄이 접힌다. */
+    --bs-offcanvas-width: 320px;
+}
+
+.menu-card {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    color: var(--ink);
+    gap: 1rem;
+    text-decoration: none;
+    transition: 0.2s;
+}
+
+.menu-card:hover {
+    border-color: var(--jungle);
+    box-shadow: 0 8px 22px #21212412;
+    transform: translateY(-2px);
+}
+
+.menu-card i {
+    color: var(--jungle);
+    font-size: 1.35rem;
+}
+
+.menu-card span {
+    display: flex;
+    flex-direction: column;
+}
+
+.menu-card small {
+    color: #868b94;
+}
+
+/* ── 접근성 ────────────────────────────────────────────────
+   견본에는 없다. 모션을 끈 사용자에게 이동을 강요하지 않는다. */
+
+@media (prefers-reduced-motion: reduce) {
+    .menu-card {
+        transition: border-color 200ms ease, box-shadow 200ms ease;
+    }
+
+    .menu-card:hover {
+        transform: none;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .navbar-brand {
+        font-size: 1rem;
+    }
+}

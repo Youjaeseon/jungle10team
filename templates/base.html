@@ -4,34 +4,82 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>{% block title %}정글장터{% endblock %}</title>
+	<link href="https://cdn.jsdelivr.net" rel="preconnect" crossorigin>
+	<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet">
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+	<link href="{{ url_for('static', filename='css/layout.css') }}" rel="stylesheet">
 	{% block styles %}
 	{% endblock %}
 </head>
 <body>
     {% if g.user %}
-    <nav class="navbar bg-body-tertiary sticky-top">
-      <div class="container-fluid">
-        <button class="btn" data-bs-toggle="offcanvas" data-bs-target="#sideMenu">☰</button>
-        <a class="navbar-brand me-auto" href="/">정글장터</a>
-        <form class="d-flex" role="search" action="/search" method="get">
-          <input class="form-control form-control-sm" type="search" name="q" placeholder="물품 검색">
+    <nav class="navbar sticky-top bg-white border-bottom">
+      <div class="container-fluid gap-2">
+        <button
+          class="btn icon-btn"
+          type="button"
+          data-bs-toggle="offcanvas"
+          data-bs-target="#sideMenu"
+          aria-label="메뉴 열기"
+        >
+          <svg viewBox="0 0 20 20" aria-hidden="true">
+            <path d="M3 5h14M3 10h14M3 15h14" />
+          </svg>
+        </button>
+
+        <a class="navbar-brand fw-black me-auto" href="/">정글장터</a>
+
+        <form class="search-box" role="search" action="/search" method="get">
+          <i class="bi bi-search text-secondary" aria-hidden="true"></i>
+          <input
+            type="search"
+            name="q"
+            placeholder="물품 검색"
+            aria-label="물품 검색"
+          >
         </form>
-        <a href="/chats" class="btn">💬</a>
+
+        <a class="btn icon-btn" href="/chats" aria-label="채팅 목록">
+          <svg viewBox="0 0 20 20" aria-hidden="true">
+            <path d="M17 12a2 2 0 0 1-2 2H7l-4 3V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+          </svg>
+        </a>
       </div>
     </nav>
-    <div class="offcanvas offcanvas-start" id="sideMenu">
-      <div class="offcanvas-header">
-        <h5>메뉴</h5>
-        <button class="btn-close" data-bs-dismiss="offcanvas"></button>
+
+    <div
+      class="offcanvas offcanvas-start app-sidebar"
+      id="sideMenu"
+      tabindex="-1"
+      aria-labelledby="sideMenuTitle"
+    >
+      <div class="offcanvas-header border-bottom">
+        <h2 class="offcanvas-title h6 fw-black mb-0" id="sideMenuTitle">메뉴</h2>
+        <button class="btn-close" data-bs-dismiss="offcanvas" aria-label="닫기"></button>
       </div>
-      <div class="offcanvas-body d-grid gap-2">
-        <a href="/" class="card text-decoration-none"><div class="card-body">Home</div></a>
-        <a href="/community" class="card text-decoration-none"><div class="card-body">Community</div></a>
-        <a href="/chats" class="card text-decoration-none"><div class="card-body">채팅목록</div></a>
-        <a href="/history" class="card text-decoration-none"><div class="card-body">거래내역</div></a>
-        <a href="/logout" class="card text-decoration-none"><div class="card-body">로그아웃</div></a>
-      </div>
+      <nav class="offcanvas-body d-grid gap-2 align-content-start">
+        <a class="menu-card" href="/">
+          <i class="bi bi-house" aria-hidden="true"></i>
+          <span>Home<small>전체 거래 피드</small></span>
+        </a>
+        <a class="menu-card" href="/community">
+          <i class="bi bi-people" aria-hidden="true"></i>
+          <span>Community<small>정글 사람들의 이야기</small></span>
+        </a>
+        <a class="menu-card" href="/chats">
+          <i class="bi bi-chat-dots" aria-hidden="true"></i>
+          <span>채팅목록<small>진행 중인 대화</small></span>
+        </a>
+        <a class="menu-card" href="/history">
+          <i class="bi bi-receipt" aria-hidden="true"></i>
+          <span>거래내역<small>내가 올린 물품</small></span>
+        </a>
+        <a class="menu-card" href="/logout">
+          <i class="bi bi-box-arrow-right" aria-hidden="true"></i>
+          <span>로그아웃<small>계정에서 나가기</small></span>
+        </a>
+      </nav>
     </div>
     {% endif %}
 

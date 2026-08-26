@@ -1,0 +1,62 @@
+{# 검색 결과 — GET /search (routes/main.py:20-44)
+   받는 값: items(list) · keyword(str). 이 둘 말고는 쓸 수 없다.
+   빈 검색어는 main.py:28-29 가 홈으로 돌려보내므로 여기 오지 않는다.
+   줄별 설명: docs/search-html-notes.md #}
+{% extends "base.html" %}
+
+
+{% block styles %}
+    {# 카드 모양은 item.css 가 쥐고 있다. 없으면 사진이 원본 크기로 늘어난다. #}
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/item.css') }}"
+    >
+{% endblock %}
+
+
+{% block title %}
+    '{{ keyword }}' 검색 결과 | 정글장터
+{% endblock %}
+
+
+{% block content %}
+    {# feed-page: item.css 의 색 변수와 모바일 패딩이 이 이름에 걸려 있다. #}
+    <section class="feed-page">
+
+        <div class="mb-4">
+            <h1 class="h3 fw-bold mb-1">
+                '{{ keyword }}' 검색 결과
+            </h1>
+
+            <p class="text-secondary mb-0">
+                모두 {{ items|length }}건을 찾았어요.
+            </p>
+        </div>
+
+        {# for ... else : 결과가 0건일 때만 else 가 실행된다. #}
+        <div class="row g-4">
+            {% for item in items %}
+                <div class="col-12 col-sm-6 col-lg-4">
+                    {# 루프 변수는 반드시 item. partial 이 그 이름을 직접 읽는다. #}
+                    {% include "_item_card.html" %}
+                </div>
+            {% else %}
+                <div class="col-12">
+                    <div class="alert alert-light border text-center py-5">
+                        <p class="fw-bold mb-2">
+                            '{{ keyword }}' 와 맞는 물품이 없어요.
+                        </p>
+
+                        <p class="text-secondary mb-3">
+                            제목의 일부만 넣어서 다시 찾아보세요.
+                        </p>
+
+                        <a href="/" class="btn btn-outline-success">
+                            전체 목록 보기
+                        </a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </section>
+{% endblock %}
