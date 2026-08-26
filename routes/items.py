@@ -50,11 +50,18 @@ def _allowed_file(filename):
 @login_required
 def feed():
     page = request.args.get("page", 1, type=int)
+    selected_type = request.args.get("type")
 
     if page < 1:
         page = 1
 
     query = {}
+
+    #type 필터링
+    if selected_type in {"sale", "free", "swap"}:
+        query["type"] = selected_type
+    else:
+        selected_type = None
 
     total_items = db.items.count_documents(query)
 
@@ -112,7 +119,7 @@ def feed():
         items=items,
         page=page,
         total_pages=total_pages,
-        type=None,
+        selected_type=selected_type,
     )
 
 
