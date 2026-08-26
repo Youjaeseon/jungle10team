@@ -60,75 +60,194 @@ def _to_object_id(value):
     except Exception:
         return None
 
+#판매자,구매자 구별
 def _is_room_member(room, user_id):
-    """
-    사용자가 해당 채팅방의 판매자 또는 구매자인지 확인.
-    """
     return user_id in (
         room["seller_id"],
         room["buyer_id"],
     )
 
-#한국시간으로 변환
+#소켓룸 이름
+def _socket_room_name(room_id):
+    return f"room:{room_id}"
+
+#한국 시간 변환
 def _to_kst(value):
     if not value:
-      return None
+        return None
 
     if value.tzinfo is None:
-       value = value.replace(tzinfo=timezone.utc)
+        value = value.replace(tzinfo=timezone.utc)
 
     return value.astimezone(KST)
 
-#프론트 전달을 json으로 변환
-def _serialize_message(message, sender=None):
-    """
-    sender을 전달하지 않으면 DB에서 조회하여 가져옴.
-    이미 채팅방이 존재하는 경우에는 sender를 전달하지 않아도 됨.
-    """
-    if sender is None:
-      sender = db.users.find_one({"_id": message["sender_id"]})
+#시간 문자열
+def _display_time(value):
+    local_time = _to_kst(value)
+
+    if not local_time:
+        return ""
+
+    hour = local_time.hour
+
+    if hour < 12:
+        period = "오전"
+        display_hour = hour if hour != 0 else 12
+    else:
+        period = "오후"
+        display_hour = hour - 12 if hour > 12 else 12
+
+    return f"{period} {display_hour:02d}:{local_time.minute:02d}"
+
+#채팅 날짜
+def _date_label(value):
+    local_time = _to_kst(value)
+
+    if not local_time:
+        return None
+
+    return (
+        f"{local_time.year}년 "
+        f"{local_time.month}월 "
+        f"{local_time.day}일"
+    )
+
+#html형식에 맞게 변환
+def _partner_data(user):
+    if not user:
+        return {
+            "_id": None,
+            "name": "알 수 없음",
+            "lab": "",
+            "initial": "?",
+        }
+
+    name = user.get("name") or "알 수 없음"
 
     return {
-        "id": str(message["_id"]),
-        "sender_id": str(message["sender_id"]),
-        "name": sender["name"] if sender else "알 수 없음",
-        "lab": sender.get("lab") if sender else None,
-        "text": message["text"],
-        "created_at": message["created_at"].isoformat(),
+        "_id": user["_id"],
+        "name": name,
+        "lab": user.get("lab") or "",
+        "initial": name[0] if name else "?",
     }
 
-#SocketIo에서 token쿠키에서 로그인 사용자를 가져오는 함수
+#DB형식에 맞게 변환
+def _serialize_message(message, sender=None, date_label=None):
+    if sender is None:
+        sender = db.users.find_one({
+            "_id": message["sender_id"]
+        })
+
+    created_at = message["created_at"]
+
+    return {
+        # HTML에서는 message._id 사용
+        "_id": message["_id"],
+
+        # WebSocket/API에서는 id 사용
+        "id": str(message["_id"]),
+
+        "sender_id": str(message["sender_id"]),
+        "name": (
+            sender.get("name", "알 수 없음")
+            if sender
+            else "알 수 없음"
+        ),
+        "lab": (
+            sender.get("lab", "")
+            if sender
+            else ""
+        ),
+        "text": message["text"],
+        "created_at": created_at.isoformat(),
+        "display_time": _display_time(created_at),
+        "date_label": date_label,
+    }
+
+#날짜별로 메세지 구분선 표시
+def _load_messages(room_id):
+    raw_messages = list(
+        db.messages
+        .find({"room_id": room_id})
+        .sort("created_at", 1)
+    )
+
+    result = []
+    previous_date = None
+
+    for message in raw_messages:
+
+        created_at_kst = _to_kst(
+            message["created_at"]
+        )
+
+        current_date = (
+            created_at_kst.date()
+            if created_at_kst
+            else None
+        )
+
+        # 날짜가 달라졌을 때만 날짜 구분선 출력
+        if current_date != previous_date:
+            label = _date_label(
+                message["created_at"]
+            )
+        else:
+            label = None
+
+        sender = db.users.find_one({
+            "_id": message["sender_id"]
+        })
+
+        result.append(
+            _serialize_message(
+                message,
+                sender=sender,
+                date_label=label,
+            )
+        )
+
+        previous_date = current_date
+
+    return result
+
+#소켓 사용자 확인
 def _get_socket_user():
     token = request.cookies.get("token")
 
     if not token:
-       return None
+        return None
 
-    secret = os.getenv("JWT_SECRET")
+    secret = (
+        current_app.config.get("JWT_SECRET")
+        or os.getenv("JWT_SECRET")
+        or current_app.config.get("SECRET_KEY")
+    )
 
     if not secret:
-      return None
+        return None
 
     try:
-      payload = jwt.decode(token, secret, algorithms=["HS256"])
+        payload = jwt.decode(
+            token,
+            secret,
+            algorithms=["HS256"],
+        )
+
     except jwt.PyJWTError:
-      return None
+        return None
 
     user_id = payload.get("user_id")
-
-    if not user_id:
-      return None
 
     user_oid = _to_object_id(user_id)
 
     if not user_oid:
-      return None
+        return None
 
-    return db.users.find_one({"_id": user_oid})
+    return db.users.find_one({
+        "_id": user_oid
+    })
 
-#채팅방 메세지 조회
-def _get_room_messages(room_id):
-    return f"chat: {room_id}"
 
 #==========================================================================
 # 채팅목록 (GET)
