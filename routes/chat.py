@@ -263,11 +263,10 @@ def chat_list():
          {"seller_id": user_id},
          {"buyer_id": user_id}
      ] 
-   }).sort("created_at", -1)
+   })
    )
 
-   buying_rooms = []
-   selling_rooms = []
+   chat_rooms = []
 
    for room in rooms:
       item = db.items.find_one({"_id": room["item_id"]})
@@ -278,13 +277,14 @@ def chat_list():
 
       #상대방 찾기
       if user_id == room["seller_id"]:
-         peer_id = room["buyer_id"]
-         room_type = "selling"
-      else:
-            peer_id = room["seller_id"]
-            room_type = "buying"
 
-      peer = db.users.find_one({"_id": peer_id})
+         role = "seller"
+         partner_id = room["buyer_id"]
+      else:
+         role = "buyer"
+         partner_id = room["seller_id"]
+
+      partner = db.users.find_one({"_id": partner_id})
 
       #마지막 메세지
       last_message = db.message.find_one({"room_id": room["_id"]}, sort=[("created_at", -1)])
