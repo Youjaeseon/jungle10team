@@ -1,52 +1,63 @@
-{# 거래내역 — GET /history (routes/main.py)
-   받는 값: selling_items(list). 이 이름 말고는 쓸 수 없다.
-   2단계에서 buying_items 가 하나 더 들어온다.
+{# 내 거래글 — GET /history (routes/main.py)
+   받는 값: my_items(list). 이것 말고는 쓸 수 없다.
 
-   구조의 본은 search.html 이다. 검색어 관련 부분(keyword)만 전부 빠지고,
-   그 자리에 탭 바가 들어간다. 카드 모양은 손대지 않는다.
-   화면 확정: docs/wireframe/8. History@2x.png #}
+   구조의 본은 search.html 이다. 검색어(keyword) 자리가 비고 카드 목록만 남는다.
+   카드는 _item_card.html 이 그린다.
 
-
-{# TODO 1. base.html 을 상속한다. search.html 5행과 같은 한 줄. #}
-
-
-{# TODO 2. styles 블록 — item.css 를 건다.
-   베낄 자리: search.html 8-14행 그대로.
-   이걸 빼면 카드 사진이 원본 크기로 늘어난다.
-   feed-page 클래스를 그대로 쓸 것이므로 CSS 파일은 새로 만들지 않는다.
-   (item.css 는 래혁 영역이라 수정도 하지 않는다.) #}
+   판매/구매 탭은 2026-08-27 에 사라졌다. 구매 탭을 걷어내자 탭이 하나만 남았고,
+   갈래가 하나뿐인 탭 바는 아무것도 구분해 주지 못한다 (DESIGN.md § 잘라낸 것).
+   화면 확정: docs/wireframe/8. History@2x.png
+   — 단 그 그림은 탭 바가 있던 옛 화면이다. 라벨도 '거래내역' 그대로다.
+     와이어프레임은 갱신하지 않기로 했으므로(DESIGN.md § 화면), 이 파일이
+     현재 계약이고 그림은 배치 참고용으로만 본다. #}
+{% extends "base.html" %}
 
 
-{# TODO 3. title 블록 — 거래내역 | 정글장터
-   search.html 17-19행과 같은 자리. 검색어가 없으니 문구는 고정이다. #}
+{% block styles %}
+    {# 카드 모양은 item.css 가 쥐고 있다. 없으면 사진이 원본 크기로 늘어난다. #}
+    <link href="{{ url_for('static', filename='css/item.css') }}"
+          rel="stylesheet">
+{% endblock %}
 
 
-{# TODO 4. content 블록.
-   바깥은 <section class="feed-page"> 로 감싼다 (search.html:24).
-   이 이름에 item.css 의 색 변수와 모바일 패딩이 걸려 있다. #}
+{% block title %}
+    내 거래글 | 정글장터
+{% endblock %}
 
-    {# 4-1. 화면 제목. search.html 26-34행의 자리인데,
-       '모두 N건' 줄은 탭이 대신하므로 h1 하나면 된다. #}
 
-    {# 4-2. 탭 바 — ul.nav.nav-pills 안에 li.nav-item 두 개.
-       참고: BOOTSTRAP.md:28. 우리가 쓰는 JS 는 0줄이고,
-       data-bs-toggle="tab" 과 data-bs-target 선언만으로 부트스트랩이 전환한다.
-       · 판매 탭: button.nav-link.active, data-bs-target 이 아래 pane 의 id 를 가리킨다.
-       · 구매 탭: 와이어프레임대로 '구매 P1' 라벨 + disabled.
-         2단계에서 disabled 만 떼고 pane 을 채운다.
-         지금 빈 pane 을 미리 만들지 않는다 (CLAUDE.md § Add on failure). #}
+{% block content %}
+    {# feed-page: item.css 의 색 변수와 모바일 패딩이 이 이름에 걸려 있다. #}
+    <section class="feed-page">
 
-    {# 4-3. 탭 내용 — div.tab-content 안에 판매 pane 하나.
-       pane 의 id 가 위 data-bs-target 과 글자까지 같아야 전환된다.
+        <h1 class="h3 fw-bold mb-3">
+            내 거래글
+        </h1>
 
-       pane 안쪽은 search.html 37-42행을 그대로 옮긴 것이다:
-         div.row.g-4 → {% for %} → div.col-12.col-sm-6.col-lg-4
-         → {% include "_item_card.html" %}
-       · 반복 대상만 selling_items 로 바꾼다.
-       · 루프 변수 이름은 반드시 item 이다. partial 이 그 이름을 직접 읽는다
-         (_item_card.html 은 인자를 받지 않는다). 카드는 새로 그리지 않는다. #}
+        {# 순서는 라우트가 정해서 넘긴다. 거래완료가 먼저, 같은 그룹 안에서는 최신순.
+           템플릿에서 다시 정렬하지 않는다 — 순서의 주인은 한 곳이어야 한다. #}
+        <div class="row g-4">
+            {% for item in my_items %}
+                <div class="col-12 col-sm-6 col-lg-4">
+                    {# 루프 변수는 반드시 item. partial 이 그 이름을 직접 읽는다. #}
+                    {% include "_item_card.html" %}
+                </div>
+            {% else %}
+                <div class="col-12">
+                    <div class="alert alert-light border text-center py-5">
+                        <p class="fw-bold mb-2">
+                            아직 올린 물품이 없어요.
+                        </p>
 
-    {# 4-4. 빈 상태 — {% for %} 의 {% else %} 가지.
-       구조는 search.html 43-58행과 같고 문구만 바꾼다.
-       검색은 '다시 찾아보세요' 였지만 여기는 아직 글이 없는 상황이므로,
-       글 작성으로 보내는 버튼(/items/new)이 맞다. #}
+                        <p class="text-secondary mb-3">
+                            첫 물품을 등록하면 여기에 모여요.
+                        </p>
+
+                        <a href="/items/new" class="btn btn-outline-success">
+                            물품 등록하기
+                        </a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </section>
+{% endblock %}
