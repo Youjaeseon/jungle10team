@@ -195,7 +195,7 @@ $(function () {
             return;
         }
 
-        socket = window.io();
+        socket = window.jungleSocket || window.io();
 
         socket.on("connect", function () {
             socket.emit(

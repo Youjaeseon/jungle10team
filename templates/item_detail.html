@@ -17,13 +17,13 @@
     >
         <a
             href="/"
-            class="btn btn-sm btn-outline-secondary mb-4"
+            class="btn btn-sm btn-outline-secondary mb-3"
         >
             &larr; 거래 피드로 돌아가기
         </a>
 
-        <div class="row g-4 g-lg-5">
-            <div class="col-12 col-lg-7">
+        <div class="row g-4 align-items-start">
+            <div class="col-12 col-lg-6">
                 <div class="item-detail-image-wrap {{ 'item-detail-image-done' if item.status == 'done' }}">
                     {% if item.photo %}
                         <img
@@ -36,10 +36,15 @@
                             물품 사진
                         </div>
                     {% endif %}
+
+                    <div class="item-detail-completed-message" aria-live="polite">
+                        <strong>거래 완료</strong>
+                        <span>거래가 완료된 물품입니다</span>
+                    </div>
                 </div>
             </div>
 
-            <div class="col-12 col-lg-5">
+            <div class="col-12 col-lg-6">
                 <div class="item-detail-panel">
                     <div class="d-flex flex-wrap gap-2 mb-3">
                         {% if item.type == "sale" %}
@@ -112,7 +117,7 @@
                             <button
                                 type="button"
                                 id="toggleItemStatus"
-                                class="btn btn-outline-warning"
+                                class="btn item-status-button {{ 'item-status-button-done' if item.status == 'done' }}"
                             >
                                 {{ "거래완료 해제" if item.status == "done" else "거래완료 처리" }}
                             </button>
@@ -124,7 +129,7 @@
                             >
                                 <button
                                     type="submit"
-                                    class="btn btn-outline-danger"
+                                    class="btn item-delete-button"
                                 >
                                     게시글 삭제
                                 </button>

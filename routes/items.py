@@ -79,7 +79,11 @@ def feed():
     items = list(
         db.items
         .find(query)
-        .sort("created_at", -1)
+        # 판매 중인 글을 먼저 보여주고, 같은 상태 안에서는 최신 글부터 정렬한다.
+        .sort([
+            ("status", -1),
+            ("created_at", -1),
+        ])
         .skip(skip)
         .limit(ITEMS_PER_PAGE)
     )
