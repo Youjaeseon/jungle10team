@@ -457,44 +457,76 @@ def chat_room(room_id):
 
    is_seller = user_id == room["seller_id"]
 
-   #과거 메세지
-   raw_messages = list(
-        db.messages.find({
-            "room_id": room_oid,
-        }).sort("created_at", 1)
+    # -----------------------------------------------------
+    # 상대방
+    # -----------------------------------------------------
+
+   if is_seller:
+        partner_id = room["buyer_id"]
+   else:
+        partner_id = room["seller_id"]
+
+   partner = db.users.find_one({
+        "_id": partner_id
+    })
+
+    # -----------------------------------------------------
+    # MongoDB room 복사본에 화면용 값 추가
+    # -----------------------------------------------------
+
+   room_view = dict(room)
+
+   room_view["partner"] = (
+        _partner_data(partner)
     )
 
-   messages = []
+   room_view["item"] = item
 
-   for message in raw_messages:
-        sender = db.users.find_one({
-            "_id": message["sender_id"]
-        })
+    # -----------------------------------------------------
+    # 기존 메시지
+    # -----------------------------------------------------
 
-        messages.append(
-            _serialize_message(message, sender)
-        )
+   messages = _load_messages(
+        room_oid
+    )
 
-    # 판매자만
-    # 같은 상품에 달린 다른 구매자 방들을 페이지처럼 표시
+    # -----------------------------------------------------
+    # 판매자라면 같은 상품의 모든 구매자 방 조회
+    # -----------------------------------------------------
+
    sibling_rooms = []
 
    if is_seller:
+
         sibling_rooms = list(
-            db.rooms.find({
-                "item_id": room["item_id"],
-            }).sort("created_at", 1)
+            db.rooms
+            .find({
+                "item_id": room["item_id"]
+            })
+            .sort(
+                "created_at",
+                1,
+            )
         )
 
    return render_template(
         "chat_room.html",
-        room=room,
-        item=item,
+
+        room=room_view,
+
         messages=messages,
+
+        current_user_id=str(
+            user_id
+        ),
+
+        socket_enabled=True,
+
         is_seller=is_seller,
+
         sibling_rooms=sibling_rooms,
     )
 
-#==========================================================
-#과거 메세지 조회(GET)
-#==========================================================
+#=========================================================
+#과거 메세지(GET)
+#=========================================================
