@@ -122,18 +122,24 @@
                                 {{ "거래완료 해제" if item.status == "done" else "거래완료 처리" }}
                             </button>
 
-                            <form
-                                action="/items/{{ item._id }}/delete"
-                                method="post"
-                                class="d-grid"
+                            {#
+                              누르면 곧바로 지워지던 것을 확인창 한 단계 뒤로
+                              물렸다. 커뮤니티 글·댓글과 같은 모달을 쓴다
+                              (.delete-modal, static/css/layout.css).
+
+                              여는 데 자바스크립트가 필요 없다. data-bs-toggle 과
+                              data-bs-target 두 속성이면 부트스트랩이 연다.
+                              실제 form 은 모달 안에 있어서, 그 버튼을 눌러야만
+                              요청이 나간다.
+                            #}
+                            <button
+                                type="button"
+                                class="btn item-delete-button"
+                                data-bs-toggle="modal"
+                                data-bs-target="#deleteItemModal"
                             >
-                                <button
-                                    type="submit"
-                                    class="btn item-delete-button"
-                                >
-                                    게시글 삭제
-                                </button>
-                            </form>
+                                게시글 삭제
+                            </button>
                         {% elif item.status == "done" %}
                             <button
                                 type="button"
@@ -155,6 +161,64 @@
             </div>
         </div>
     </section>
+    {% if is_seller %}
+        <div
+            class="modal fade delete-modal"
+            id="deleteItemModal"
+            tabindex="-1"
+            aria-labelledby="deleteItemModalLabel"
+            aria-hidden="true"
+        >
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2 class="modal-title h5" id="deleteItemModalLabel">
+                            게시글을 삭제할까요?
+                        </h2>
+
+                        <button
+                            type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal"
+                            aria-label="닫기"
+                        ></button>
+                    </div>
+
+                    <div class="modal-body">
+                        <p class="delete-modal-target">{{ item.title }}</p>
+
+                        <p class="delete-modal-warning">
+                            이 물품에 대한 대화 내역은 상대방 화면에 남아요.
+                            한 번 지우면 되돌릴 수 없어요.
+                        </p>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button
+                            type="button"
+                            class="btn btn-outline-secondary"
+                            data-bs-dismiss="modal"
+                        >
+                            취소
+                        </button>
+
+                        {# 실제 삭제는 이 form 이 한다. 판매자 검사는 서버
+                           (routes/items.py 의 delete_item)에 그대로 있다.
+                           모달은 실수를 줄이는 장치이지 방어선이 아니다. #}
+                        <form
+                            action="/items/{{ item._id }}/delete"
+                            method="post"
+                        >
+                            <button class="btn btn-danger" type="submit">
+                                삭제
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
 {% endblock %}
 
 {% block scripts %}
