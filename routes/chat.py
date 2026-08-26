@@ -330,6 +330,49 @@ def chat_list():
                     tzinfo=timezone.utc
                 ),
             )
+
+        #-------------------------------------------------
+        # 변환
+        # -------------------------------------------------
+
+      chat_rooms.append({
+            "_id": room["_id"],
+            "item_id": room["item_id"],
+            "seller_id": room["seller_id"],
+            "buyer_id": room["buyer_id"],
+            "created_at": room.get(
+                "created_at"
+            ),
+
+            "partner": _partner_data(
+                partner
+            ),
+
+            "item": item,
+
+            "last_message": last_message,
+
+            "role": role,
+
+            # 화면에는 사용하지 않고 정렬용
+            "_sort_time": sort_time,
+        })
+
+    # 마지막 대화가 최신인 방부터 표시
+      chat_rooms.sort(
+        key=lambda room: room["_sort_time"],
+        reverse=True,
+    )
+
+    # 템플릿에서 필요 없는 정렬용 값 제거
+      for room in chat_rooms:
+        room.pop("_sort_time", None)
+
+      return render_template(
+        "chat_list.html",
+        chat_rooms=chat_rooms,
+    )
+
 # =========================================================
 # 채팅 입구(GET)
 # 구매자:
