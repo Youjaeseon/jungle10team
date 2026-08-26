@@ -24,6 +24,24 @@ chat_bp = Blueprint('chat', __name__)
 
 socketio = SocketIO()
 
+#========================================================================
+#시간zone 설정
+#========================================================================
+KST = ZoneInfo("Asia/Seoul")
+
+# =========================================================
+# SocketIO 접속 상태
+# =========================================================
+
+# sid -> {"room_id": ObjectId, "user_id": ObjectId}
+_socket_connections = {}
+
+# (room_id, user_id) -> 연결 개수
+# 같은 사용자가 탭을 여러 개 열었을 때를 고려
+_presence_counts = defaultdict(int)
+
+
+#========================================================================
 # Socket 접속 상태 관리
 # 브라우저 탭/재접속 고려
 # ex) 같은 사용자가 같은 방에 여러개의 연결을 하는것을 방지하기 위해 연결 개수를 따로 센다.
@@ -41,6 +59,15 @@ def _to_object_id(value):
         return ObjectId(value)
     except Exception:
         return None
+
+def _is_room_member(room, user_id):
+    """
+    사용자가 해당 채팅방의 판매자 또는 구매자인지 확인.
+    """
+    return user_id in (
+        room["seller_id"],
+        room["buyer_id"],
+    )
 
 #프론트 전달을 json으로 변환
 def _serialize_message(message, sender=None):
