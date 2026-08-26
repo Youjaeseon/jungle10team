@@ -530,3 +530,65 @@ def chat_room(room_id):
 #=========================================================
 #과거 메세지(GET)
 #=========================================================
+@chat_bp.route(
+    "/api/rooms/<room_id>/messages",
+    methods=["GET"],
+)
+@login_required
+def get_messages(room_id):
+
+    room_oid = _to_object_id(room_id)
+
+    if not room_oid:
+        return jsonify({
+            "error": "room_not_found"
+        }), 404
+
+    room = db.rooms.find_one({
+        "_id": room_oid
+    })
+
+    if not room:
+        return jsonify({
+            "error": "room_not_found"
+        }), 404
+
+    user_id = g.user["_id"]
+
+    if not _is_room_member(
+        room,
+        user_id,
+    ):
+        return jsonify({
+            "error": "not_member"
+        }), 403
+
+    item = db.items.find_one({
+        "_id": room["item_id"]
+    })
+
+    if not item:
+        return jsonify({
+            "error": "item_not_found"
+        }), 404
+
+    messages = _load_messages(
+        room_oid
+    )
+
+    return jsonify({
+        "ok": True,
+
+        "status": item.get(
+            "status",
+            "selling",
+        ),
+
+        "is_seller": (
+            user_id
+            == room["seller_id"]
+        ),
+
+        "messages": messages,
+    })
+
