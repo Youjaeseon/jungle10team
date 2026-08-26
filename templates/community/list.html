@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block title %}Community | 정글장터{% endblock %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/community.css') }}">
+{% endblock %}
+
+{% block content %}
+    <section class="community-page">
+        <header class="community-heading">
+            <div>
+                <h1>Community</h1>
+                <p>질문하고 정보를 나눠요.</p>
+            </div>
+            <a class="btn btn-success community-write-button" href="{{ url_for('community.new_post') }}">
+                글쓰기
+            </a>
+        </header>
+
+        <nav class="community-category-filter" aria-label="커뮤니티 카테고리">
+            <a
+                class="btn {{ 'btn-success' if not selected_category else 'btn-outline-success' }}"
+                href="{{ url_for('community.post_list', page=1) }}"
+            >
+                전체
+            </a>
+            {% for category_value, category_name in categories.items() %}
+                <a
+                    class="btn {{ 'btn-success' if selected_category == category_value else 'btn-outline-success' }}"
+                    href="{{ url_for('community.post_list', category=category_value, page=1) }}"
+                >
+                    {{ category_name }}
+                </a>
+            {% endfor %}
+        </nav>
+
+        <div class="community-post-list">
+            {% for post in posts %}
+                <article class="community-post-card">
+                    <a href="{{ url_for('community.post_detail', post_id=post._id) }}">
+                        <div class="community-post-card-top">
+                            <span class="community-category-badge community-category-{{ post.category }}">
+                                {{ categories.get(post.category, '기타') }}
+                            </span>
+                            <time datetime="{{ post.created_at.isoformat() if post.created_at else '' }}">
+                                {{ post.created_at.strftime('%Y.%m.%d') if post.created_at else '' }}
+                            </time>
+                        </div>
+                        <h2>{{ post.title }}</h2>
+                        <p>{{ post.body }}</p>
+                        <div class="community-post-meta">
+                            <span>{{ post.author.name if post.author else '알 수 없는 사용자' }}</span>
+                            {% if post.author and post.author.lab %}
+                                <span>{{ post.author.lab }}</span>
+                            {% endif %}
+                            <span>댓글 {{ post.comments|length }}</span>
+                        </div>
+                    </a>
+                </article>
+            {% else %}
+                <div class="community-empty-state">
+                    <p>첫 커뮤니티 글을 작성해 보세요.</p>
+                </div>
+            {% endfor %}
+        </div>
+
+        {% if total_pages > 1 %}
+            <nav class="community-pagination" aria-label="커뮤니티 페이지">
+                <ul class="pagination justify-content-center">
+                    {% for page_number in range(1, total_pages + 1) %}
+                        <li class="page-item {{ 'active' if page_number == page }}">
+                            <a
+                                class="page-link"
+                                href="{{ url_for('community.post_list', page=page_number, category=selected_category or None) }}"
+                                {% if page_number == page %}aria-current="page"{% endif %}
+                            >
+                                {{ page_number }}
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </nav>
+        {% endif %}
+    </section>
+{% endblock %}
