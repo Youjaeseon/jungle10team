@@ -71,6 +71,15 @@ def _is_room_member(room, user_id):
 def _socket_room_name(room_id):
     return f"room:{room_id}"
 
+
+
+# 래혁·재성이 같은 기능을 각자 구현해서 머지 때 만났다(_user_room_name /
+# _user_socket_room_name). 동작이 같으므로 이름 하나로 합친다. 아래 socket_message
+# 의 알림 emit 이 이미 이 이름을 부르고 있어서 그쪽에 맞췄다.
+def _user_room_name(user_id):
+    """로그인 사용자가 어느 화면에 있어도 알림을 받을 개인 소켓 방."""
+    return f"user:{user_id}"
+
 #한국 시간 변환
 def _to_kst(value):
     if not value:
@@ -520,6 +529,12 @@ def chat_room(room_id):
             user_id
         ),
 
+        # 머지 복구(2026-08-27): feature/chat 이 이 줄을 지웠는데, 템플릿
+        # (chat_room.html:18)이 아직 data-socket-enabled 로 읽고 ws.js:189 가
+        # 그 값이 거짓이면 소켓 초기화를 건너뛴다. 값이 없으면 Jinja 가
+        # Undefined 를 주고 그것은 거짓이라, 지운 채로 두면 거래 채팅
+        # 실시간이 조용히 죽는다. 플래그를 정말 없애려면 템플릿과 ws.js 를
+        # 함께 고쳐야 한다 — 재성 확인 필요.
         socket_enabled=True,
 
         is_seller=is_seller,
@@ -601,6 +616,19 @@ def socket_connet(auth=None):
     #연결 거부
     if not user:
         return False
+
+    user_id = user["_id"]
+
+    # 개인 알림용 방. 채팅방 밖에 있어도 알림을 받는다.
+    join_room(
+        _user_room_name(user_id)
+    )
+
+    # 접속 시점에 등록해 둔다. room_id 는 join 이벤트가 채운다.
+    _socket_connections[request.sid] = {
+        "user_id": user_id,
+        "room_id": None,
+    }
 
     return True
 #=========================================================
@@ -933,6 +961,27 @@ def socket_message(data):
         to=_socket_room_name(
             room_oid
         ),
+    )
+
+    recipient_id = (
+        room["buyer_id"]
+        if user_id == room["seller_id"]
+        else room["seller_id"]
+    )
+    item = db.items.find_one(
+        {"_id": room["item_id"]},
+        {"title": 1},
+    )
+
+    emit(
+        "chat_notification",
+        {
+            "room_id": str(room_oid),
+            "sender_name": user.get("name", "상대방"),
+            "text": text,
+            "item_title": (item or {}).get("title", "거래 채팅"),
+        },
+        to=_user_room_name(recipient_id),
     )
 
 

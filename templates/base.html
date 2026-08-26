@@ -40,10 +40,20 @@
           >
         </form>
 
-        <a class="btn icon-btn" href="/chats" aria-label="채팅 목록">
+        <a
+          class="btn icon-btn chat-notification-link"
+          href="/chats"
+          aria-label="채팅 목록"
+        >
           <svg viewBox="0 0 20 20" aria-hidden="true">
             <path d="M17 12a2 2 0 0 1-2 2H7l-4 3V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
           </svg>
+          <span
+            id="chatNotificationBadge"
+            class="chat-notification-badge d-none"
+            aria-label="읽지 않은 채팅 알림"
+          >
+          </span>
         </a>
       </div>
     </nav>
@@ -73,7 +83,7 @@
         </a>
         <a class="menu-card" href="/history">
           <i class="bi bi-receipt" aria-hidden="true"></i>
-          <span>거래내역<small>내가 올린 물품</small></span>
+          <span>내 거래글<small>내가 올린 물품</small></span>
         </a>
         <a class="menu-card" href="/logout">
           <i class="bi bi-box-arrow-right" aria-hidden="true"></i>
@@ -83,12 +93,25 @@
     </div>
     {% endif %}
 
+    {% if g.user %}
+    <div
+      id="chatNotificationArea"
+      class="chat-notification-area"
+      aria-live="polite"
+      aria-atomic="true"
+    ></div>
+    {% endif %}
+
 	<main class="container py-3">
 	  {% block content %}{% endblock %}
 	</main>
 
 	<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+	{% if g.user %}
+	<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+	<script src="{{ url_for('static', filename='js/socket.js') }}"></script>
+	{% endif %}
 	{% block scripts %}{% endblock %}
 </body>
 </html>

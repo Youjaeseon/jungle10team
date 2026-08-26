@@ -1,12 +1,23 @@
+/* 색 토큰. 삭제 확인 모달(.delete-modal)은 .community-detail-page 바깥
+   (main 바로 아래)에 있어서 그 안의 변수를 물려받지 못한다. 값을 복사하는
+   대신 선언 자리에 함께 올려서 값이 한 곳에만 남게 한다. */
 .community-page,
 .community-form-page,
-.community-detail-page {
+.community-detail-page,
+.delete-modal {
     --community-green: #124734;
     --community-green-soft: #eef7f2;
     --community-border: #dce5df;
     --community-text: #17372b;
     --community-muted: #68766f;
+}
 
+/* 레이아웃은 페이지 컨테이너에만 준다. 모달까지 max-width 를 받으면
+   부트스트랩이 화면 전체에 깔아 둔 .modal 이 1120px 로 좁혀져서, 넓은
+   화면에서 대화상자가 가운데를 벗어난다. */
+.community-page,
+.community-form-page,
+.community-detail-page {
     max-width: 1120px;
     margin: 0 auto;
     color: var(--community-text);
@@ -226,7 +237,7 @@
 }
 
 .community-detail-body {
-    min-height: 260px;
+    min-height: 120px;
     padding: 32px 0;
     color: #34483e;
     line-height: 1.8;
@@ -259,4 +270,282 @@
     .community-form textarea {
         min-height: 240px;
     }
+}
+
+
+/* ── 댓글 게시판 액자 ───────────────────────────────────────
+   게시글 본문 아래에 붙는 댓글 상자. 채팅방 액자(chat.css)와 구조는 같지만
+   높이를 정하는 방식과 행의 생김새가 다르다.
+
+   높이: 채팅방은 페이지에 카드가 하나뿐이라 calc(100vh - 100px) 로 뷰포트를
+   다 먹어도 됐다. 여기는 위에 제목·작성자·본문이 먼저 있으므로 같은 식을
+   쓰면 액자가 화면 밖으로 밀려난다. 그래서 자기 크기로 정한다.
+
+   min-height 가 아니라 height 인 이유: overflow-y: auto 는 "스크롤을 만들어라"가
+   아니라 "내용이 상자를 넘치면 그때 스크롤을 붙여라"라는 조건문이다. min- 을
+   쓰면 상한선이 없어 상자가 내용을 따라 자라기만 해서 조건이 참이 되지 않는다. */
+
+.comment-box {
+    display: flex;
+    height: min(56vh, 460px);
+    margin: 8px 0 48px;
+    overflow: hidden;
+    flex-direction: column;
+    border: 1px solid var(--community-border);
+    border-radius: 14px;
+    background-color: #ffffff;
+}
+
+.comment-box-header {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--community-border);
+    background-color: #fbfdfc;
+}
+
+.comment-box-title {
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 800;
+}
+
+.comment-count {
+    color: var(--community-green);
+    font-size: 0.95rem;
+    font-weight: 800;
+}
+
+/* 이 블록의 핵심.
+   flex: 1 로 머리말과 폼이 쓰고 남은 높이를 전부 가져간다.
+   min-height: 0 이 없으면 스크롤이 생기지 않는다 — flex 자식의 min-height
+   기본값은 0 이 아니라 auto 라서, "내용물보다 작아지지 않는다"는 하한선이
+   자동으로 붙기 때문이다. 그 하한선을 걷어내야 목록이 부모 높이로 접힌다. */
+.comment-list {
+    display: flex;
+    min-height: 0;
+    margin: 0;
+    padding: 0;
+    overflow-y: auto;
+    flex: 1;
+    flex-direction: column;
+    list-style: none;
+}
+
+/* 게시판식 행. 아바타도 말풍선도 없다.
+   grid 로 [이름][내용][시각][버튼] 네 칸을 잡는다. 내용 칸만 1fr 이라
+   이름과 시각은 자기 폭을 지키고 긴 댓글만 늘어난다. */
+.comment-row {
+    display: grid;
+    align-items: baseline;
+    padding: 11px 16px;
+    border-bottom: 1px solid #edf2ef;
+    gap: 4px 12px;
+    grid-template-columns: auto 1fr auto auto;
+}
+
+.comment-row:last-child {
+    border-bottom: 0;
+}
+
+.comment-row:hover {
+    background-color: #fbfdfc;
+}
+
+.comment-author {
+    flex: 0 0 auto;
+    color: var(--community-text);
+    font-size: 0.88rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.comment-author small {
+    margin-left: 5px;
+    color: var(--community-muted);
+    font-size: 0.76rem;
+    font-weight: 400;
+}
+
+/* pre-wrap 이 여기 있으므로 템플릿이 {{- comment.text -}} 를 써야 한다.
+   공백 압축이 꺼지면 마크업의 들여쓰기가 전부 진짜 글자가 된다. */
+.comment-text {
+    min-width: 0;
+    color: #34483e;
+    font-size: 0.92rem;
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+    white-space: pre-wrap;
+}
+
+.comment-time {
+    flex: 0 0 auto;
+    color: var(--community-muted);
+    font-size: 0.76rem;
+    white-space: nowrap;
+}
+
+.comment-actions {
+    display: flex;
+    flex: 0 0 auto;
+    gap: 6px;
+}
+
+.comment-actions button {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--community-muted);
+    font-size: 0.76rem;
+}
+
+.comment-actions button:hover {
+    color: var(--community-green);
+    text-decoration: underline;
+}
+
+/* 인라인 수정 폼. 행 전체 폭을 쓴다. */
+.comment-edit-form {
+    display: flex;
+    gap: 8px;
+    grid-column: 1 / -1;
+    margin-top: 6px;
+}
+
+.comment-edit-form input {
+    min-width: 0;
+    flex: 1;
+    padding: 5px 9px;
+    border: 1px solid var(--community-border);
+    border-radius: 7px;
+    font-size: 0.9rem;
+}
+
+.comment-edit-form input:focus {
+    border-color: var(--community-green);
+    outline: 0;
+}
+
+.comment-edit-form button {
+    flex: 0 0 auto;
+    padding: 5px 11px;
+    border: 1px solid var(--community-border);
+    border-radius: 7px;
+    background-color: #ffffff;
+    font-size: 0.8rem;
+}
+
+.comment-edit-form button[type="submit"] {
+    border-color: var(--community-green);
+    background-color: var(--community-green);
+    color: #ffffff;
+}
+
+.comment-empty {
+    display: grid;
+    flex: 1;
+    place-items: center;
+    color: var(--community-muted);
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+/* flex: 0 0 auto — 댓글이 많아졌을 때 입력 폼이 눌려 찌그러지는 것을 막는다. */
+.comment-form {
+    display: grid;
+    flex: 0 0 auto;
+    padding: 11px 14px;
+    border-top: 1px solid var(--community-border);
+    background-color: #fbfdfc;
+    gap: 8px;
+    grid-template-columns: 1fr auto;
+}
+
+.comment-form .form-control {
+    border-color: var(--community-border);
+}
+
+.comment-form .form-control:focus {
+    border-color: var(--community-green);
+    box-shadow: 0 0 0 0.2rem rgba(18, 71, 52, 0.14);
+}
+
+.comment-form .btn-success {
+    --bs-btn-bg: var(--community-green);
+    --bs-btn-border-color: var(--community-green);
+    --bs-btn-hover-bg: #0e3527;
+    --bs-btn-hover-border-color: #0e3527;
+}
+
+.comment-form .btn:disabled {
+    opacity: 0.45;
+}
+
+/* 좁은 화면에서는 네 칸을 두 줄로 접는다.
+   윗줄에 이름과 시각, 아랫줄에 내용과 버튼이 온다. */
+@media (max-width: 575.98px) {
+    .comment-box {
+        height: min(64vh, 400px);
+        margin-bottom: 32px;
+    }
+
+    .comment-row {
+        grid-template-columns: 1fr auto;
+    }
+
+    .comment-text {
+        grid-column: 1 / -1;
+    }
+
+    .comment-actions {
+        grid-column: 1 / -1;
+        justify-content: flex-end;
+    }
+}
+
+/* ── 삭제 확인 모달 ─────────────────────────────────────────
+   글 삭제와 댓글 삭제가 같은 규칙을 쓴다. 확인 창의 생김새가 대상마다
+   갈리면 사용자가 매번 다시 읽어야 한다.
+   부트스트랩 기본 모달 위에 커뮤니티 팔레트만 얹는다. 구조는 손대지 않는다. */
+
+.delete-modal .modal-content {
+    border: 0;
+    border-radius: 16px;
+}
+
+.delete-modal .modal-header,
+.delete-modal .modal-footer {
+    border-color: var(--community-border);
+}
+
+.delete-modal .modal-title {
+    font-weight: 800;
+    letter-spacing: -0.02em;
+}
+
+/* 지워질 대상을 눈에 띄게 보여 준다. 무엇을 지우는지 모른 채 누르는 일이
+   생기지 않도록, 제목을 그대로 인용한다. */
+.delete-modal-target {
+    margin: 0 0 10px;
+    padding: 12px 14px;
+    overflow: hidden;
+    border-radius: 10px;
+    background-color: var(--community-green-soft);
+    color: var(--community-green);
+    font-weight: 800;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.delete-modal-warning {
+    margin: 0;
+    color: var(--community-muted);
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+
+.delete-modal .modal-footer form {
+    margin: 0;
 }

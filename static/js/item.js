@@ -225,6 +225,11 @@ $(function () {
                     : "거래완료 처리"
             );
 
+            $toggleButton.toggleClass(
+                "item-status-button-done",
+                isDone
+            );
+
             $imageWrap.toggleClass(
                 "item-detail-image-done",
                 isDone

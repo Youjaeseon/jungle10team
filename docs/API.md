@@ -49,10 +49,23 @@
 | POST | `/items/<id>/delete` | ○ 판매자만 | 래혁/재성 | 글 삭제 → `302 /` |
 | GET | `/chats` | ○ | 래혁/재성 | 내가 참여한 1:1 방 목록 — **구매 중인 방과 판매 중인 방을 구분**해 보여준다(회의록). 헤더 말풍선 아이콘의 목적지 — 진입 방식 해석은 아래 주석 |
 | GET | `/chats/<room_id>` | ○ 방 당사자만 | 래혁/재성 | 1:1 채팅. 상단에 물건 요약 한 줄. 입장하면 WebSocket 연결(§3). 뷰어가 판매자면 하단에 같은 글의 방 페이지네이션 |
-| GET | `/history` | ○ | 진근 | 거래내역. 판매 탭(P0) / 구매 탭(P1) |
+| GET | `/history` | ○ | 진근 | **내 거래글**(구 활동내역 · 구 거래내역). `items.seller_id` 가 나인 글 전부를 한 목록으로 — 판매·교환·나눔을 가리지 않는다. 탭 없음. 정렬은 **거래완료 먼저, 같은 그룹 안에서는 `created_at` 내림차순** |
 | GET/POST | `/items/<id>/edit` | ○ 판매자만 | 공용 풀 | **P1** 글 수정 |
 | GET | `/community` `/community/new` `/community/<id>` | ○ | 진근 | **P2** 커뮤니티 3종 (거래 CRUD 복사). 엔드포인트 설계·구현은 진근 |
 
+> **`/history` 의 구매 탭은 2026-08-27 에 제거됐다.** `items` 에 구매자 필드가 없고
+> 결제도 구매 확정도 없어서(§4 · `DESIGN.md`) "누가 샀는지" 는 어디에도 남지 않는다.
+> 그래서 구매 탭은 **내가 채팅방을 연 물건**(`rooms.buyer_id`)을 근사값으로 썼는데,
+> 문의만 하고 사지 않은 것까지 '구매' 라고 부르게 되어 라벨이 실제보다 넓었다. 탭을
+> 걷어내고 페이지를 '내가 올린 글' 하나로 좁혔다. **이 라우트는 이제 `rooms` 를 읽지
+> 않는다.** 정확한 구매 기록이 필요해지면 거래완료 토글에서 구매자를 고르게 하고
+> `items` 에 기록해야 하며, 그것은 팀 회의 안건이다.
+>
+> **정렬 규칙.** `status` 가 `"selling"` / `"done"` 문자열이라서 몽고의 `sort` 하나로는
+> 완료를 앞에 놓을 수 없다 — 사전순으로는 `selling` 이 앞선다. `created_at` 내림차순으로
+> 받아 온 뒤 완료 여부로 한 번 더 정렬한다. 파이썬 정렬이 stable 이라 그룹 안의 최신순은
+> 그대로 남는다.
+>
 > 래혁/재성이 함께 적힌 행: 재성이 라우트(백엔드), 래혁이 그 화면의 템플릿·JS(프론트엔드)를
 > 맡는다. 파일 단위 경계는 미확정 — 제안은 `ARCHITECTURE.md` §6.
 >
@@ -110,7 +123,52 @@
 |---|---|---|---|
 | GET | `/api/chats/unread` | P1 | navbar 💬 안 읽음 카운트 (WebSocket 활용 여부 미정) |
 | POST | `/api/items/<id>/like` | P2 | 찜 토글 |
-| POST | `/api/community/<id>/comments` | P2 | 댓글 등록 (Ajax, 나머지 커뮤니티는 SSR) |
+
+### 2.x 커뮤니티 댓글 (구현 완료, 2026-08-27 · 진근)
+
+거래 채팅과 달리 **WebSocket을 쓰지 않는다.** 0.5초 AJAX 폴링이다. 커뮤니티는
+동시 인원이 적고 즉각성 요구가 낮아, 소켓의 네임스페이스·룸·재연결 처리를
+들이는 것보다 폴링이 단순하다고 판단했다. `routes/chat.py`의 SocketIO 계층은
+건드리지 않는다.
+
+경로가 `/api/`로 시작해야 하는 이유: `auth_util.py`의 `login_required`는 그때만
+401 JSON을 돌려주고, 아니면 `/login`으로 302 리다이렉트한다. 폴링이 그것을
+받으면 로그인 페이지 HTML을 JSON으로 파싱하려다 터진다.
+
+| Method | Path | 설명 |
+|---|---|---|
+| GET | `/api/community/<post_id>/comments?since=<id>` | 목록. `since`가 있으면 그 id 뒤에 달린 것만 |
+| POST | `/api/community/<post_id>/comments` | 등록. body `{"text": "..."}` |
+| POST | `/api/community/comments/<comment_id>/edit` | 본인 댓글 수정. body `{"text": "..."}` |
+| POST | `/api/community/comments/<comment_id>/delete` | 본인 댓글 삭제 |
+
+```
+GET  /api/community/<post_id>/comments?since=<id>
+성공  200 {"ok": true,
+           "comments": [
+             {"id": "...", "author_id": "...", "name": "조진근", "lab": "SW-AI LAB",
+              "text": "저요저요", "created_at": "...", "updated_at": "...",
+              "display_time": "08-27 09:12", "edited": false}
+           ],
+           "total": 12,
+           "stamp": "2026-08-27T00:12:33.123456"}
+실패  404 {"error": "post_not_found"} · 401 {"error": "login_required"}
+```
+
+**`total`과 `stamp`가 왜 필요한가.** `since` 방식은 "마지막 id 뒤에 생긴 것"만
+볼 수 있어서, 남이 댓글을 수정하거나 삭제한 것은 구조적으로 관측되지 않는다.
+그래서 두 값을 함께 내려보낸다 — `total`은 전체 개수(삭제를 잡는다), `stamp`는
+가장 늦은 `updated_at`(수정을 잡는다). 클라이언트는 화면에 그려 둔 값과 이
+둘이 어긋날 때만 전체를 다시 받는다. 평상시에는 빈 배열만 오간다.
+
+`total`과 `stamp`는 `since` 여부와 무관하게 **항상 전체 기준**이며, 작성·수정·
+삭제 응답에도 같이 실린다(그래야 자기 동작 직후 불필요한 전체 재요청이 없다).
+
+저장은 `db.post_comments` 컬렉션이다. 게시글 문서의 `comments` 배열이 아니다.
+목록 페이지의 "댓글 N"은 `post_list()`가 집계 한 번으로 센다.
+
+에러 코드: `post_not_found` `comment_not_found` `not_author`(403)
+`empty_text`(400) `too_long`(400, 500자 초과) `login_required`(401)
 
 ## 3. WebSocket 이벤트 계약 (Flask-SocketIO)
 
@@ -137,5 +195,5 @@
 selling(판매중) ⇄ done(거래완료)     — 판매자 단독, ON/OFF 토글
 ```
 - **양방향** (v6 변경). 완료를 실수로 눌러도 다시 끄면 된다.
-- 표시 규칙: 피드·거래내역·상세·채팅 어디서든 `items.status` 하나를 읽어
+- 표시 규칙: 피드·내 거래글·상세·채팅 어디서든 `items.status` 하나를 읽어
   done이면 '완료' 뱃지 + 사진 흑백 필터.

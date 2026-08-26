@@ -41,7 +41,7 @@ bash ../src/shot.sh _probe/BuyerFlow.html /tmp/x.png   # 3. 넘침 확인 (1280x
 | 5 | `WriteForm` | 거래 글 작성 |
 | 6 | `Sidebar` | 햄버거 → offcanvas |
 | 7 | `ChatList` | 사이드바 → 채팅목록 |
-| 8 | `History` | 사이드바 → 거래내역 |
+| 8 | `History` | 사이드바 → 내 거래글 (와이어프레임 안의 라벨은 옛 이름 '거래내역' 그대로) |
 | 9 | `Logout` | 사이드바 → 로그아웃 |
 | 10 | `Community` | 커뮤니티 (P2) |
 | 11 | `Architecture` | 아키텍처 |

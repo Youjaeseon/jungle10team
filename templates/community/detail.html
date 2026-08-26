@@ -10,14 +10,23 @@
     <article class="community-detail-page">
         <div class="community-detail-actions">
             <a class="btn btn-outline-secondary" href="{{ url_for('community.post_list') }}">목록으로</a>
+            {#
+              브라우저 기본 confirm() 대신 부트스트랩 모달을 쓴다. 기본
+              confirm 은 OS 마다 생김새가 달라 나머지 화면과 따로 논다.
+
+              여는 데 자바스크립트가 필요 없다. data-bs-toggle / data-bs-target
+              두 속성만 있으면 부트스트랩이 알아서 연다(번들은 base.html:127).
+              실제 form 은 모달 안에 있고, 이 버튼은 여는 일만 한다.
+            #}
             {% if is_author %}
-                <form
-                    action="{{ url_for('community.delete_post', post_id=post._id) }}"
-                    method="post"
-                    onsubmit="return confirm('이 글을 삭제할까요?');"
+                <button
+                    class="btn btn-outline-danger"
+                    type="button"
+                    data-bs-toggle="modal"
+                    data-bs-target="#deletePostModal"
                 >
-                    <button class="btn btn-outline-danger" type="submit">삭제</button>
-                </form>
+                    삭제
+                </button>
             {% endif %}
         </div>
 
@@ -34,5 +43,223 @@
         </header>
 
         <div class="community-detail-body">{{ post.body }}</div>
+
+        {#
+          댓글 액자.
+          채팅방(chat_room.html)과 액자 구조는 같지만 행의 생김새가 다르다.
+          말풍선도 아바타도 없고, 이름·내용·시각이 한 줄로 놓이는 게시판식이다.
+
+          data-* 로 JS 에 값을 넘긴다. 템플릿 안에 <script> 를 두면 값이
+          마크업에 섞여 어디서 온 값인지 추적하기 어려워진다.
+        #}
+        <section
+            class="comment-box"
+            data-post-id="{{ post._id }}"
+            data-current-user-id="{{ current_user_id }}"
+            data-comment-stamp="{{ comment_stamp }}"
+        >
+            <header class="comment-box-header">
+                <h2 class="comment-box-title">댓글</h2>
+                <span class="comment-count" id="commentCount">{{ comments|length }}</span>
+            </header>
+
+            <ol
+                class="comment-list"
+                id="commentList"
+                aria-live="polite"
+                aria-label="댓글 목록"
+            >
+                {% for comment in comments %}
+                    <li
+                        class="comment-row"
+                        data-comment-id="{{ comment.id }}"
+                        data-author-id="{{ comment.author_id }}"
+                    >
+                        <span class="comment-author">
+                            {{ comment.name }}
+                            {% if comment.lab %}<small>{{ comment.lab }}</small>{% endif %}
+                        </span>
+
+                        {#
+                          {{- -}} 가 필수다. CSS 에 white-space: pre-wrap 이 걸리면
+                          공백 압축이 꺼지면서 태그와 텍스트 사이의 줄바꿈·들여쓰기가
+                          전부 진짜 글자로 승격된다. 하이픈이 Jinja 컴파일 단계에서
+                          그 공백을 지운다.
+                        #}
+                        <span class="comment-text">{{- comment.text -}}</span>
+
+                        <time
+                            class="comment-time"
+                            datetime="{{ comment.created_at }}"
+                        >
+                            {{ comment.display_time }}{% if comment.edited %} (수정됨){% endif %}
+                        </time>
+
+                        {% if comment.author_id == current_user_id %}
+                            <span class="comment-actions">
+                                <button type="button" class="comment-edit-button">수정</button>
+                                <button type="button" class="comment-delete-button">삭제</button>
+                            </span>
+                        {% endif %}
+                    </li>
+                {% else %}
+                    <li class="comment-empty" id="commentEmpty">
+                        첫 댓글을 남겨 보세요.
+                    </li>
+                {% endfor %}
+            </ol>
+
+            <form class="comment-form" id="commentForm" autocomplete="off">
+                <label class="visually-hidden" for="commentInput">댓글 입력</label>
+                <input
+                    type="text"
+                    class="form-control"
+                    id="commentInput"
+                    name="text"
+                    maxlength="500"
+                    placeholder="댓글을 입력해 주세요"
+                >
+                <button
+                    type="submit"
+                    class="btn btn-success"
+                    id="commentSubmit"
+                    disabled
+                >
+                    등록
+                </button>
+            </form>
+
+            {# 전송 실패 같은 소식을 화면 낭독기에 전달하는 자리. 눈에는 보이지 않는다. #}
+            <div class="visually-hidden" id="commentStatus" aria-live="polite"></div>
+        </section>
     </article>
+
+    {% if is_author %}
+        <div
+            class="modal fade delete-modal"
+            id="deletePostModal"
+            tabindex="-1"
+            aria-labelledby="deletePostModalLabel"
+            aria-hidden="true"
+        >
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2 class="modal-title h5" id="deletePostModalLabel">
+                            글을 삭제할까요?
+                        </h2>
+
+                        <button
+                            type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal"
+                            aria-label="닫기"
+                        ></button>
+                    </div>
+
+                    <div class="modal-body">
+                        <p class="delete-modal-target">{{ post.title }}</p>
+
+                        <p class="delete-modal-warning">
+                            {% if comments %}
+                                이 글에 달린 댓글 {{ comments|length }}개도 함께 사라져요.
+                            {% endif %}
+                            한 번 지우면 되돌릴 수 없어요.
+                        </p>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button
+                            type="button"
+                            class="btn btn-outline-secondary"
+                            data-bs-dismiss="modal"
+                        >
+                            취소
+                        </button>
+
+                        {# 실제 삭제는 이 form 이 한다. 서버 쪽 권한 검사는
+                           community.py 의 delete_post 에 그대로 있다.
+                           모달은 실수를 줄이는 장치이지 방어선이 아니다. #}
+                        <form
+                            action="{{ url_for('community.delete_post', post_id=post._id) }}"
+                            method="post"
+                        >
+                            <button class="btn btn-danger" type="submit">
+                                삭제
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    {#
+      댓글 삭제 확인 모달.
+
+      글 모달과 달리 이것 하나를 모든 댓글이 돌려 쓴다. 댓글은 폴링으로
+      늘어나고 줄어들기 때문에, 댓글마다 모달을 그리면 화면에 죽은 마크업이
+      계속 쌓인다. 어느 댓글을 지우는지는 community_comments.js 가 열기 직전에
+      채워 넣는다.
+
+      로그인한 사람은 누구나 댓글을 쓸 수 있으므로 is_author 로 감싸지 않는다.
+      본인 댓글에만 삭제 버튼이 붙는 판정은 목록 쪽에서 한다.
+    #}
+    <div
+        class="modal fade delete-modal"
+        id="deleteCommentModal"
+        tabindex="-1"
+        aria-labelledby="deleteCommentModalLabel"
+        aria-hidden="true"
+    >
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title h5" id="deleteCommentModalLabel">
+                        댓글을 삭제할까요?
+                    </h2>
+
+                    <button
+                        type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="닫기"
+                    ></button>
+                </div>
+
+                <div class="modal-body">
+                    {# 지울 댓글의 본문이 JS 로 채워진다. #}
+                    <p class="delete-modal-target" id="deleteCommentTarget"></p>
+
+                    <p class="delete-modal-warning">
+                        한 번 지우면 되돌릴 수 없어요.
+                    </p>
+                </div>
+
+                <div class="modal-footer">
+                    <button
+                        type="button"
+                        class="btn btn-outline-secondary"
+                        data-bs-dismiss="modal"
+                    >
+                        취소
+                    </button>
+
+                    {# 글 삭제와 달리 form 이 아니다. 댓글 삭제는 JSON API 를
+                       부르고 화면만 고치므로 페이지를 떠나지 않는다. #}
+                    <button
+                        type="button"
+                        class="btn btn-danger"
+                        id="deleteCommentConfirm"
+                    >
+                        삭제
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script src="{{ url_for('static', filename='js/community_comments.js') }}"></script>
 {% endblock %}
