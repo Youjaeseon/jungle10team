@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}커뮤니티 글쓰기 | 정글장터{% endblock %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/community.css') }}">
+{% endblock %}
+
+{% block content %}
+    <section class="community-form-page">
+        <div class="community-form-heading">
+            <div>
+                <h1>커뮤니티 글쓰기</h1>
+                <p>정글 구성원들과 질문과 정보를 나눠 보세요.</p>
+            </div>
+            <a class="btn btn-outline-secondary" href="{{ url_for('community.post_list') }}">취소</a>
+        </div>
+
+        {% if error %}
+            <div class="alert alert-danger" role="alert">{{ error }}</div>
+        {% endif %}
+
+        <form class="community-form" action="{{ url_for('community.create_post') }}" method="post">
+            <div class="mb-3">
+                <label class="form-label fw-bold" for="communityCategory">카테고리</label>
+                <select class="form-select form-select-lg" id="communityCategory" name="category" required>
+                    {% for category_value, category_name in categories.items() %}
+                        <option
+                            value="{{ category_value }}"
+                            {% if form_values.category == category_value %}selected{% endif %}
+                        >
+                            {{ category_name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-bold" for="communityTitle">제목</label>
+                <input
+                    class="form-control form-control-lg"
+                    id="communityTitle"
+                    name="title"
+                    type="text"
+                    value="{{ form_values.title }}"
+                    maxlength="80"
+                    placeholder="제목"
+                    required
+                >
+            </div>
+
+            <div class="mb-4">
+                <div class="d-flex justify-content-between gap-3">
+                    <label class="form-label fw-bold" for="communityBody">내용</label>
+                    <small class="text-secondary"><span id="communityBodyCount">{{ form_values.body|length }}</span>/3000</small>
+                </div>
+                <textarea
+                    class="form-control"
+                    id="communityBody"
+                    name="body"
+                    maxlength="3000"
+                    placeholder="내용"
+                    required
+                >{{ form_values.body }}</textarea>
+            </div>
+
+            <button class="btn btn-success btn-lg w-100" type="submit">등록하기</button>
+        </form>
+    </section>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        const communityBody = document.getElementById("communityBody");
+        const communityBodyCount = document.getElementById("communityBodyCount");
+
+        communityBody.addEventListener("input", () => {
+            communityBodyCount.textContent = communityBody.value.length;
+        });
+    </script>
+{% endblock %}

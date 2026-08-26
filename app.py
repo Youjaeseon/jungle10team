@@ -7,6 +7,7 @@ from flask import Flask, request
 
 from routes.auth import bp as auth_bp
 from routes.chat import chat_bp
+from routes.community import community_bp
 from routes.items import items_bp
 from routes.main import bp as main_bp
 
@@ -16,6 +17,7 @@ app.register_blueprint(auth_bp)    # [진근] /signup /login /logout /api/login
 app.register_blueprint(items_bp)   # [재성] / /items /items/<id> ...
 app.register_blueprint(chat_bp)    # [재성] /chats /chats/<id> ...
 app.register_blueprint(main_bp)
+app.register_blueprint(community_bp)  # /community /community/new /community/<id>
 
 
 # 뒤로가기로 돌아온 페이지가 옛 화면을 보여주던 문제.

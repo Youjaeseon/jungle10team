@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}{{ post.title }} | 정글장터{% endblock %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/community.css') }}">
+{% endblock %}
+
+{% block content %}
+    <article class="community-detail-page">
+        <div class="community-detail-actions">
+            <a class="btn btn-outline-secondary" href="{{ url_for('community.post_list') }}">목록으로</a>
+            {% if is_author %}
+                <form
+                    action="{{ url_for('community.delete_post', post_id=post._id) }}"
+                    method="post"
+                    onsubmit="return confirm('이 글을 삭제할까요?');"
+                >
+                    <button class="btn btn-outline-danger" type="submit">삭제</button>
+                </form>
+            {% endif %}
+        </div>
+
+        <header class="community-detail-heading">
+            <span class="community-category-badge community-category-{{ post.category }}">
+                {{ category_label }}
+            </span>
+            <h1>{{ post.title }}</h1>
+            <div class="community-post-meta">
+                <span>{{ author.name if author else '알 수 없는 사용자' }}</span>
+                {% if author and author.lab %}<span>{{ author.lab }}</span>{% endif %}
+                {% if post.created_at %}<span>{{ post.created_at.strftime('%Y.%m.%d %H:%M') }}</span>{% endif %}
+            </div>
+        </header>
+
+        <div class="community-detail-body">{{ post.body }}</div>
+    </article>
+{% endblock %}
