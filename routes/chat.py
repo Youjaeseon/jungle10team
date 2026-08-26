@@ -723,3 +723,15 @@ def socket_join(data):
    _presence_counts[
        presence_key
    ] += 1
+
+   # 첫 번째 연결일 때만 다른 사용자에게 온라인 상태 전송
+   if previous_count == 0:
+         emit(
+               "presence",
+               {
+                  "user_id": str(user_id),
+                  "online": True,
+               },
+               to=socket_room,
+               include_self=False,
+         )
