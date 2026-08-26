@@ -287,24 +287,49 @@ def chat_list():
       partner = db.users.find_one({"_id": partner_id})
 
       #마지막 메세지
-      last_message = db.message.find_one({"room_id": room["_id"]}, sort=[("created_at", -1)])
+      last_message_doc = db.messages.find_one(
+            {
+                "room_id": room["_id"]
+            },
+            sort=[
+                ("created_at", -1)
+            ],
+        )
 
-      room_data = {
-         "room" : room,
-         "item" : item,
-         "peer" : peer,
-         "last_message" : last_message,
-      }
+      if last_message_doc:
 
-      if room_type == "selling":
-            selling_rooms.append(room_data)
+            last_message = {
+                "text": last_message_doc["text"],
+                "created_at": (
+                    last_message_doc[
+                        "created_at"
+                    ].isoformat()
+                ),
+                "display_time": _display_time(
+                    last_message_doc[
+                        "created_at"
+                    ]
+                ),
+            }
+
+            sort_time = last_message_doc[
+                "created_at"
+            ]
+
       else:
-            buying_rooms.append(room_data)
-            """
-            구매와 판매 채팅을 각각 넘긴다.
-            """
-      return render_template("chat_list.html", selling_rooms=selling_rooms, buying_rooms=buying_rooms)
 
+            last_message = {
+                "text": "아직 메시지가 없습니다.",
+                "created_at": "",
+                "display_time": "",
+            }
+
+            sort_time = room.get(
+                "created_at",
+                datetime.min.replace(
+                    tzinfo=timezone.utc
+                ),
+            )
 # =========================================================
 # 채팅 입구(GET)
 # 구매자:
