@@ -1,0 +1,29 @@
+# 정글장터 배포용 systemd 유닛.
+#
+# deploy/bootstrap.sh 가 이 파일을 /etc/systemd/system/ 으로 복사하면서
+# User / WorkingDirectory / ExecStart 를 실제 계정과 경로로 바꿔 쓴다.
+# 손으로 설치한다면 아래 세 값을 직접 확인한다.
+
+[Unit]
+Description=jungle10team (Flask + SocketIO)
+# mongod 가 먼저 떠야 한다. db.py 가 localhost:27017 을 하드코딩하고 있다.
+After=network.target mongod.service
+Wants=mongod.service
+
+[Service]
+User=ubuntu
+
+# 이 줄이 핵심이다. auth_util.py 의 load_dotenv() 는 현재 작업 디렉터리에서
+# 위로 .env 를 찾는다. 경로가 어긋나면 KeyError: 'JWT_SECRET' 으로 죽는다.
+WorkingDirectory=/home/ubuntu/jungle10team
+
+ExecStart=/home/ubuntu/jungle10team/venv/bin/python app.py
+
+# 발표 도중 예외로 죽었을 때 되살린다. 다만 .env 누락처럼 시작하자마자
+# 죽는 경우에는 무한 재시작이 되므로, 실패가 이어지면 로그를 먼저 본다.
+#   journalctl -u jungle10team -n 50 --no-pager
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target
