@@ -237,7 +237,7 @@
     display: flex;
     width: 100%;
     max-width: 880px;
-    min-height: calc(100vh - 150px);
+    height: calc(100vh - 150px);
     margin: 0 auto;
     overflow: hidden;
     flex-direction: column;
@@ -329,7 +329,7 @@
 
 .chat-message-list {
     display: flex;
-    min-height: 360px;
+    min-height: 0px;
     margin: 0;
     padding: 24px 18px;
     overflow-y: auto;
@@ -444,6 +444,7 @@
     padding: 14px;
     border-top: 1px solid var(--chat-border);
     background-color: #ffffff;
+    flex: 0 0 auto;
 }
 
 .chat-message-form .form-control {
@@ -477,7 +478,7 @@
 
 @media (max-width: 575.98px) {
     .chat-room-page {
-        min-height: calc(100vh - 110px);
+        min-height: calc(100vh - 100px);
         border-right: 0;
         border-left: 0;
         border-radius: 0;
