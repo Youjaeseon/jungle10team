@@ -757,3 +757,121 @@ def socket_join(data):
                   "online": True,
                },
          )
+
+# =========================================================
+# SocketIO 메시지 전송
+# =========================================================
+
+@socketio.on("message")
+def socket_message(data):
+
+    user = _get_socket_user()
+
+    if not user:
+
+        emit(
+            "error",
+            {
+                "error": "login_required"
+            },
+        )
+
+        return
+
+    connection = (
+        _socket_connections.get(
+            request.sid
+        )
+    )
+
+    # join 이벤트를 아직 안 보낸 상태
+    if not connection:
+
+        emit(
+            "error",
+            {
+                "error": "not_joined"
+            },
+        )
+
+        return
+
+    room_oid = connection[
+        "room_id"
+    ]
+
+    room = db.rooms.find_one({
+        "_id": room_oid
+    })
+
+    if not room:
+
+        emit(
+            "error",
+            {
+                "error": "room_not_found"
+            },
+        )
+
+        return
+
+    user_id = user["_id"]
+
+    if not _is_room_member(
+        room,
+        user_id,
+    ):
+
+        emit(
+            "error",
+            {
+                "error": "not_member"
+            },
+        )
+
+        return
+
+    if not isinstance(data, dict):
+
+        emit(
+            "error",
+            {
+                "error": "empty_text"
+            },
+        )
+
+        return
+
+    text = (
+        data.get("text")
+        or ""
+    ).strip()
+
+    if not text:
+
+        emit(
+            "error",
+            {
+                "error": "empty_text"
+            },
+        )
+
+        return
+
+    # HTML maxlength와 동일하게 서버에서도 제한
+    if len(text) > 500:
+
+        emit(
+            "error",
+            {
+                "error": "text_too_long"
+            },
+        )
+
+        return
+
+    created_at = datetime.now(
+        timezone.utc
+    )
+
+    
