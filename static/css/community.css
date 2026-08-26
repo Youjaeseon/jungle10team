@@ -1,12 +1,23 @@
+/* 색 토큰. 삭제 확인 모달(.delete-modal)은 .community-detail-page 바깥
+   (main 바로 아래)에 있어서 그 안의 변수를 물려받지 못한다. 값을 복사하는
+   대신 선언 자리에 함께 올려서 값이 한 곳에만 남게 한다. */
 .community-page,
 .community-form-page,
-.community-detail-page {
+.community-detail-page,
+.delete-modal {
     --community-green: #124734;
     --community-green-soft: #eef7f2;
     --community-border: #dce5df;
     --community-text: #17372b;
     --community-muted: #68766f;
+}
 
+/* 레이아웃은 페이지 컨테이너에만 준다. 모달까지 max-width 를 받으면
+   부트스트랩이 화면 전체에 깔아 둔 .modal 이 1120px 로 좁혀져서, 넓은
+   화면에서 대화상자가 가운데를 벗어난다. */
+.community-page,
+.community-form-page,
+.community-detail-page {
     max-width: 1120px;
     margin: 0 auto;
     color: var(--community-text);
@@ -492,4 +503,49 @@
         grid-column: 1 / -1;
         justify-content: flex-end;
     }
+}
+
+/* ── 삭제 확인 모달 ─────────────────────────────────────────
+   글 삭제와 댓글 삭제가 같은 규칙을 쓴다. 확인 창의 생김새가 대상마다
+   갈리면 사용자가 매번 다시 읽어야 한다.
+   부트스트랩 기본 모달 위에 커뮤니티 팔레트만 얹는다. 구조는 손대지 않는다. */
+
+.delete-modal .modal-content {
+    border: 0;
+    border-radius: 16px;
+}
+
+.delete-modal .modal-header,
+.delete-modal .modal-footer {
+    border-color: var(--community-border);
+}
+
+.delete-modal .modal-title {
+    font-weight: 800;
+    letter-spacing: -0.02em;
+}
+
+/* 지워질 대상을 눈에 띄게 보여 준다. 무엇을 지우는지 모른 채 누르는 일이
+   생기지 않도록, 제목을 그대로 인용한다. */
+.delete-modal-target {
+    margin: 0 0 10px;
+    padding: 12px 14px;
+    overflow: hidden;
+    border-radius: 10px;
+    background-color: var(--community-green-soft);
+    color: var(--community-green);
+    font-weight: 800;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.delete-modal-warning {
+    margin: 0;
+    color: var(--community-muted);
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+
+.delete-modal .modal-footer form {
+    margin: 0;
 }

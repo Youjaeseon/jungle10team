@@ -371,13 +371,59 @@ $(function () {
     });
 
     // ── 삭제 ────────────────────────────────────────────────
+    // 브라우저 기본 confirm() 대신 부트스트랩 모달을 쓴다. 글 삭제와 같은
+    // 생김새라, 확인 창이 대상마다 달라 보이지 않는다.
+    //
+    // 모달은 화면에 하나뿐이고 모든 댓글이 돌려 쓴다. 그래서 "지금 어느
+    // 댓글을 지우려는 중인가"를 기억해 둘 자리가 필요하다.
+    let pendingDeleteId = null;
+
+    const $deleteModal = $("#deleteCommentModal");
+    const $deleteTarget = $("#deleteCommentTarget");
+    const $deleteConfirm = $("#deleteCommentConfirm");
+
+    function deleteModalInstance() {
+        const el = $deleteModal.get(0);
+
+        if (!el || typeof bootstrap === "undefined") {
+            return null;
+        }
+
+        return bootstrap.Modal.getOrCreateInstance(el);
+    }
+
     $list.on("click", ".comment-delete-button", function () {
         const $row = $(this).closest(".comment-row");
-        const commentId = String($row.data("commentId"));
 
-        if (!window.confirm("이 댓글을 삭제할까요?")) {
+        pendingDeleteId = String($row.data("commentId"));
+
+        // 지울 댓글의 본문을 모달에 보여 준다. .text() 로 넣는다 —
+        // 여기서 .html() 을 쓰면 남이 쓴 댓글의 태그가 살아난다.
+        $deleteTarget.text($row.find(".comment-text").text());
+
+        const modal = deleteModalInstance();
+
+        if (modal) {
+            modal.show();
             return;
         }
+
+        // 부트스트랩이 없는 상황(CDN 실패 등)에서도 삭제 자체는 되어야 한다.
+        if (window.confirm("이 댓글을 삭제할까요?")) {
+            $deleteConfirm.trigger("click");
+        }
+    });
+
+    $deleteConfirm.on("click", function () {
+        if (pendingDeleteId === null) {
+            return;
+        }
+
+        const commentId = pendingDeleteId;
+        const $row = $list.find(`[data-comment-id="${commentId}"]`);
+
+        pendingDeleteId = null;
+        $deleteConfirm.prop("disabled", true);
 
         postJson(`/api/community/comments/${commentId}/delete`)
             .then(function (data) {
@@ -398,7 +444,23 @@ $(function () {
             })
             .catch(function () {
                 announce("댓글을 삭제하지 못했어요.");
+            })
+            .then(function () {
+                $deleteConfirm.prop("disabled", false);
+
+                const modal = deleteModalInstance();
+
+                if (modal) {
+                    modal.hide();
+                }
             });
+    });
+
+    // 취소하거나 바깥을 눌러 닫았을 때 남은 대상을 지운다. 이게 없으면
+    // 다음에 모달을 열 때 이전 대상이 그대로 남아 엉뚱한 댓글이 지워진다.
+    $deleteModal.on("hidden.bs.modal", function () {
+        pendingDeleteId = null;
+        $deleteTarget.text("");
     });
 
     // ── 수정 ────────────────────────────────────────────────
