@@ -735,3 +735,25 @@ def socket_join(data):
                to=socket_room,
                include_self=False,
          )
+
+   #나에게는 상대방의 온라인 상태를 전송
+   if user_id == room["seller_id"]:
+       partner_id = room["buyer_id"]
+   else:
+       partner_id = room["seller_id"]
+
+   partner_key = (
+       str(room_oid),
+       str(partner_id),
+   )
+
+   if _presence_counts.get(
+       partner_key, 0,
+   ) > 0:
+         emit(
+               "presence",
+               {
+                  "user_id": str(partner_id),
+                  "online": True,
+               },
+         )
