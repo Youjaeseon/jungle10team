@@ -694,3 +694,32 @@ def socket_join(data):
                 to=old_room_name,
                 include_self=False,
             )
+
+   #새로운 방 참가
+   socket_room = (
+       _socket_room_name(room_oid)
+   )
+
+   join_room(socket_room)
+
+   _socket_connections[
+        request.sid
+    ] = {
+        "room_id": room_oid,
+        "user_id": user_id,
+    }
+
+   presence_key = (
+        str(room_oid),
+        str(user_id),
+    )
+
+   previous_count = (
+       _presence_counts[
+           presence_key
+       ]
+   )
+
+   _presence_counts[
+       presence_key
+   ] += 1
