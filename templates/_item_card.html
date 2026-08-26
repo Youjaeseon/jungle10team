@@ -4,7 +4,12 @@
         class="text-decoration-none text-dark"
     >
         <div class="item-card-image-wrap">
-            {% if item.photo %}
+            {% if item.status == "done" %}
+                <div class="item-card-completed-message">
+                    <strong>거래 완료</strong>
+                    <span>거래가 완료된 물품입니다</span>
+                </div>
+            {% elif item.photo %}
                 <img
                     src="{{ url_for('static', filename='uploads/' ~ item.photo) }}"
                     alt="{{ item.title }}"

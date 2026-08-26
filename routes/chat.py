@@ -71,6 +71,11 @@ def _is_room_member(room, user_id):
 def _socket_room_name(room_id):
     return f"room:{room_id}"
 
+
+def _user_room_name(user_id):
+    """로그인 사용자가 어느 화면에 있어도 알림을 받을 개인 소켓 방."""
+    return f"user:{user_id}"
+
 #한국 시간 변환
 def _to_kst(value):
     if not value:
@@ -602,6 +607,8 @@ def socket_connet(auth=None):
     if not user:
         return False
 
+    join_room(_user_room_name(user["_id"]))
+
     return True
 #=========================================================
 # Socket 방 참가
@@ -933,6 +940,27 @@ def socket_message(data):
         to=_socket_room_name(
             room_oid
         ),
+    )
+
+    recipient_id = (
+        room["buyer_id"]
+        if user_id == room["seller_id"]
+        else room["seller_id"]
+    )
+    item = db.items.find_one(
+        {"_id": room["item_id"]},
+        {"title": 1},
+    )
+
+    emit(
+        "chat_notification",
+        {
+            "room_id": str(room_oid),
+            "sender_name": user.get("name", "상대방"),
+            "text": text,
+            "item_title": (item or {}).get("title", "거래 채팅"),
+        },
+        to=_user_room_name(recipient_id),
     )
 
 

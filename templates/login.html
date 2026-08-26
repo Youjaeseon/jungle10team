@@ -1,60 +1,191 @@
 {% extends "base.html" %}
 {% block title %}로그인 · 정글장터{% endblock %}
 
+{% block styles %}
+<style>
+  body {
+    background: #fbfdfb;
+  }
+
+  .login-page {
+    display: grid;
+    min-height: calc(100vh - 2rem);
+    place-items: center;
+    padding: 2.5rem 1rem;
+  }
+
+  .login-card {
+    width: min(520px, 100%);
+    padding: 3.5rem 3.25rem 2.75rem;
+    border: 1px solid #d9e8de;
+    border-radius: 28px;
+    background: #ffffff;
+    box-shadow: 0 22px 60px rgba(18, 55, 42, 0.08);
+  }
+
+  .login-brand {
+    margin-bottom: 2.5rem;
+    text-align: center;
+  }
+
+  .login-brand-mark {
+    width: 62px;
+    height: 62px;
+    margin-bottom: 0.6rem;
+    object-fit: contain;
+  }
+
+  .login-brand h1 {
+    margin-bottom: 0.5rem;
+    color: #12372a;
+    font-size: clamp(2.25rem, 6vw, 3rem);
+    font-weight: 800;
+    letter-spacing: -0.06em;
+  }
+
+  .login-brand p {
+    margin: 0;
+    color: #737d83;
+    font-size: 1.05rem;
+  }
+
+  .login-card .form-label {
+    margin-bottom: 0.65rem;
+    color: #173b2e;
+    font-size: 1.05rem;
+    font-weight: 700;
+  }
+
+  .login-card .form-control {
+    min-height: 58px;
+    border: 1px solid #d9dee2;
+    border-radius: 12px;
+    background-color: #ffffff;
+    font-size: 1rem;
+  }
+
+  .login-card .form-control:focus {
+    border-color: #237a4d;
+    box-shadow: 0 0 0 0.22rem rgba(35, 122, 77, 0.13);
+  }
+
+  .login-button {
+    min-height: 58px;
+    border: 0;
+    border-radius: 12px;
+    background-color: #103d2e;
+    color: #ffffff;
+    font-size: 1.1rem;
+    font-weight: 700;
+  }
+
+  .login-button:hover,
+  .login-button:focus {
+    background-color: #176b3a;
+    color: #ffffff;
+  }
+
+  .login-signup {
+    margin: 2rem 0 0;
+    color: #294137;
+    text-align: center;
+  }
+
+  .login-signup a {
+    color: #176b3a;
+    font-weight: 700;
+    text-underline-offset: 3px;
+  }
+
+  @media (max-width: 575.98px) {
+    .login-page {
+      padding: 1rem 0;
+    }
+
+    .login-card {
+      padding: 2.5rem 1.5rem 2rem;
+      border-radius: 22px;
+      box-shadow: 0 14px 36px rgba(18, 55, 42, 0.07);
+    }
+  }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="mx-auto" style="max-width: 400px;">
-  <h1 class="h4 mb-3">로그인</h1>
+<div class="login-page">
+  <section class="login-card" aria-labelledby="login-title">
+    <header class="login-brand">
+      <img
+        class="login-brand-mark"
+        src="data:image/webp;base64,UklGRjIKAABXRUJQVlA4WAoAAAAQAAAAVgAAXQAAQUxQSH8BAAABYNtIUpjtv+kNDPz/gRxHxATwRuXJvsnve1w/xzd5+BYf5b/yUT7CIa5Vn2XBh+izbOM6n+WzbOFej59ljWzts0KcJ0xwgW0CbDj1eEjn2Fql322TO9bWA7QNZWknEX5oYek9zthKigA1X+CArWTR420ClGgjSr5HfnwFFXsJc0EAl8BKaWKvKW5AWdjJkbYwwaKXipoFKt8C5xuNUhk/0CjGLR7xFM3wBt1R8ojABue8xQ0DXOKGAlsLapAbWlTWHqe4oYel5RA31NzYmUVF5WvvGV3uOFP52h3hjhWAKwez4AjwHaxUwEnOIxBQAd+CqIBBdFn5jlGOwWFucAlM0NlkhW0bV3gEPTRPqVKt0D+jSrsyPKHKxX2q3P0saFGlah4Nqhx7HkRJlVM7U2DC9hA4UWXtaAosQJWl8yHAmZExiCqAqSmoAiZHGR5zYYAqkEYG3ygidwQR6QEphKrsI4g9gzlirTBEsEp1grugi2h7gBrpfXDEhSpP/lvI5QBWUDggjAgAABAnAJ0BKlcAXgA+MRSIQqIhIReK1oQgAwS1AGfOy23PGn7r+PP5M/K9Vv61+LPVB0x9D+btz9zj/MA/UrpV+YD9ofWe9F39v9QD+u/3rrM/QA8tb9uvhJ/uP/M/bL2w8wA7VP8R4Z+QUEeg0jR5IIJuxzOtk+v5Xxh5BvVc/v/2W88X55/rfYD/mf9o6zPoTfr7//3N8c98UXfx++ivw9m7StsoAn8aiDnrGbKtZ1noef7elbT7xtV9oITVtmP3X3znGqP6XsZQ3Sn/gB/B1WwbK92rbSPer38VBKe0OlXop/r/iZj3PsY9DR/hZUvoVV84MALhUW0dnXBTd8dIZ2Sh3ItNXgSsj5Ak0HdFhODTkMriybJ40n9e3Qr1fNg8Rzbcx6n1hKeGdP9CZ6CnEuFn/0c9HzIaqqTRc9HznyYcAAD+/3UBAC+4HH322M8Cq4emVutr5d9YyzwLLP6wcopbzchVlvpP+Jx4qEjWEmAFr9WGaApBsVU6MjkKJwWvHMiO/Ra3bGhox1X60JOuNlISbk0H/eWXa4HgKh6S3CpXW3cGRQXXgWBFTMCE4ndu7p64te/sfHEVrGHuQOAHBxQQsuQmWQs5iat4sd31TF1KaOvmi3AM5KncwOm4+rxyADJ+0rlFxzMy4tpGDv0ae6DM8ocd6wj3z4gOv/dkSOCOdERC1X3uU6oR/XfT9Ya2Z/tcIW1FB1s3P+Py632IuRxYessEhkVm3jcWlMgtBpE7igsaD3s8P1GsuvZvoWJbbds3Ml4OhSDF+/+GIG94NFjVohIPucsEDl0neCj0Iobk3/LiuFecRa68Wb8AlygIpeOdY6JivvCZDM92d77NoMmw6DmmvxpjCxJKlxr+oV4nKe6UaEODZgtOx/gA5d+pmodpN1ri4Ke53/X8B+OQHyvt0bYb35OCdfMGZmiPOyxwJUVcxoD4CtHRDZPIOvx1/II5hhMvXDe5+Rg1qJU6ofmF/PoIvx6m21iwJ/jcJf++NQNTRgTCfFlEExjkBZZ9mZPZ2eL/F9xEj7+uvQVZ4EJ/AbH6wHMXs4QgArt8BxoqvUG76dgDEKmfUdD+Ty0g9/6Jb/6L5cLgboaWXjD5BkRZydwe/X4tDEzX8Zz5B/5pJHOaRXTxZDDkPcvsOn+hfjxVVHIA5/jcj2f+IJrJW/sivarUOT3GqWgS2Fsahz0bRBhgooW2NkzDMFGmroSeN0JoMDyu0si/gqPPkLcW9pmPbrU+8uBfNXFILQghzqW2ePHI+WGnHduef+gNVSjSdUHGZsxizNSqA0gcALuBrJoriSBfCwyg2hxToupY3PtUYzANvfBjuRRuURvoluGoflX/A/IEDofqmyxB/GUT9paof5al46bjOGGqS/pm29oF6OCHEYkM+CL0Fbg0rZleqzCGfuSG+/36isKWFbRFW1JHu/xQtfXyFfNTFzNF/xc3D9odVPG2gPoXX1xSyExaU/c5cNJRRqZ3cbqRJKyWOTKcJq3mdlLjrS0E6eKWwDLIe/C2rZGtxZMdXresuedKHatCJTf3VeOXA+3RQWBABiZ9Jbg+z/K/z//+MU0UxQtpaPAmiysGhKfKN51atMTspdWtit049KOl7KltebF67+KMEgd9TO1XD9B5chXE/iHFd8CsJACMpJiK7ifoB4FqNe2uOx+mSJhm+3gWD3HEL2AR2kQhJJ5WerEKUzxCB6eiNlE6MslJZz9Uy3Hho1aNKO9QGabbtGUQdxEcie/oYgsFY9HCjfqYQr9Z/04Nntkyx0tM/cCGBqarRXkB5X/ECQtpdXTPCvByWjy+FsobYFQ9tAIf16MlDV1WndPu70DqxDGp0NdMzQnDH8K4OS3ByD9+VQPCHttziRdS9HHLnMSE52WTUnjCwVY5k78HLfzT+I1f47Yb1tSk7nwsuwKvdB67a4y7kUv2LI5YZsWuDki5aapj1NHd3Kezv6uG1N9mM/AwHGNg0w3+PUDZu1b5HRkkvidrGe/aSI8CDbSjpmHLPz985Hc6K47bpkNPc7bOObyBAm7uqR7wT/pQo/LK/fIqTHUUhLwasip/33Gc9m3tMT48TUApgD5E7sQGt4SJxK7O2vDMXeTWvcmAbs1msfLDJ60Z9HPOMRqXRqATbT8KcN0YAYX8lBVpKZboMnaB8k9aQsYf2miexyY0/eOQcecpGNbfucEEjf4YzQx4/9iMGSZkrachtzHlY0VOwhOvwkMp1JzcOTkkr9NKA2aTLfMT0ottqdeB5xC71Ovti4Hw6NDPwevJSELWlOVispJbjLJ4oWiq5srVSrssyX6Pu6XIHHryq3eMwUYyNud6jgs1eu/umXR3fBgWVrrTbUIiT4AJxRoPXS/ZOI1ayLbW4U5M8grTffqkRhssxYtFr+hITF61jsGKiZqT7y0Fbcgnesdg2tvakFDdAHlivi92OwlsXyefE3T+dLTgdZUp8N+fn81H6Hk6CMNPXaVrWhTlBwd1mFxaXyHlLZmUphDbfFgcplDpmH6DZDg0l5vrc8Su41+n/se5DKTrtYbIpfIXY/ScMMyj3rbUuht4JD6xxEq612FU35BSd7jx/jeRO0+XQQy0tH6kVbxB0csO4AEkJ+shtfdMw3AntTxiw9F1q3SCYtX/h5IJgcvbldNvsr9BMX/wMFp+k7WnLjGGsWZolD2+nzNGUlX4HanLA62Zz6fCergK2S9mL7ch5VMVPq9lrOSB0m3/7IyiSG9tFNyOIwdFq4ToY7JR2GMeESNA5Nbybg+oBg8yMh8aO1uqc/t7l00X3f9eq8Jaf2lEHecz0+pzeLvlst5gxhJhdTKEsj1uQGADnRYdK6YgBuWZIjY4KttxPDUpT6H5k1mMXX76zH4owHhOdGiPnxe2KaKbP/zxQP+H/xbYhLcmDV9E+IPlG+3bN+54GIAAAAA="
+        alt="정글장터 나뭇잎"
+      >
+      <h1 id="login-title">정글장터</h1>
+      <p>정글 구성원 중고거래 커뮤니티</p>
+    </header>
 
-  {# 서버가 아니라 자바스크립트가 채운다. 처음에는 d-none 으로 숨겨 둔다. #}
-  <div class="alert alert-danger py-2 d-none" id="error"></div>
+    <div class="alert alert-danger py-2 d-none" id="error" role="alert"></div>
 
-  <form id="login-form">
-    <div class="mb-3">
-      <label class="form-label" for="username">아이디</label>
-      <input class="form-control" id="username" name="username" required>
-    </div>
+    <form id="login-form">
+      <div class="mb-4">
+        <label class="form-label" for="username">아이디</label>
+        <input
+          class="form-control"
+          id="username"
+          name="username"
+          autocomplete="username"
+          required
+        >
+      </div>
 
-    <div class="mb-3">
-      <label class="form-label" for="password">비밀번호</label>
-      <input class="form-control" id="password" name="password" type="password" required>
-    </div>
+      <div class="mb-4">
+        <label class="form-label" for="password">비밀번호</label>
+        <input
+          class="form-control"
+          id="password"
+          name="password"
+          type="password"
+          autocomplete="current-password"
+          required
+        >
+      </div>
 
-    <button class="btn btn-primary w-100" type="submit">로그인</button>
-  </form>
+      <button class="login-button w-100" type="submit">로그인</button>
+    </form>
 
-  <p class="text-center mt-3 mb-0">
-    아직 계정이 없나요? <a href="/signup">회원가입</a>
-  </p>
+    <p class="login-signup">
+      처음 오셨나요? <a href="/signup">회원가입</a>
+    </p>
+  </section>
 </div>
 {% endblock %}
 
 {% block scripts %}
 <script>
-const form = document.getElementById("login-form");
-const errorBox = document.getElementById("error");
+  const form = document.getElementById("login-form");
+  const errorBox = document.getElementById("error");
 
-form.addEventListener("submit", async (event) => {
-  // 이걸 막지 않으면 브라우저가 원래 하던 폼 제출(페이지 이동)을 해 버린다.
-  event.preventDefault();
-  errorBox.classList.add("d-none");
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    errorBox.classList.add("d-none");
 
-  const response = await fetch("/api/login", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },   // 본문이 JSON 이라고 알린다
-    body: JSON.stringify({
-      username: document.getElementById("username").value,
-      password: document.getElementById("password").value,
-    }),
+    const response = await fetch("/api/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        username: document.getElementById("username").value,
+        password: document.getElementById("password").value,
+      }),
+    });
+    const data = await response.json();
+
+    if (response.ok) {
+      location.href = data.redirect;
+      return;
+    }
+
+    errorBox.textContent = "아이디 또는 비밀번호가 올바르지 않아요.";
+    errorBox.classList.remove("d-none");
   });
-  const data = await response.json();
-
-  if (response.ok) {
-    // 쿠키는 이 응답의 Set-Cookie 로 이미 브라우저에 심겼다. 화면만 옮기면 된다.
-    location.href = data.redirect;
-    return;
-  }
-  errorBox.textContent = "아이디 또는 비밀번호가 올바르지 않아요.";
-  errorBox.classList.remove("d-none");
-});
 </script>
 {% endblock %}
