@@ -6,7 +6,7 @@ Blueprint 를 등록하는 일만 한다. 라우트의 본체는 각 담당자�
 from flask import Flask, request
 
 from routes.auth import bp as auth_bp
-from routes.chat import chat_bp
+from routes.chat import chat_bp, socketio
 from routes.community import community_bp
 from routes.items import items_bp
 from routes.main import bp as main_bp
@@ -18,7 +18,7 @@ app.register_blueprint(items_bp)   # [재성] / /items /items/<id> ...
 app.register_blueprint(chat_bp)    # [재성] /chats /chats/<id> ...
 app.register_blueprint(main_bp)
 app.register_blueprint(community_bp)  # /community /community/new /community/<id>
-
+socketio.init_app(app)
 
 # 뒤로가기로 돌아온 페이지가 옛 화면을 보여주던 문제.
 # 브라우저가 캐시에서 꺼내 쓰느라 서버에 묻지 않아서, 거래완료 토글이
@@ -38,4 +38,5 @@ def no_store(response):
 if __name__ == "__main__":
     # debug=True → .py 저장 시 서버 자동 재시작 + 템플릿은 새로고침만으로 반영.
     # 배포할 때는 반드시 끄기
-    app.run(debug=True, port=5000)
+
+    socketio.run(app, debug=True, port=5000, allow_unsafe_werkzeug=True)
