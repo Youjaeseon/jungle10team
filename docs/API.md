@@ -110,7 +110,52 @@
 |---|---|---|---|
 | GET | `/api/chats/unread` | P1 | navbar 💬 안 읽음 카운트 (WebSocket 활용 여부 미정) |
 | POST | `/api/items/<id>/like` | P2 | 찜 토글 |
-| POST | `/api/community/<id>/comments` | P2 | 댓글 등록 (Ajax, 나머지 커뮤니티는 SSR) |
+
+### 2.x 커뮤니티 댓글 (구현 완료, 2026-08-27 · 진근)
+
+거래 채팅과 달리 **WebSocket을 쓰지 않는다.** 0.5초 AJAX 폴링이다. 커뮤니티는
+동시 인원이 적고 즉각성 요구가 낮아, 소켓의 네임스페이스·룸·재연결 처리를
+들이는 것보다 폴링이 단순하다고 판단했다. `routes/chat.py`의 SocketIO 계층은
+건드리지 않는다.
+
+경로가 `/api/`로 시작해야 하는 이유: `auth_util.py`의 `login_required`는 그때만
+401 JSON을 돌려주고, 아니면 `/login`으로 302 리다이렉트한다. 폴링이 그것을
+받으면 로그인 페이지 HTML을 JSON으로 파싱하려다 터진다.
+
+| Method | Path | 설명 |
+|---|---|---|
+| GET | `/api/community/<post_id>/comments?since=<id>` | 목록. `since`가 있으면 그 id 뒤에 달린 것만 |
+| POST | `/api/community/<post_id>/comments` | 등록. body `{"text": "..."}` |
+| POST | `/api/community/comments/<comment_id>/edit` | 본인 댓글 수정. body `{"text": "..."}` |
+| POST | `/api/community/comments/<comment_id>/delete` | 본인 댓글 삭제 |
+
+```
+GET  /api/community/<post_id>/comments?since=<id>
+성공  200 {"ok": true,
+           "comments": [
+             {"id": "...", "author_id": "...", "name": "조진근", "lab": "SW-AI LAB",
+              "text": "저요저요", "created_at": "...", "updated_at": "...",
+              "display_time": "08-27 09:12", "edited": false}
+           ],
+           "total": 12,
+           "stamp": "2026-08-27T00:12:33.123456"}
+실패  404 {"error": "post_not_found"} · 401 {"error": "login_required"}
+```
+
+**`total`과 `stamp`가 왜 필요한가.** `since` 방식은 "마지막 id 뒤에 생긴 것"만
+볼 수 있어서, 남이 댓글을 수정하거나 삭제한 것은 구조적으로 관측되지 않는다.
+그래서 두 값을 함께 내려보낸다 — `total`은 전체 개수(삭제를 잡는다), `stamp`는
+가장 늦은 `updated_at`(수정을 잡는다). 클라이언트는 화면에 그려 둔 값과 이
+둘이 어긋날 때만 전체를 다시 받는다. 평상시에는 빈 배열만 오간다.
+
+`total`과 `stamp`는 `since` 여부와 무관하게 **항상 전체 기준**이며, 작성·수정·
+삭제 응답에도 같이 실린다(그래야 자기 동작 직후 불필요한 전체 재요청이 없다).
+
+저장은 `db.post_comments` 컬렉션이다. 게시글 문서의 `comments` 배열이 아니다.
+목록 페이지의 "댓글 N"은 `post_list()`가 집계 한 번으로 센다.
+
+에러 코드: `post_not_found` `comment_not_found` `not_author`(403)
+`empty_text`(400) `too_long`(400, 500자 초과) `login_required`(401)
 
 ## 3. WebSocket 이벤트 계약 (Flask-SocketIO)
 

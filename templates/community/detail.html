@@ -34,5 +34,98 @@
         </header>
 
         <div class="community-detail-body">{{ post.body }}</div>
+
+        {#
+          댓글 액자.
+          채팅방(chat_room.html)과 액자 구조는 같지만 행의 생김새가 다르다.
+          말풍선도 아바타도 없고, 이름·내용·시각이 한 줄로 놓이는 게시판식이다.
+
+          data-* 로 JS 에 값을 넘긴다. 템플릿 안에 <script> 를 두면 값이
+          마크업에 섞여 어디서 온 값인지 추적하기 어려워진다.
+        #}
+        <section
+            class="comment-box"
+            data-post-id="{{ post._id }}"
+            data-current-user-id="{{ current_user_id }}"
+            data-comment-stamp="{{ comment_stamp }}"
+        >
+            <header class="comment-box-header">
+                <h2 class="comment-box-title">댓글</h2>
+                <span class="comment-count" id="commentCount">{{ comments|length }}</span>
+            </header>
+
+            <ol
+                class="comment-list"
+                id="commentList"
+                aria-live="polite"
+                aria-label="댓글 목록"
+            >
+                {% for comment in comments %}
+                    <li
+                        class="comment-row"
+                        data-comment-id="{{ comment.id }}"
+                        data-author-id="{{ comment.author_id }}"
+                    >
+                        <span class="comment-author">
+                            {{ comment.name }}
+                            {% if comment.lab %}<small>{{ comment.lab }}</small>{% endif %}
+                        </span>
+
+                        {#
+                          {{- -}} 가 필수다. CSS 에 white-space: pre-wrap 이 걸리면
+                          공백 압축이 꺼지면서 태그와 텍스트 사이의 줄바꿈·들여쓰기가
+                          전부 진짜 글자로 승격된다. 하이픈이 Jinja 컴파일 단계에서
+                          그 공백을 지운다.
+                        #}
+                        <span class="comment-text">{{- comment.text -}}</span>
+
+                        <time
+                            class="comment-time"
+                            datetime="{{ comment.created_at }}"
+                        >
+                            {{ comment.display_time }}{% if comment.edited %} (수정됨){% endif %}
+                        </time>
+
+                        {% if comment.author_id == current_user_id %}
+                            <span class="comment-actions">
+                                <button type="button" class="comment-edit-button">수정</button>
+                                <button type="button" class="comment-delete-button">삭제</button>
+                            </span>
+                        {% endif %}
+                    </li>
+                {% else %}
+                    <li class="comment-empty" id="commentEmpty">
+                        첫 댓글을 남겨 보세요.
+                    </li>
+                {% endfor %}
+            </ol>
+
+            <form class="comment-form" id="commentForm" autocomplete="off">
+                <label class="visually-hidden" for="commentInput">댓글 입력</label>
+                <input
+                    type="text"
+                    class="form-control"
+                    id="commentInput"
+                    name="text"
+                    maxlength="500"
+                    placeholder="댓글을 입력해 주세요"
+                >
+                <button
+                    type="submit"
+                    class="btn btn-success"
+                    id="commentSubmit"
+                    disabled
+                >
+                    등록
+                </button>
+            </form>
+
+            {# 전송 실패 같은 소식을 화면 낭독기에 전달하는 자리. 눈에는 보이지 않는다. #}
+            <div class="visually-hidden" id="commentStatus" aria-live="polite"></div>
+        </section>
     </article>
+{% endblock %}
+
+{% block scripts %}
+    <script src="{{ url_for('static', filename='js/community_comments.js') }}"></script>
 {% endblock %}
